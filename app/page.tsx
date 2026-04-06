@@ -452,10 +452,8 @@ export default function Home() {
                   : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
               }`}
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-              </svg>
-              급상승
+              <span className="text-base">🔥</span>
+              <span className={showTrendingOnly ? "text-orange-400" : "text-orange-400/70"}>급상승</span>
             </button>
           </div>
 
