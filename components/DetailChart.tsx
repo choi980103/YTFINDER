@@ -25,7 +25,7 @@ function defaultFormatter(v: number): string {
 export default function DetailChart({
   data,
   color = "#00e5a0",
-  height = 200,
+  height = 220,
   title,
   subtitle,
   valueFormatter = defaultFormatter,
@@ -34,27 +34,47 @@ export default function DetailChart({
     if (data.length < 2) return null;
 
     const values = data.map((d) => d.value);
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const range = max - min || 1;
+    const rawMin = Math.min(...values);
+    const rawMax = Math.max(...values);
+    const range = rawMax - rawMin || 1;
 
-    const padding = { top: 20, bottom: 30, left: 0, right: 0 };
-    const chartW = 100; // percentage-based
-    const chartH = height - padding.top - padding.bottom;
+    // Y축 여유 (10%)
+    const min = rawMin - range * 0.1;
+    const max = rawMax + range * 0.1;
+    const yRange = max - min;
+
+    const W = 600;
+    const H = height;
+    const pad = { top: 24, bottom: 40, left: 60, right: 20 };
+    const cw = W - pad.left - pad.right;
+    const ch = H - pad.top - pad.bottom;
 
     const points = data.map((d, i) => ({
-      x: (i / (data.length - 1)) * 100,
-      y: padding.top + chartH - ((d.value - min) / range) * chartH,
+      x: pad.left + (i / (data.length - 1)) * cw,
+      y: pad.top + ch - ((d.value - min) / yRange) * ch,
       ...d,
     }));
 
-    const pathD = points
-      .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-      .join(" ");
+    // 부드러운 곡선 경로
+    let pathD = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      pathD += ` C ${cpx} ${prev.y}, ${cpx} ${curr.y}, ${curr.x} ${curr.y}`;
+    }
 
-    const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding.bottom} L ${points[0].x} ${height - padding.bottom} Z`;
+    const areaD = `${pathD} L ${points[points.length - 1].x} ${pad.top + ch} L ${points[0].x} ${pad.top + ch} Z`;
 
-    return { points, pathD, areaD, min, max, padding };
+    // Y축 눈금 (5단계)
+    const yTicks = Array.from({ length: 5 }, (_, i) => {
+      const ratio = i / 4;
+      const val = rawMin + (rawMax - rawMin) * ratio;
+      const y = pad.top + ch - ((val - min) / yRange) * ch;
+      return { y, val };
+    });
+
+    return { points, pathD, areaD, rawMin, rawMax, yTicks, W, H, pad, ch };
   }, [data, height]);
 
   if (!chartData || data.length < 2) {
@@ -66,7 +86,8 @@ export default function DetailChart({
     );
   }
 
-  const { points, pathD, areaD, min, max, padding } = chartData;
+  const { points, pathD, areaD, rawMin, rawMax, yTicks, W, H, pad, ch } = chartData;
+  const gradId = `grad-${title.replace(/\s/g, "")}`;
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
@@ -75,78 +96,98 @@ export default function DetailChart({
           <h3 className="text-sm font-semibold text-zinc-300">{title}</h3>
           {subtitle && <p className="mt-0.5 text-[10px] text-zinc-600">{subtitle}</p>}
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-zinc-500">
-          <span>최저 {valueFormatter(min)}</span>
-          <span>최고 {valueFormatter(max)}</span>
+        <div className="flex items-center gap-4 text-[11px]">
+          <span className="text-zinc-500">최저 <span className="font-semibold text-zinc-300">{valueFormatter(rawMin)}</span></span>
+          <span className="text-zinc-500">최고 <span className="font-semibold text-zinc-300">{valueFormatter(rawMax)}</span></span>
         </div>
       </div>
 
-      <svg
-        viewBox={`0 0 100 ${height}`}
-        className="w-full"
-        preserveAspectRatio="none"
-        style={{ height }}
-      >
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height }}>
         <defs>
-          <linearGradient id={`grad-${title}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity="0.2" />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.02" />
           </linearGradient>
         </defs>
 
-        {/* Grid lines */}
-        {[0.25, 0.5, 0.75].map((ratio) => {
-          const y = padding.top + (height - padding.top - padding.bottom) * (1 - ratio);
-          return (
+        {/* Y축 눈금선 + 라벨 */}
+        {yTicks.map((t, i) => (
+          <g key={i}>
             <line
-              key={ratio}
-              x1="0"
-              y1={y}
-              x2="100"
-              y2={y}
-              stroke="rgba(255,255,255,0.04)"
-              strokeWidth="0.3"
+              x1={pad.left}
+              y1={t.y}
+              x2={W - pad.right}
+              y2={t.y}
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth={1}
+              strokeDasharray={i === 0 ? "none" : "4 4"}
             />
-          );
-        })}
+            <text
+              x={pad.left - 8}
+              y={t.y + 4}
+              textAnchor="end"
+              className="fill-zinc-500"
+              fontSize={11}
+            >
+              {valueFormatter(t.val)}
+            </text>
+          </g>
+        ))}
 
-        {/* Area fill */}
-        <path d={areaD} fill={`url(#grad-${title})`} />
+        {/* 영역 채우기 */}
+        <path d={areaD} fill={`url(#${gradId})`} />
 
-        {/* Line */}
+        {/* 곡선 */}
         <path
           d={pathD}
           fill="none"
           stroke={color}
-          strokeWidth="0.8"
+          strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
         />
 
-        {/* Data points */}
+        {/* 데이터 포인트 + 값 표시 */}
         {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r="1.2"
-            fill={color}
-            className="transition-all"
-          >
-            <title>{`${p.label}: ${valueFormatter(p.value)}`}</title>
-          </circle>
+          <g key={i}>
+            {/* 외곽 원 */}
+            <circle cx={p.x} cy={p.y} r={5} fill={color} opacity={0.2} />
+            {/* 내부 원 */}
+            <circle cx={p.x} cy={p.y} r={3} fill={color} />
+            {/* 값 라벨 (포인트 위에) */}
+            <text
+              x={p.x}
+              y={p.y - 12}
+              textAnchor="middle"
+              className="fill-zinc-300"
+              fontSize={10}
+              fontWeight={600}
+            >
+              {valueFormatter(p.value)}
+            </text>
+          </g>
         ))}
-      </svg>
 
-      {/* X-axis labels */}
-      <div className="mt-1 flex justify-between text-[9px] text-zinc-600">
-        {data.length <= 8
-          ? data.map((d, i) => <span key={i}>{d.label}</span>)
-          : [data[0], data[Math.floor(data.length / 2)], data[data.length - 1]].map(
-              (d, i) => <span key={i}>{d.label}</span>
-            )}
-      </div>
+        {/* X축 라벨 */}
+        {(() => {
+          // 라벨이 너무 많으면 간격 조절
+          const step = data.length <= 6 ? 1 : data.length <= 12 ? 2 : 3;
+          return points
+            .filter((_, i) => i % step === 0 || i === points.length - 1)
+            .map((p, i) => (
+              <text
+                key={i}
+                x={p.x}
+                y={H - 8}
+                textAnchor="middle"
+                className="fill-zinc-500"
+                fontSize={10}
+              >
+                {p.label}
+              </text>
+            ));
+        })()}
+      </svg>
     </div>
   );
 }

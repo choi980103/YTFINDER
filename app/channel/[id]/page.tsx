@@ -629,6 +629,12 @@ export default function ChannelPage({
         )}
 
         {/* 히스토리 차트 (구독자 추이 + 비율 변화 + 떡상 지수) */}
+        <div className="mb-2 flex items-center gap-1.5 text-[11px] text-zinc-600">
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+          </svg>
+          아래 추이 차트는 방문할 때마다 데이터가 기록되어, 시간이 지날수록 더 정확한 변화를 확인할 수 있습니다.
+        </div>
         <HistoryCharts channelId={id} />
 
         {/* Memo */}
