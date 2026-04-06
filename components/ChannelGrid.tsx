@@ -210,7 +210,7 @@ export default function ChannelGrid({
               <ChannelCard
                 channel={channel}
                 index={index}
-                rank={safePage * pageSize + index + 1}
+
                 isFavorite={favorites.has(channel.id)}
                 onToggleFavorite={onToggleFavorite}
                 isTrending={trendingIds.has(channel.id)}
@@ -252,7 +252,7 @@ export default function ChannelGrid({
               <ChannelListItem
                 channel={channel}
                 index={index}
-                rank={safePage * pageSize + index + 1}
+
                 isFavorite={favorites.has(channel.id)}
                 onToggleFavorite={onToggleFavorite}
                 isTrending={trendingIds.has(channel.id)}

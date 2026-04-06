@@ -56,7 +56,6 @@ function getSparklineColor(ratio: number): string {
 interface ChannelCardProps {
   channel: Channel;
   index: number;
-  rank: number;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
   isTrending?: boolean;
@@ -65,7 +64,6 @@ interface ChannelCardProps {
 export default function ChannelCard({
   channel,
   index,
-  rank,
   isFavorite,
   onToggleFavorite,
   isTrending,
@@ -95,11 +93,6 @@ export default function ChannelCard({
           급상승
         </div>
       )}
-
-      {/* Rank Badge */}
-      <div className="absolute left-4 top-4 font-mono text-xs text-zinc-600">
-        #{rank}
-      </div>
 
       {/* Favorite Button — 넓은 클릭 영역 */}
       <button

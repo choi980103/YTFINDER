@@ -48,7 +48,6 @@ function getSparklineColor(ratio: number): string {
 interface ChannelListItemProps {
   channel: Channel;
   index: number;
-  rank: number;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
   isTrending?: boolean;
@@ -57,7 +56,6 @@ interface ChannelListItemProps {
 export default function ChannelListItem({
   channel,
   index,
-  rank,
   isFavorite,
   onToggleFavorite,
   isTrending,
@@ -75,11 +73,6 @@ export default function ChannelListItem({
       onClick={handleRowClick}
       className="card-animate group flex cursor-pointer items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-all hover:border-white/10 hover:bg-white/[0.04] sm:gap-4"
     >
-      {/* Rank */}
-      <span className="w-6 shrink-0 text-center font-mono text-xs text-zinc-600">
-        {rank}
-      </span>
-
       {/* Favorite */}
       <button
         onClick={() => onToggleFavorite(channel.id)}
