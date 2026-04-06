@@ -10,7 +10,7 @@ export interface Channel {
   recentVideos: number;
   growthRate: number;
   description: string;
-  region?: "kr" | "global";
+  region?: "kr" | "us" | "jp" | "global";
   viewTrend?: number[];
   createdAt?: string; // ISO date string
   videoTitles?: string[];

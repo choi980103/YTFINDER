@@ -16,7 +16,7 @@ import DailyDiscovery from "@/components/DailyDiscovery";
 import { saveChannelSnapshots } from "@/lib/history";
 import LandingHero from "@/components/LandingHero";
 
-type RegionTab = "kr" | "global";
+type RegionTab = "kr" | "us" | "jp";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -254,9 +254,10 @@ export default function Home() {
   const filteredChannels = useMemo(() => {
     let channels = [...sourceChannels];
 
-    // 지역 필터
+    // 지역 필터 (global 검색 결과는 US에 포함)
     channels = channels.filter((ch) => {
       const r = ch.region || "kr";
+      if (regionTab === "us") return r === "us" || r === "global";
       return r === regionTab;
     });
 
@@ -366,29 +367,26 @@ export default function Home() {
           </p>
         </div>
 
-        {/* 한국 / 해외 탭 + 즐겨찾기 */}
+        {/* 한국 / 미국 / 일본 탭 + 즐겨찾기 */}
         <div className="mb-6 flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
-            <button
-              onClick={() => setRegionTab("kr")}
-              className={`rounded-lg px-5 py-2 text-sm font-semibold transition-all ${
-                regionTab === "kr"
-                  ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/10"
-                  : "text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              한국 채널
-            </button>
-            <button
-              onClick={() => setRegionTab("global")}
-              className={`rounded-lg px-5 py-2 text-sm font-semibold transition-all ${
-                regionTab === "global"
-                  ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/10"
-                  : "text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              해외 채널
-            </button>
+            {([
+              { key: "kr" as const, label: "한국" },
+              { key: "us" as const, label: "미국" },
+              { key: "jp" as const, label: "일본" },
+            ]).map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setRegionTab(tab.key)}
+                className={`rounded-lg px-5 py-2 text-sm font-semibold transition-all ${
+                  regionTab === tab.key
+                    ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/10"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
           <button

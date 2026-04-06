@@ -12,7 +12,7 @@ interface ShortsChannel {
   recentVideos: number;
   growthRate: number;
   description: string;
-  region: "kr" | "global";
+  region: "kr" | "us" | "jp" | "global";
   viewTrend?: number[];
   createdAt?: string;
   videoTitles?: string[];
@@ -200,30 +200,44 @@ export async function POST(request: NextRequest) {
       ),
     ]);
 
-    const channelMap = new Map<string, string>();
+    const channelMap = new Map<string, { title: string; region: "kr" | "us" | "jp" | "global" }>();
 
-    // search 결과에서 채널 추출 (한국 + 글로벌 + US + JP)
-    for (const data of [...searchResultsKR, ...searchResultsGlobal, ...searchResultsUS, ...searchResultsJP]) {
-      for (const item of data.items || []) {
-        const chId = item.snippet?.channelId;
-        if (chId && !channelMap.has(chId)) {
-          channelMap.set(chId, item.snippet.channelTitle);
-        }
-      }
-    }
-
-    // mostPopular 결과에서 쇼츠(60초 이하) 채널만 추출 (한국 + US + JP)
-    for (const data of [...popularResultsKR, ...popularResultsUS, ...popularResultsJP]) {
-      for (const item of data.items || []) {
-        const duration = parseDuration(item.contentDetails?.duration || "");
-        if (duration > 0 && duration <= 60) {
+    // 소스별로 region 태깅하면서 채널 추출
+    function addChannels(results: { items?: { snippet?: { channelId: string; channelTitle: string } }[] }[], region: "kr" | "us" | "jp" | "global") {
+      for (const data of results) {
+        for (const item of data.items || []) {
           const chId = item.snippet?.channelId;
           if (chId && !channelMap.has(chId)) {
-            channelMap.set(chId, item.snippet.channelTitle);
+            channelMap.set(chId, { title: item.snippet!.channelTitle, region });
           }
         }
       }
     }
+
+    // search 결과
+    addChannels(searchResultsKR, "kr");
+    addChannels(searchResultsUS, "us");
+    addChannels(searchResultsJP, "jp");
+    addChannels(searchResultsGlobal, "global");
+
+    // mostPopular 결과에서 쇼츠(60초 이하) 채널만 추출
+    function addPopularChannels(results: { items?: { contentDetails?: { duration: string }; snippet?: { channelId: string; channelTitle: string } }[] }[], region: "kr" | "us" | "jp" | "global") {
+      for (const data of results) {
+        for (const item of data.items || []) {
+          const duration = parseDuration(item.contentDetails?.duration || "");
+          if (duration > 0 && duration <= 60) {
+            const chId = item.snippet?.channelId;
+            if (chId && !channelMap.has(chId)) {
+              channelMap.set(chId, { title: item.snippet!.channelTitle, region });
+            }
+          }
+        }
+      }
+    }
+
+    addPopularChannels(popularResultsKR, "kr");
+    addPopularChannels(popularResultsUS, "us");
+    addPopularChannels(popularResultsJP, "jp");
 
     const uniqueIds = [...channelMap.keys()];
     if (uniqueIds.length === 0) {
@@ -313,9 +327,12 @@ export async function POST(request: NextRequest) {
         .map((v) => v.snippet?.title || "")
         .filter((t) => t.length > 0);
 
-      const isKorean =
+      // channelMap에서 region 가져오기 (한국어 감지로 보정)
+      const mappedRegion = channelMap.get(ch.id)?.region || "global";
+      const hasKorean =
         containsKorean(ch.snippet.title) ||
         containsKorean(ch.snippet.description || "");
+      const region = hasKorean ? "kr" : mappedRegion;
 
       channels.push({
         id: ch.id,
@@ -330,7 +347,7 @@ export async function POST(request: NextRequest) {
         growthRate: Math.round(Math.random() * 300 + 50),
         description:
           ch.snippet.description?.slice(0, 80) || "YouTube Shorts 크리에이터",
-        region: isKorean ? "kr" : "global",
+        region,
         ...(viewTrend.length >= 2 ? { viewTrend } : {}),
         createdAt: ch.snippet.publishedAt || undefined,
         ...(videoTitles.length > 0 ? { videoTitles } : {}),
