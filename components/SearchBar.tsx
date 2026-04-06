@@ -79,13 +79,13 @@ export default function SearchBar({
         <select
           value={sortBy}
           onChange={(e) => onSortChange(e.target.value)}
-          className="cursor-pointer rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-300 outline-none transition-all hover:bg-white/10 focus:border-[#00e5a0]/50"
+          className="cursor-pointer rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 outline-none transition-all hover:bg-zinc-800 focus:border-[#00e5a0]/50"
         >
-          <option value="score">떡상 지수순</option>
-          <option value="ratio">조회수/구독자 비율순</option>
-          <option value="growth">성장률순</option>
-          <option value="views">평균 조회수순</option>
-          <option value="subscribers">구독자순</option>
+          <option value="score" className="bg-zinc-900 text-zinc-200">떡상 지수순</option>
+          <option value="ratio" className="bg-zinc-900 text-zinc-200">조회수/구독자 비율순</option>
+          <option value="growth" className="bg-zinc-900 text-zinc-200">성장률순</option>
+          <option value="views" className="bg-zinc-900 text-zinc-200">평균 조회수순</option>
+          <option value="subscribers" className="bg-zinc-900 text-zinc-200">구독자순</option>
         </select>
 
         {/* Mobile filter toggle */}
