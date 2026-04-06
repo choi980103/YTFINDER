@@ -31,6 +31,7 @@ export default function Home() {
   const [favoriteOrder, setFavoriteOrder] = useState<string[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showHiddenGems, setShowHiddenGems] = useState(false);
+  const [showTrendingOnly, setShowTrendingOnly] = useState(false);
 
   const hasActiveFilters =
     searchQuery !== "" ||
@@ -38,7 +39,8 @@ export default function Home() {
     subRange !== "all" ||
     channelAge !== "all" ||
     showFavoritesOnly ||
-    showHiddenGems;
+    showHiddenGems ||
+    showTrendingOnly;
 
   const resetFilters = useCallback(() => {
     setSearchQuery("");
@@ -48,6 +50,7 @@ export default function Home() {
     setChannelAge("all");
     setShowFavoritesOnly(false);
     setShowHiddenGems(false);
+    setShowTrendingOnly(false);
   }, []);
 
   // API 상태
@@ -308,6 +311,17 @@ export default function Home() {
       );
     }
 
+    // 급상승: 성장률 상위 채널 (평균의 1.5배 이상 + 200% 이상)
+    if (showTrendingOnly) {
+      const avgGrowth = channels.length > 0
+        ? channels.reduce((s, ch) => s + ch.growthRate, 0) / channels.length
+        : 0;
+      const threshold = avgGrowth * 1.5;
+      channels = channels.filter(
+        (ch) => ch.growthRate >= threshold && ch.growthRate >= 200
+      );
+    }
+
     switch (sortBy) {
       case "score":
         channels.sort((a, b) => calculateScore(b) - calculateScore(a));
@@ -327,7 +341,7 @@ export default function Home() {
     }
 
     return channels;
-  }, [sourceChannels, regionTab, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, sortBy]);
+  }, [sourceChannels, regionTab, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, sortBy]);
 
   if (showLanding) {
     return (
@@ -428,6 +442,20 @@ export default function Home() {
             >
               <span className="text-base">💎</span>
               히든 젬
+            </button>
+
+            <button
+              onClick={() => setShowTrendingOnly((v) => !v)}
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                showTrendingOnly
+                  ? "border-orange-400/30 bg-orange-400/10 text-orange-400"
+                  : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+              }`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+              </svg>
+              급상승
             </button>
           </div>
 
