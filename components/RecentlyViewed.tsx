@@ -71,7 +71,7 @@ export default function RecentlyViewed() {
             <span className="max-w-[64px] truncate text-[10px] text-zinc-500 group-hover:text-zinc-300">
               {ch.name}
             </span>
-            <span className="text-[8px] text-zinc-700">{timeAgo(ch.viewedAt)}</span>
+            <span className="text-[9px] text-zinc-400">{timeAgo(ch.viewedAt)}</span>
           </Link>
         ))}
       </div>
