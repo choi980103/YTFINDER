@@ -444,7 +444,7 @@ export default function Home() {
                 <span className="text-base">💎</span>
                 히든 젬
               </button>
-              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl transition-all group-hover/gem:visible group-hover/gem:opacity-100">
+              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-72 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl transition-all group-hover/gem:visible group-hover/gem:opacity-100">
                 구독자 5만 이하이지만 조회/구독 비율이 200% 이상인 채널. 아직 덜 알려졌지만 알고리즘을 타고 있는 숨겨진 보석!
               </div>
             </div>
@@ -461,7 +461,7 @@ export default function Home() {
                 <span className="text-base">🔥</span>
                 <span className={showTrendingOnly ? "text-orange-400" : "text-orange-400/70"}>급상승</span>
               </button>
-              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl transition-all group-hover/trend:visible group-hover/trend:opacity-100">
+              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-72 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl transition-all group-hover/trend:visible group-hover/trend:opacity-100">
                 성장률이 평균의 1.5배 이상이고 200% 이상인 채널. 지금 가장 빠르게 성장 중인 채널만 모아보기!
               </div>
             </div>
