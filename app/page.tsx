@@ -112,7 +112,26 @@ export default function Home() {
 
   const isConnected = apiKey.length > 0;
 
-  async function fetchShortsChannels(key: string) {
+  const CLIENT_CACHE_KEY = "yt_shorts_cache";
+  const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 3; // 3시간
+
+  async function fetchShortsChannels(key: string, forceRefresh = false) {
+    // 클라이언트 캐시 확인 (강제 새로고침이 아닐 때)
+    if (!forceRefresh) {
+      try {
+        const cached = localStorage.getItem(CLIENT_CACHE_KEY);
+        if (cached) {
+          const { channels: cachedChannels, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CLIENT_CACHE_TTL && cachedChannels.length > 0) {
+            setLiveChannels(cachedChannels);
+            setDataSource("live");
+            setIsReady(true);
+            return;
+          }
+        }
+      } catch { /* ignore */ }
+    }
+
     setIsLoading(true);
     setError("");
 
@@ -133,6 +152,13 @@ export default function Home() {
       if (data.channels && data.channels.length > 0) {
         setLiveChannels(data.channels);
         setDataSource("live");
+        // 클라이언트 캐시 저장
+        try {
+          localStorage.setItem(CLIENT_CACHE_KEY, JSON.stringify({
+            channels: data.channels,
+            timestamp: Date.now(),
+          }));
+        } catch { /* quota exceeded */ }
       }
     } catch {
       setError("네트워크 오류가 발생했습니다");
@@ -432,7 +458,7 @@ export default function Home() {
           {isConnected && (
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <button
-                onClick={() => fetchShortsChannels(apiKey)}
+                onClick={() => fetchShortsChannels(apiKey, true)}
                 disabled={isLoading}
                 className="rounded-xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-5 py-2.5 text-sm font-semibold text-[#0a0a0f] transition-opacity hover:opacity-90 disabled:opacity-50"
               >

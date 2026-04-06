@@ -19,7 +19,7 @@ interface ShortsChannel {
 
 // 메모리 캐시
 let cache: { channels: ShortsChannel[]; timestamp: number } | null = null;
-const CACHE_TTL = 1000 * 60 * 60; // 1시간
+const CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
 // 검색 키워드 (3개만 사용 = 300유닛)
 const SEARCH_QUERIES = [
