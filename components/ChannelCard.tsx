@@ -97,14 +97,14 @@ export default function ChannelCard({
       )}
 
       {/* Rank Badge */}
-      <div className="absolute right-4 top-4 font-mono text-xs text-zinc-600">
+      <div className="absolute left-4 top-4 font-mono text-xs text-zinc-600">
         #{rank}
       </div>
 
       {/* Favorite Button — 넓은 클릭 영역 */}
       <button
-        onClick={(e) => { e.preventDefault(); onToggleFavorite(channel.id); }}
-        className="absolute right-1 top-7 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 hover:bg-white/5 active:scale-95"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(channel.id); }}
+        className="absolute right-2 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all hover:scale-110 hover:bg-white/10 active:scale-95"
         title={isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
       >
         <svg
