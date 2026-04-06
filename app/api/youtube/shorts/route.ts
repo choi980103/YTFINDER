@@ -31,13 +31,20 @@ const SEARCH_QUERIES = [
 
 // mostPopular 카테고리 (1유닛 x N개 — 초저렴)
 const POPULAR_CATEGORIES = [
+  "1",  // Film & Animation
+  "2",  // Autos & Vehicles
   "10", // Music
+  "15", // Pets & Animals
   "17", // Sports
+  "19", // Travel & Events
   "20", // Gaming
   "22", // People & Blogs
   "23", // Comedy
   "24", // Entertainment
+  "25", // News & Politics
   "26", // Howto & Style
+  "27", // Education
+  "28", // Science & Technology
 ];
 
 function containsKorean(text: string): boolean {
@@ -201,7 +208,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    const limited = targetChannels.slice(0, 130);
+    const limited = targetChannels.slice(0, 300);
 
     // === 3단계: 최근 영상 ID (1유닛 x N회) ===
     const videoIdResults = await Promise.all(
