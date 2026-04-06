@@ -191,6 +191,34 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
         )}
       </div>
 
+      {/* 베타 주의사항 */}
+      <div className="mb-8 w-full max-w-xl rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-left">
+        <div className="mb-2 flex items-center gap-2">
+          <svg className="h-4 w-4 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          <span className="text-xs font-bold text-red-400">베타 테스트 기간 — API 사용량 안내</span>
+        </div>
+        <ul className="space-y-1.5 text-[11px] leading-relaxed text-red-300/70">
+          <li className="flex items-start gap-1.5">
+            <span className="mt-0.5 text-red-400">•</span>
+            <span><span className="font-semibold text-red-300">새로고침은 1번이면 충분합니다.</span> 이후 접속 시 캐시된 데이터가 자동 표시됩니다.</span>
+          </li>
+          <li className="flex items-start gap-1.5">
+            <span className="mt-0.5 text-red-400">•</span>
+            <span><span className="font-semibold text-red-300">&quot;키워드로 검색&quot; 버튼은 사용을 자제해주세요.</span> 1회당 100 유닛이 소모됩니다.</span>
+          </li>
+          <li className="flex items-start gap-1.5">
+            <span className="mt-0.5 text-red-400">•</span>
+            <span>하루 무료 할당량은 <span className="font-semibold text-red-300">10,000 유닛</span>이며, 매일 한국시간 오후 4시에 리셋됩니다.</span>
+          </li>
+          <li className="flex items-start gap-1.5">
+            <span className="mt-0.5 text-red-400">•</span>
+            <span>할당량 초과 시 다음 날 리셋 전까지 데이터 조회가 불가합니다.</span>
+          </li>
+        </ul>
+      </div>
+
       {/* CTA Buttons */}
       <div className="flex flex-col items-center gap-3 sm:flex-row">
         <button
