@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { categories } from "@/data/mockChannels";
 
 export type SubRange = "all" | "0-1만" | "1만-5만" | "5만-10만" | "10만+";
 
@@ -18,8 +17,6 @@ export type ChannelAge = "all" | "1year";
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  selectedCategory: string;
-  onCategoryChange: (category: string) => void;
   sortBy: string;
   onSortChange: (sort: string) => void;
   subRange: SubRange;
@@ -31,8 +28,6 @@ interface SearchBarProps {
 export default function SearchBar({
   searchQuery,
   onSearchChange,
-  selectedCategory,
-  onCategoryChange,
   sortBy,
   onSortChange,
   subRange,
@@ -43,7 +38,6 @@ export default function SearchBar({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const activeFilterCount =
-    (selectedCategory !== "전체" ? 1 : 0) +
     (subRange !== "all" ? 1 : 0) +
     (channelAge !== "all" ? 1 : 0);
 
@@ -107,23 +101,6 @@ export default function SearchBar({
 
       {/* Filters — always visible on desktop, toggleable on mobile */}
       <div className={`space-y-3 ${filtersOpen ? "block" : "hidden"} sm:block`}>
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => onCategoryChange(cat)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
-                selectedCategory === cat
-                  ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/20"
-                  : "border border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
         {/* Subscriber Range + Channel Age Filters */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
           <div className="flex flex-wrap items-center gap-2">

@@ -472,8 +472,6 @@ export default function Home() {
           <SearchBar
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
             sortBy={sortBy}
             onSortChange={setSortBy}
             subRange={subRange}
