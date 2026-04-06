@@ -162,8 +162,7 @@ export async function POST(request: NextRequest) {
 
     // === 1단계: 채널 수집 ===
     // A) search.list — 한국 3회(300유닛) + 글로벌 1회(100유닛)
-    // B) mostPopular — 한국 14회(14유닛) + 글로벌(US/JP) 6회(6유닛)
-    const GLOBAL_POPULAR_CATS = ["10", "20", "24"]; // Music, Gaming, Entertainment
+    // B) mostPopular — 한국 14회(14유닛) + 글로벌(US/JP) 28회(28유닛)
     const [searchResultsKR, searchResultsGlobal, popularResultsKR, popularResultsUS, popularResultsJP] = await Promise.all([
       Promise.all(
         SEARCH_QUERIES_KR.map((q) => searchPopularShorts(apiKey, q))
@@ -175,10 +174,10 @@ export async function POST(request: NextRequest) {
         POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "KR"))
       ),
       Promise.all(
-        GLOBAL_POPULAR_CATS.map((cat) => getMostPopularVideos(apiKey, cat, "US"))
+        POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "US"))
       ),
       Promise.all(
-        GLOBAL_POPULAR_CATS.map((cat) => getMostPopularVideos(apiKey, cat, "JP"))
+        POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "JP"))
       ),
     ]);
 
