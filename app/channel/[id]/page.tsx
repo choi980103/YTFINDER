@@ -16,6 +16,7 @@ import {
 import DetailChart from "@/components/DetailChart";
 import { addRecentlyViewed } from "@/lib/recentlyViewed";
 import { getChannelHistory, extractHistoryValues } from "@/lib/history";
+import RadarChart from "@/components/RadarChart";
 
 interface ChannelDetail {
   id: string;
@@ -65,6 +66,75 @@ function daysSince(iso: string): string {
   if (days < 30) return `${days}일 전`;
   if (days < 365) return `${Math.floor(days / 30)}개월 전`;
   return `${Math.floor(days / 365)}년 전`;
+}
+
+function ShareButton({ channelName }: { channelName: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareText = `${channelName} - 떡상 분석 결과 확인해봐!`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = shareUrl;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const shareTwitter = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+      "_blank"
+    );
+  };
+
+  const shareKakao = () => {
+    // 카카오 SDK 없으면 클립보드 복사 후 카카오톡 열기 안내
+    copyLink();
+    alert("링크가 복사됐어! 카카오톡에 붙여넣기 해줘 🙂");
+  };
+
+  return (
+    <div className="relative group/share">
+      <button className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-zinc-300 transition-all hover:bg-white/10 hover:text-white">
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+        공유
+      </button>
+      <div className="invisible absolute right-0 top-full z-50 mt-2 w-44 rounded-xl border border-white/10 bg-zinc-900 p-2 opacity-0 shadow-2xl transition-all group-hover/share:visible group-hover/share:opacity-100">
+        <button
+          onClick={copyLink}
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          {copied ? "✓ 복사됨!" : "🔗 링크 복사"}
+        </button>
+        <button
+          onClick={shareTwitter}
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          𝕏 트위터 공유
+        </button>
+        <button
+          onClick={shareKakao}
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          💬 카카오톡 공유
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function HistoryCharts({ channelId }: { channelId: string }) {
@@ -424,14 +494,17 @@ export default function ChannelPage({
               <span>({daysSince(channel.createdAt)})</span>
             </div>
           </div>
-          <a
-            href={`https://www.youtube.com/channel/${channel.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            YouTube에서 보기
-          </a>
+          <div className="flex shrink-0 items-center gap-2">
+            <a
+              href={`https://www.youtube.com/channel/${channel.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              YouTube에서 보기
+            </a>
+            <ShareButton channelName={channel.name} />
+          </div>
         </div>
 
         {/* 떡상 지수 Hero */}
@@ -478,6 +551,37 @@ export default function ChannelPage({
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 레이더 차트 — 채널 역량 분석 */}
+        {channelForScore && (
+          <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <h2 className="mb-4 text-center text-sm font-semibold text-zinc-300">채널 역량 분석</h2>
+            <RadarChart
+              axes={(() => {
+                const vsr = channelForScore.viewToSubRatio;
+                const gr = channelForScore.growthRate;
+                const activity = shortsVideos.length;
+                const totalViews = shortsVideos.reduce((a, v) => a + v.views, 0);
+                const totalLikes = shortsVideos.reduce((a, v) => a + v.likes, 0);
+                const engRate = totalViews > 0 ? (totalLikes / totalViews) * 100 : 0;
+                // 각 지표를 0~100 스케일로 정규화
+                return [
+                  { label: "조회/구독", value: Math.min(vsr / 20, 100) },
+                  { label: "성장률", value: Math.min(gr / 5, 100) },
+                  { label: "활동량", value: Math.min(activity * 10, 100) },
+                  { label: "참여율", value: Math.min(engRate * 15, 100) },
+                  { label: "평균조회", value: Math.min(shortsAvgViews / 5000, 100) },
+                ];
+              })()}
+            />
+            <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-zinc-500">
+              <span>조회/구독: {channelForScore.viewToSubRatio.toFixed(1)}%</span>
+              <span>성장률: +{channelForScore.growthRate}%</span>
+              <span>쇼츠: {shortsVideos.length}개</span>
+              <span>평균조회: {formatNumber(shortsAvgViews)}</span>
             </div>
           </div>
         )}

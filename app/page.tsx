@@ -14,6 +14,7 @@ import { mockChannels, Channel } from "@/data/mockChannels";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import DailyDiscovery from "@/components/DailyDiscovery";
 import { saveChannelSnapshots } from "@/lib/history";
+import LandingHero from "@/components/LandingHero";
 
 type RegionTab = "kr" | "global";
 
@@ -57,14 +58,20 @@ export default function Home() {
   const [error, setError] = useState("");
   const [dataSource, setDataSource] = useState<"mock" | "live">("mock");
   const [isReady, setIsReady] = useState(false); // 초기 마운트 완료 여부
+  const [showLanding, setShowLanding] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("yt_api_key") || "";
+    const hasVisited = localStorage.getItem("yt_has_visited");
     if (stored) {
       setApiKey(stored);
       fetchShortsChannels(stored);
+    } else if (!hasVisited) {
+      // 첫 방문 + API 키 없음 → 랜딩 페이지
+      setShowLanding(true);
+      setIsReady(true);
     } else {
-      // API 키 없으면 mock 데이터를 잠깐 스켈레톤 후 보여줌
+      // 재방문이지만 API 키 없음 → 샘플 데이터
       setTimeout(() => setIsReady(true), 800);
     }
     const savedFavs = localStorage.getItem("yt_favorites");
@@ -320,6 +327,25 @@ export default function Home() {
 
     return channels;
   }, [sourceChannels, regionTab, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, sortBy]);
+
+  if (showLanding) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] bg-grid">
+        <LandingHero
+          onGetStarted={() => {
+            localStorage.setItem("yt_has_visited", "1");
+            setShowLanding(false);
+            setIsModalOpen(true);
+          }}
+          onSkip={() => {
+            localStorage.setItem("yt_has_visited", "1");
+            setShowLanding(false);
+            setTimeout(() => setIsReady(true), 800);
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-grid">
