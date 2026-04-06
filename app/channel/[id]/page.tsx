@@ -283,6 +283,24 @@ export default function ChannelPage({
       return;
     }
 
+    const DETAIL_CACHE_KEY = `yt_channel_${id}`;
+    const DETAIL_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
+
+    // 캐시 확인
+    try {
+      const cached = localStorage.getItem(DETAIL_CACHE_KEY);
+      if (cached) {
+        const { channel: cachedCh, videos: cachedVids, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < DETAIL_CACHE_TTL) {
+          setChannel(cachedCh);
+          setVideos(cachedVids || []);
+          addRecentlyViewed({ id: cachedCh.id, name: cachedCh.name, thumbnail: cachedCh.thumbnail });
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch { /* ignore */ }
+
     async function fetchChannel() {
       try {
         const res = await fetch("/api/youtube/channel", {
@@ -302,6 +320,14 @@ export default function ChannelPage({
           name: data.channel.name,
           thumbnail: data.channel.thumbnail,
         });
+        // 캐시 저장
+        try {
+          localStorage.setItem(DETAIL_CACHE_KEY, JSON.stringify({
+            channel: data.channel,
+            videos: data.recentVideos || [],
+            timestamp: Date.now(),
+          }));
+        } catch { /* quota exceeded */ }
       } catch {
         setError("네트워크 오류가 발생했습니다");
       } finally {
