@@ -67,6 +67,10 @@ function containsKorean(text: string): boolean {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(text);
 }
 
+function containsJapanese(text: string): boolean {
+  return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(text);
+}
+
 // [100유닛] 쇼츠 검색 (한국)
 async function searchPopularShorts(apiKey: string, query: string) {
   const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&regionCode=KR&relevanceLanguage=ko&maxResults=50&key=${apiKey}`;
@@ -327,12 +331,12 @@ export async function POST(request: NextRequest) {
         .map((v) => v.snippet?.title || "")
         .filter((t) => t.length > 0);
 
-      // channelMap에서 region 가져오기 (한국어 감지로 보정)
+      // channelMap에서 region 가져오기 (언어 감지로 보정)
       const mappedRegion = channelMap.get(ch.id)?.region || "global";
-      const hasKorean =
-        containsKorean(ch.snippet.title) ||
-        containsKorean(ch.snippet.description || "");
-      const region = hasKorean ? "kr" : mappedRegion;
+      const text = ch.snippet.title + (ch.snippet.description || "");
+      const hasKorean = containsKorean(text);
+      const hasJapanese = containsJapanese(text);
+      const region = hasKorean ? "kr" : hasJapanese ? "jp" : mappedRegion;
 
       channels.push({
         id: ch.id,
