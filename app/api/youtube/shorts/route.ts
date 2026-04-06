@@ -20,9 +20,9 @@ interface ShortsChannel {
 
 // 메모리 캐시
 let cache: { channels: ShortsChannel[]; timestamp: number } | null = null;
-const CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
+const CACHE_TTL = 1000 * 60 * 60 * 24; // 24시간
 
-// 검색 키워드 (국내 3개 + 해외 3개 = 600유닛)
+// 검색 키워드 (국내 3개 + 글로벌 3개 + US 2개 + JP 2개 = 1000유닛)
 const SEARCH_QUERIES_KR = [
   "쇼츠",
   "shorts 챌린지",
@@ -33,6 +33,16 @@ const SEARCH_QUERIES_GLOBAL = [
   "viral shorts 2026",
   "shorts challenge trending",
   "shorts funny moments",
+];
+
+const SEARCH_QUERIES_US = [
+  "shorts trending",
+  "shorts viral",
+];
+
+const SEARCH_QUERIES_JP = [
+  "ショート",
+  "shorts おすすめ",
 ];
 
 // mostPopular 카테고리 (1유닛 x N개 — 초저렴)
@@ -68,9 +78,10 @@ async function searchPopularShorts(apiKey: string, query: string) {
   return res.json();
 }
 
-// [100유닛] 쇼츠 검색 (글로벌)
-async function searchGlobalShorts(apiKey: string, query: string) {
-  const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&maxResults=50&key=${apiKey}`;
+// [100유닛] 쇼츠 검색 (글로벌 — 지역 지정 가능)
+async function searchGlobalShorts(apiKey: string, query: string, regionCode?: string) {
+  const regionParam = regionCode ? `&regionCode=${regionCode}` : "";
+  const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount${regionParam}&maxResults=50&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) return { items: [] };
   return res.json();
@@ -163,14 +174,20 @@ export async function POST(request: NextRequest) {
     }
 
     // === 1단계: 채널 수집 ===
-    // A) search.list — 한국 3회(300유닛) + 글로벌 3회(300유닛)
-    // B) mostPopular — 한국 14회(14유닛) + 글로벌(US/JP) 28회(28유닛)
-    const [searchResultsKR, searchResultsGlobal, popularResultsKR, popularResultsUS, popularResultsJP] = await Promise.all([
+    // A) search.list — 한국 3회(300) + 글로벌 3회(300) + US 2회(200) + JP 2회(200) = 1000유닛
+    // B) mostPopular — 한국 14회(14) + US 14회(14) + JP 14회(14) = 42유닛
+    const [searchResultsKR, searchResultsGlobal, searchResultsUS, searchResultsJP, popularResultsKR, popularResultsUS, popularResultsJP] = await Promise.all([
       Promise.all(
         SEARCH_QUERIES_KR.map((q) => searchPopularShorts(apiKey, q))
       ),
       Promise.all(
         SEARCH_QUERIES_GLOBAL.map((q) => searchGlobalShorts(apiKey, q))
+      ),
+      Promise.all(
+        SEARCH_QUERIES_US.map((q) => searchGlobalShorts(apiKey, q, "US"))
+      ),
+      Promise.all(
+        SEARCH_QUERIES_JP.map((q) => searchGlobalShorts(apiKey, q, "JP"))
       ),
       Promise.all(
         POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "KR"))
@@ -185,8 +202,8 @@ export async function POST(request: NextRequest) {
 
     const channelMap = new Map<string, string>();
 
-    // search 결과에서 채널 추출 (한국 + 글로벌)
-    for (const data of [...searchResultsKR, ...searchResultsGlobal]) {
+    // search 결과에서 채널 추출 (한국 + 글로벌 + US + JP)
+    for (const data of [...searchResultsKR, ...searchResultsGlobal, ...searchResultsUS, ...searchResultsJP]) {
       for (const item of data.items || []) {
         const chId = item.snippet?.channelId;
         if (chId && !channelMap.has(chId)) {

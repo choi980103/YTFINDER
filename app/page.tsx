@@ -120,7 +120,7 @@ export default function Home() {
   const isConnected = apiKey.length > 0;
 
   const CLIENT_CACHE_KEY = "yt_shorts_cache";
-  const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 3; // 3시간
+  const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
   async function fetchShortsChannels(key: string, forceRefresh = false) {
     // 클라이언트 캐시 확인 (강제 새로고침이 아닐 때)
