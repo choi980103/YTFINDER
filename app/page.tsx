@@ -368,7 +368,7 @@ export default function Home() {
         </div>
 
         {/* 한국 / 미국 / 일본 탭 + 즐겨찾기 */}
-        <div className="mb-6 flex items-center gap-3 flex-wrap">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
           <div className="flex items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
             {([
               { key: "kr" as const, label: "한국" },
@@ -378,7 +378,7 @@ export default function Home() {
               <button
                 key={tab.key}
                 onClick={() => setRegionTab(tab.key)}
-                className={`rounded-lg px-5 py-2 text-sm font-semibold transition-all ${
+                className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all sm:flex-none sm:px-5 sm:py-2 ${
                   regionTab === tab.key
                     ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/10"
                     : "text-zinc-400 hover:text-zinc-200"
@@ -389,45 +389,47 @@ export default function Home() {
             ))}
           </div>
 
-          <button
-            onClick={() => setShowFavoritesOnly((v) => !v)}
-            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
-              showFavoritesOnly
-                ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
-                : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
-            }`}
-          >
-            <svg
-              className={`h-4 w-4 ${showFavoritesOnly ? "fill-amber-400" : "fill-none"}`}
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFavoritesOnly((v) => !v)}
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                showFavoritesOnly
+                  ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
+                  : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-              />
-            </svg>
-            즐겨찾기
-            {favorites.size > 0 && (
-              <span className="rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
-                {favorites.size}
-              </span>
-            )}
-          </button>
+              <svg
+                className={`h-4 w-4 ${showFavoritesOnly ? "fill-amber-400" : "fill-none"}`}
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                />
+              </svg>
+              즐겨찾기
+              {favorites.size > 0 && (
+                <span className="rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
+                  {favorites.size}
+                </span>
+              )}
+            </button>
 
-          <button
-            onClick={() => setShowHiddenGems((v) => !v)}
-            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all ${
-              showHiddenGems
-                ? "border-purple-400/30 bg-purple-400/10 text-purple-400"
-                : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
-            }`}
-          >
-            <span className="text-base">💎</span>
-            히든 젬
-          </button>
+            <button
+              onClick={() => setShowHiddenGems((v) => !v)}
+              className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                showHiddenGems
+                  ? "border-purple-400/30 bg-purple-400/10 text-purple-400"
+                  : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+              }`}
+            >
+              <span className="text-base">💎</span>
+              히든 젬
+            </button>
+          </div>
 
           {hasActiveFilters && (
             <button

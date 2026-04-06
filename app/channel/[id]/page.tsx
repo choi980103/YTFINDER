@@ -403,7 +403,7 @@ export default function ChannelPage({
           </div>
 
           {/* Stats cards skeleton */}
-          <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="mb-8 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
                 <div className="h-3 w-14 rounded bg-white/[0.07] skeleton-pulse" />
@@ -471,35 +471,37 @@ export default function ChannelPage({
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         {/* Channel Profile */}
-        <div className="mb-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-          {channel.thumbnail ? (
-            <img
-              src={channel.thumbnail}
-              alt={channel.name}
-              className="h-20 w-20 rounded-full object-cover ring-2 ring-white/10"
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#00e5a0] to-[#06b6d4] text-2xl font-bold text-white">
-              {channel.name.charAt(0)}
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold text-white">{channel.name}</h1>
-            <p className="mt-1 line-clamp-2 text-sm text-zinc-500">
-              {channel.description || "설명 없음"}
-            </p>
-            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-              {channel.country && <span>국가: {channel.country}</span>}
-              <span>채널 개설: {formatDate(channel.createdAt)}</span>
-              <span>({daysSince(channel.createdAt)})</span>
+        <div className="mb-8">
+          <div className="flex items-center gap-4">
+            {channel.thumbnail ? (
+              <img
+                src={channel.thumbnail}
+                alt={channel.name}
+                className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-white/10 sm:h-20 sm:w-20"
+              />
+            ) : (
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#00e5a0] to-[#06b6d4] text-xl font-bold text-white sm:h-20 sm:w-20 sm:text-2xl">
+                {channel.name.charAt(0)}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl font-bold text-white sm:text-2xl">{channel.name}</h1>
+              <p className="mt-1 line-clamp-2 text-xs text-zinc-500 sm:text-sm">
+                {channel.description || "설명 없음"}
+              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500 sm:gap-3 sm:text-xs">
+                {channel.country && <span>국가: {channel.country}</span>}
+                <span>개설: {formatDate(channel.createdAt)}</span>
+                <span>({daysSince(channel.createdAt)})</span>
+              </div>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="mt-4 flex items-center gap-2">
             <a
               href={`https://www.youtube.com/channel/${channel.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:px-5"
             >
               YouTube에서 보기
             </a>
@@ -587,7 +589,7 @@ export default function ChannelPage({
         )}
 
         {/* Stats Cards */}
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mb-8 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4">
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
             <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">구독자</div>
             <div className="mt-1 text-2xl font-black text-white">{formatNumber(channel.subscribers)}</div>

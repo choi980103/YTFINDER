@@ -83,7 +83,7 @@ export default function ChannelCard({
   return (
     <div
       onClick={handleCardClick}
-      className={`channel-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 backdrop-blur-sm ${
+      className={`channel-card group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur-sm sm:p-5 ${
         isExplosive ? "border-[#00e5a0]/20" : ""
       }`}
     >
