@@ -154,25 +154,25 @@ export default function ChannelCard({
         </div>
       </div>
 
-      {/* Ratio + Sparkline Row */}
+      {/* 떡상 지수 + Sparkline Row */}
       <div
-        className={`mb-4 rounded-xl border p-3 ${getRatioBg(channel.viewToSubRatio)}`}
+        className={`mb-4 rounded-xl border p-3 ${getScoreBg(tier)}`}
       >
         <div className="flex items-center justify-between">
           <div className="text-center flex-1">
             <div className="mb-0.5 flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-              조회/구독 비율
-              <Tooltip text="평균 조회수 / 구독자 수 × 100. 높을수록 알고리즘이 밀어주는 채널" />
+              떡상 지수
+              <Tooltip text="조회/구독 비율(50%) + 성장률(30%) + 활동량(20%) 종합 점수" />
             </div>
             <div
-              className={`text-3xl font-black tabular-nums ${getRatioColor(channel.viewToSubRatio)} ${isExplosive ? "ratio-glow" : ""}`}
+              className={`text-3xl font-black tabular-nums ${getScoreColor(tier)} ${score >= 80 ? "ratio-glow" : ""}`}
             >
-              {channel.viewToSubRatio.toFixed(1)}%
+              {score}
             </div>
             <div
-              className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getRatioBg(channel.viewToSubRatio)} ${getRatioColor(channel.viewToSubRatio)}`}
+              className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getScoreBg(tier)} ${getScoreColor(tier)}`}
             >
-              {getRatioLabel(channel.viewToSubRatio)}
+              {tier} · {getScoreLabel(tier)}
             </div>
           </div>
           {/* Sparkline */}
@@ -190,6 +190,18 @@ export default function ChannelCard({
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
+        <div className={`rounded-lg border p-2.5 ${getRatioBg(channel.viewToSubRatio)}`}>
+          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
+            조회/구독 비율
+            <Tooltip text="평균 조회수 / 구독자 수 × 100. 높을수록 알고리즘이 밀어주는 채널" />
+          </div>
+          <div className="mt-0.5 flex items-center gap-1.5">
+            <span className={`text-sm font-black ${getRatioColor(channel.viewToSubRatio)}`}>{channel.viewToSubRatio.toFixed(1)}%</span>
+            <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${getRatioBg(channel.viewToSubRatio)} ${getRatioColor(channel.viewToSubRatio)}`}>
+              {getRatioLabel(channel.viewToSubRatio)}
+            </span>
+          </div>
+        </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
           <div className="text-[10px] uppercase tracking-wider text-zinc-500">
             구독자
@@ -204,18 +216,6 @@ export default function ChannelCard({
           </div>
           <div className="mt-0.5 text-sm font-bold text-zinc-200">
             {formatNumber(channel.avgViews)}
-          </div>
-        </div>
-        <div className={`rounded-lg border p-2.5 ${getScoreBg(tier)}`}>
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
-            떡상 지수
-            <Tooltip text="조회/구독 비율(50%) + 성장률(30%) + 활동량(20%) 종합 점수" />
-          </div>
-          <div className="mt-0.5 flex items-center gap-1.5">
-            <span className={`text-sm font-black ${getScoreColor(tier)}`}>{score}</span>
-            <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold ${getScoreBg(tier)} ${getScoreColor(tier)}`}>
-              {tier} · {getScoreLabel(tier)}
-            </span>
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
