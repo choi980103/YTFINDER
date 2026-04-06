@@ -22,11 +22,15 @@ interface ShortsChannel {
 let cache: { channels: ShortsChannel[]; timestamp: number } | null = null;
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
-// 검색 키워드 (3개만 사용 = 300유닛)
-const SEARCH_QUERIES = [
+// 검색 키워드 (국내 3개 + 해외 1개 = 400유닛)
+const SEARCH_QUERIES_KR = [
   "쇼츠",
   "shorts 챌린지",
   "shorts 먹방",
+];
+
+const SEARCH_QUERIES_GLOBAL = [
+  "viral shorts 2026",
 ];
 
 // mostPopular 카테고리 (1유닛 x N개 — 초저렴)
@@ -51,7 +55,7 @@ function containsKorean(text: string): boolean {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(text);
 }
 
-// [100유닛] 쇼츠 검색
+// [100유닛] 쇼츠 검색 (한국)
 async function searchPopularShorts(apiKey: string, query: string) {
   const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&regionCode=KR&relevanceLanguage=ko&maxResults=50&key=${apiKey}`;
   const res = await fetch(url);
@@ -62,9 +66,17 @@ async function searchPopularShorts(apiKey: string, query: string) {
   return res.json();
 }
 
+// [100유닛] 쇼츠 검색 (글로벌)
+async function searchGlobalShorts(apiKey: string, query: string) {
+  const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&maxResults=50&key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) return { items: [] };
+  return res.json();
+}
+
 // [1유닛!] 인기 동영상 목록 — search 대비 100배 저렴
-async function getMostPopularVideos(apiKey: string, categoryId: string) {
-  const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=KR&videoCategoryId=${categoryId}&maxResults=50&key=${apiKey}`;
+async function getMostPopularVideos(apiKey: string, categoryId: string, regionCode = "KR") {
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=${regionCode}&videoCategoryId=${categoryId}&maxResults=50&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) return { items: [] };
   return res.json();
@@ -149,21 +161,31 @@ export async function POST(request: NextRequest) {
     }
 
     // === 1단계: 채널 수집 ===
-    // A) search.list로 쇼츠 검색 (100유닛 x 3회 = 300유닛)
-    // B) mostPopular로 인기 영상에서 채널 추출 (1유닛 x 7회 = 7유닛)
-    const [searchResults, popularResults] = await Promise.all([
+    // A) search.list — 한국 3회(300유닛) + 글로벌 1회(100유닛)
+    // B) mostPopular — 한국 14회(14유닛) + 글로벌(US/JP) 6회(6유닛)
+    const GLOBAL_POPULAR_CATS = ["10", "20", "24"]; // Music, Gaming, Entertainment
+    const [searchResultsKR, searchResultsGlobal, popularResultsKR, popularResultsUS, popularResultsJP] = await Promise.all([
       Promise.all(
-        SEARCH_QUERIES.map((q) => searchPopularShorts(apiKey, q))
+        SEARCH_QUERIES_KR.map((q) => searchPopularShorts(apiKey, q))
       ),
       Promise.all(
-        POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat))
+        SEARCH_QUERIES_GLOBAL.map((q) => searchGlobalShorts(apiKey, q))
+      ),
+      Promise.all(
+        POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "KR"))
+      ),
+      Promise.all(
+        GLOBAL_POPULAR_CATS.map((cat) => getMostPopularVideos(apiKey, cat, "US"))
+      ),
+      Promise.all(
+        GLOBAL_POPULAR_CATS.map((cat) => getMostPopularVideos(apiKey, cat, "JP"))
       ),
     ]);
 
     const channelMap = new Map<string, string>();
 
-    // search 결과에서 채널 추출
-    for (const data of searchResults) {
+    // search 결과에서 채널 추출 (한국 + 글로벌)
+    for (const data of [...searchResultsKR, ...searchResultsGlobal]) {
       for (const item of data.items || []) {
         const chId = item.snippet?.channelId;
         if (chId && !channelMap.has(chId)) {
@@ -172,8 +194,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // mostPopular 결과에서 쇼츠(60초 이하) 채널만 추출
-    for (const data of popularResults) {
+    // mostPopular 결과에서 쇼츠(60초 이하) 채널만 추출 (한국 + US + JP)
+    for (const data of [...popularResultsKR, ...popularResultsUS, ...popularResultsJP]) {
       for (const item of data.items || []) {
         const duration = parseDuration(item.contentDetails?.duration || "");
         if (duration > 0 && duration <= 60) {
