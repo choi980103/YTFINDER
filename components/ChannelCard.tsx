@@ -229,6 +229,35 @@ export default function ChannelCard({
         </div>
       </div>
 
+      {/* 참여율 바 */}
+      {channel.engagementRate !== undefined && (
+        <div className="mt-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
+              참여율
+              <Tooltip text="좋아요 ÷ 조회수. 높을수록 시청자 반응이 좋은 콘텐츠" />
+            </div>
+            <span className={`text-xs font-bold ${
+              channel.engagementRate >= 5 ? "text-[#00e5a0]" :
+              channel.engagementRate >= 3 ? "text-[#06b6d4]" :
+              channel.engagementRate >= 1 ? "text-amber-400" : "text-zinc-500"
+            }`}>
+              {channel.engagementRate.toFixed(1)}%
+            </span>
+          </div>
+          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+            <div
+              className={`h-full rounded-full transition-all ${
+                channel.engagementRate >= 5 ? "bg-[#00e5a0]" :
+                channel.engagementRate >= 3 ? "bg-[#06b6d4]" :
+                channel.engagementRate >= 1 ? "bg-amber-400" : "bg-zinc-600"
+              }`}
+              style={{ width: `${Math.min(channel.engagementRate * 10, 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Category Tag + Links */}
       <div className="mt-3 flex items-center justify-between">
         <span className="rounded-md bg-white/[0.05] px-2 py-1 text-[10px] font-medium text-zinc-400">

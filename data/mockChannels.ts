@@ -5,6 +5,7 @@ export interface Channel {
   subscribers: number;
   avgViews: number;
   viewToSubRatio: number;
+  engagementRate?: number; // 좋아요/조회수 비율 (%)
   category: string;
   recentVideos: number;
   growthRate: number;

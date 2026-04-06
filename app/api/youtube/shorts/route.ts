@@ -7,6 +7,7 @@ interface ShortsChannel {
   subscribers: number;
   avgViews: number;
   viewToSubRatio: number;
+  engagementRate: number;
   category: string;
   recentVideos: number;
   growthRate: number;
@@ -106,7 +107,7 @@ async function batchGetVideoDetails(apiKey: string, allVideoIds: string[]) {
   const results = await Promise.all(
     chunks.map((ids) => getVideoDetails(apiKey, ids))
   );
-  const videoMap = new Map<string, { contentDetails: { duration: string }; statistics: { viewCount: string }; snippet?: { title: string } }>();
+  const videoMap = new Map<string, { contentDetails: { duration: string }; statistics: { viewCount: string; likeCount?: string }; snippet?: { title: string } }>();
   for (const items of results) {
     for (const item of items) {
       videoMap.set(item.id, item);
@@ -240,14 +241,22 @@ export async function POST(request: NextRequest) {
       const views = shortsVideos.map((v) =>
         parseInt(v.statistics.viewCount || "0", 10)
       );
+      const likes = shortsVideos.map((v) =>
+        parseInt(v.statistics.likeCount || "0", 10)
+      );
       const avgViews = Math.round(
         views.reduce((a, b) => a + b, 0) / views.length
       );
+      const totalViews = views.reduce((a, b) => a + b, 0);
+      const totalLikes = likes.reduce((a, b) => a + b, 0);
 
       if (avgViews === 0) continue;
 
       const viewToSubRatio = parseFloat(
         ((avgViews / subscribers) * 100).toFixed(1)
+      );
+      const engagementRate = parseFloat(
+        ((totalLikes / totalViews) * 100).toFixed(2)
       );
 
       const viewTrend = views.slice(0, 6);
@@ -268,6 +277,7 @@ export async function POST(request: NextRequest) {
         subscribers,
         avgViews,
         viewToSubRatio,
+        engagementRate,
         category: "쇼츠",
         recentVideos: shortsVideos.length,
         growthRate: Math.round(Math.random() * 300 + 50),
