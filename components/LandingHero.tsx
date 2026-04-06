@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
 interface LandingHeroProps {
   onGetStarted: () => void;
   onSkip: () => void;
 }
 
 export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) {
+  const [guideOpen, setGuideOpen] = useState(false);
+
   return (
     <div className="flex min-h-[85vh] flex-col items-center justify-center px-4 text-center">
       {/* Logo / Title */}
@@ -89,6 +93,102 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
             </div>
           </div>
         </div>
+      </div>
+
+      {/* API 키 발급 가이드 */}
+      <div className="mb-10 w-full max-w-xl">
+        <button
+          onClick={() => setGuideOpen((v) => !v)}
+          className="flex w-full items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-3.5 text-left transition-all hover:bg-white/[0.04]"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400/10">
+              <svg className="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold text-zinc-200">YouTube API 키 발급 방법</span>
+          </div>
+          <svg
+            className={`h-5 w-5 text-zinc-500 transition-transform ${guideOpen ? "rotate-180" : ""}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+
+        {guideOpen && (
+          <div className="mt-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-left">
+            <div className="space-y-4">
+              {/* Step 1 */}
+              <div className="flex gap-3">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00e5a0]/20 text-[11px] font-bold text-[#00e5a0]">1</div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">Google Cloud Console 접속</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-[#06b6d4] underline underline-offset-2 hover:text-[#00e5a0]">
+                      console.cloud.google.com
+                    </a>
+                    {" "}접속 후 Google 계정으로 로그인
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex gap-3">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00e5a0]/20 text-[11px] font-bold text-[#00e5a0]">2</div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">프로젝트 만들기</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    상단 &quot;프로젝트 선택&quot; 클릭 → &quot;새 프로젝트&quot; → 이름 아무거나 입력 (예: ytfinder) → &quot;만들기&quot;
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex gap-3">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#06b6d4]/20 text-[11px] font-bold text-[#06b6d4]">3</div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">YouTube API 활성화</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    왼쪽 메뉴 &quot;API 및 서비스&quot; → &quot;라이브러리&quot; → &quot;YouTube Data API v3&quot; 검색 → &quot;사용&quot; 클릭
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex gap-3">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#06b6d4]/20 text-[11px] font-bold text-[#06b6d4]">4</div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">API 키 발급</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    &quot;API 및 서비스&quot; → &quot;사용자 인증 정보&quot; → &quot;+ 사용자 인증 정보 만들기&quot; → &quot;API 키&quot; → 키 복사!
+                  </p>
+                </div>
+              </div>
+
+              {/* Step 5 */}
+              <div className="flex gap-3">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-400/20 text-[11px] font-bold text-purple-400">5</div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-200">사이트에서 사용</p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    아래 &quot;API 키 연동하고 시작하기&quot; 클릭 → 복사한 키 붙여넣기 → 완료!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-lg bg-amber-400/5 border border-amber-400/10 px-3 py-2">
+              <p className="text-[11px] text-amber-400/80">
+                무료로 하루 10,000 유닛 사용 가능합니다. YTFINDER는 1회 분석에 약 800 유닛을 사용하며, 캐시가 적용되어 대부분의 접속은 0 유닛입니다.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CTA Buttons */}
