@@ -12,7 +12,7 @@ export default function RadarChart({
   size = 240,
   color = "#00e5a0",
 }: RadarChartProps) {
-  const padding = 30;
+  const padding = 45;
   const full = size + padding * 2;
   const cx = full / 2;
   const cy = full / 2;
@@ -96,7 +96,7 @@ export default function RadarChart({
 
       {/* 라벨 */}
       {axes.map((a, i) => {
-        const labelR = r + 22;
+        const labelR = r + 35;
         const { x, y } = toXY(i * angleStep, labelR);
         return (
           <text
