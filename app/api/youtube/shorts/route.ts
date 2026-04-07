@@ -24,11 +24,18 @@ interface ShortsChannel {
 let cache: { channels: ShortsChannel[]; timestamp: number } | null = null;
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24시간
 
-// 검색 키워드 (국내 3개 + 글로벌 3개 + US 2개 + JP 2개 = 1000유닛)
+// 검색 키워드 (국내 10개 + 글로벌 3개 + US 2개 + JP 2개 = 1700유닛)
 const SEARCH_QUERIES_KR = [
   "쇼츠",
   "shorts 챌린지",
   "shorts 먹방",
+  "쇼츠 브이로그",
+  "쇼츠 운동 루틴",
+  "쇼츠 요리 레시피",
+  "쇼츠 자기계발",
+  "쇼츠 반려동물",
+  "쇼츠 일상 공감",
+  "쇼츠 꿀팁",
 ];
 
 const SEARCH_QUERIES_GLOBAL = [
@@ -191,7 +198,7 @@ export async function POST(request: NextRequest) {
     }
 
     // === 1단계: 채널 수집 ===
-    // A) search.list — 한국 3회(300) + 글로벌 3회(300) + US 2회(200) + JP 2회(200) = 1000유닛
+    // A) search.list — 한국 10회(1000) + 글로벌 3회(300) + US 2회(200) + JP 2회(200) = 1700유닛
     // B) mostPopular — 한국 14회(14) + US 14회(14) + JP 14회(14) = 42유닛
     const [searchResultsKR, searchResultsGlobal, searchResultsUS, searchResultsJP, popularResultsKR, popularResultsUS, popularResultsJP] = await Promise.all([
       Promise.all(
