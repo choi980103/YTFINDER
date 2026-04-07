@@ -12,8 +12,10 @@ export default function RadarChart({
   size = 240,
   color = "#00e5a0",
 }: RadarChartProps) {
-  const cx = size / 2;
-  const cy = size / 2;
+  const padding = 30;
+  const full = size + padding * 2;
+  const cx = full / 2;
+  const cy = full / 2;
   const r = size * 0.38; // 반지름
   const levels = 4; // 동심원 레벨
   const n = axes.length;
@@ -54,7 +56,7 @@ export default function RadarChart({
 
   return (
     <svg
-      viewBox={`0 0 ${size} ${size}`}
+      viewBox={`0 0 ${full} ${full}`}
       className="w-full max-w-[280px] mx-auto"
     >
       {/* 동심원 */}
