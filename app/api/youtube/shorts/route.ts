@@ -18,6 +18,8 @@ interface ShortsChannel {
   viewTrend?: number[];
   createdAt?: string;
   videoTitles?: string[];
+  lastUploadDate?: string;
+  monthlyUploads?: number;
 }
 
 // 메모리 캐시
@@ -119,7 +121,7 @@ async function batchGetVideoDetails(apiKey: string, allVideoIds: string[]) {
   const results = await Promise.all(
     chunks.map((ids) => getVideoDetails(apiKey, ids))
   );
-  const videoMap = new Map<string, { contentDetails: { duration: string }; statistics: { viewCount: string; likeCount?: string; commentCount?: string }; snippet?: { title: string } }>();
+  const videoMap = new Map<string, { contentDetails: { duration: string }; statistics: { viewCount: string; likeCount?: string; commentCount?: string }; snippet?: { title: string; publishedAt?: string } }>();
   for (const items of results) {
     for (const item of items) {
       videoMap.set(item.id, item);
@@ -288,6 +290,19 @@ export async function POST(request: NextRequest) {
 
       const viewTrend = views.slice(0, 6);
 
+      // 최근 업로드 활동 계산
+      const uploadDates = shortsVideos
+        .map((v) => v.snippet?.publishedAt)
+        .filter((d): d is string => !!d)
+        .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+      const lastUploadDate = uploadDates[0] || undefined;
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const monthlyUploads = uploadDates.filter(
+        (d) => new Date(d) >= thirtyDaysAgo
+      ).length;
+
       // 쇼츠 영상 제목 추출
       const videoTitles = shortsVideos
         .map((v) => v.snippet?.title || "")
@@ -312,6 +327,8 @@ export async function POST(request: NextRequest) {
         ...(viewTrend.length >= 2 ? { viewTrend } : {}),
         createdAt: ch.snippet.publishedAt || undefined,
         ...(videoTitles.length > 0 ? { videoTitles } : {}),
+        ...(lastUploadDate ? { lastUploadDate } : {}),
+        monthlyUploads,
       });
     }
 

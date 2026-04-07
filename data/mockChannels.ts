@@ -14,6 +14,8 @@ export interface Channel {
   viewTrend?: number[];
   createdAt?: string; // ISO date string
   videoTitles?: string[];
+  lastUploadDate?: string;
+  monthlyUploads?: number;
 }
 
 export const categories = [

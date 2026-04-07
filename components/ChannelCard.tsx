@@ -140,9 +140,22 @@ export default function ChannelCard({
           </div>
         )}
         <div className="min-w-0">
-          <h3 className="truncate text-sm font-semibold text-white group-hover:text-[#00e5a0] transition-colors">
-            {channel.name}
-          </h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="truncate text-sm font-semibold text-white group-hover:text-[#00e5a0] transition-colors">
+              {channel.name}
+            </h3>
+            {channel.monthlyUploads !== undefined && (
+              <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                channel.monthlyUploads >= 10
+                  ? "bg-[#00e5a0]/15 text-[#00e5a0]"
+                  : channel.monthlyUploads >= 1
+                  ? "bg-[#06b6d4]/15 text-[#06b6d4]"
+                  : "bg-zinc-700/50 text-zinc-500"
+              }`}>
+                {channel.monthlyUploads > 0 ? `${channel.monthlyUploads}개/월` : "휴면"}
+              </span>
+            )}
+          </div>
           <p className="truncate text-xs text-zinc-500">{channel.description}</p>
         </div>
       </div>

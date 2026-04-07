@@ -32,6 +32,7 @@ export default function Home() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showHiddenGems, setShowHiddenGems] = useState(false);
   const [showTrendingOnly, setShowTrendingOnly] = useState(false);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
 
   const hasActiveFilters =
     searchQuery !== "" ||
@@ -40,7 +41,8 @@ export default function Home() {
     channelAge !== "all" ||
     showFavoritesOnly ||
     showHiddenGems ||
-    showTrendingOnly;
+    showTrendingOnly ||
+    showActiveOnly;
 
   const resetFilters = useCallback(() => {
     setSearchQuery("");
@@ -51,6 +53,7 @@ export default function Home() {
     setShowFavoritesOnly(false);
     setShowHiddenGems(false);
     setShowTrendingOnly(false);
+    setShowActiveOnly(false);
   }, []);
 
   // API 상태
@@ -334,6 +337,13 @@ export default function Home() {
       );
     }
 
+    // 활동 중: 최근 30일 내 업로드 1개 이상
+    if (showActiveOnly) {
+      channels = channels.filter(
+        (ch) => ch.monthlyUploads !== undefined && ch.monthlyUploads >= 1
+      );
+    }
+
     // 급상승: 성장률 상위 채널 (평균의 1.5배 이상 + 200% 이상)
     if (showTrendingOnly) {
       const avgGrowth = channels.length > 0
@@ -364,7 +374,7 @@ export default function Home() {
     }
 
     return channels;
-  }, [sourceChannels, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, sortBy]);
+  }, [sourceChannels, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy]);
 
   if (showLanding) {
     return (
@@ -466,6 +476,23 @@ export default function Home() {
               </button>
               <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/trend:visible group-hover/trend:opacity-100">
                 성장률이 평균의 1.5배 이상이고 200% 이상인 채널. 지금 가장 빠르게 성장 중인 채널만 모아보기!
+              </div>
+            </div>
+
+            <div className="group/active relative">
+              <button
+                onClick={() => setShowActiveOnly((v) => !v)}
+                className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                  showActiveOnly
+                    ? "border-green-400/30 bg-green-400/10 text-green-400"
+                    : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                }`}
+              >
+                <span className="text-base">📡</span>
+                활동 중
+              </button>
+              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/active:visible group-hover/active:opacity-100">
+                최근 30일 내 영상을 올린 채널만 보기. 꾸준히 활동 중인 채널을 찾을 수 있어요!
               </div>
             </div>
           </div>
