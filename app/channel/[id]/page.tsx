@@ -294,26 +294,6 @@ export default function ChannelPage({
     } catch { /* ignore */ }
   }, [id]);
 
-  // 자동 저장: 타이핑 멈추고 1초 후 저장
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        const memos = JSON.parse(localStorage.getItem("yt_memos") || "{}");
-        const saved = memos[id] || "";
-        if (memo !== saved) {
-          if (memo.trim()) {
-            memos[id] = memo;
-          } else {
-            delete memos[id];
-          }
-          localStorage.setItem("yt_memos", JSON.stringify(memos));
-          setMemoSaved(true);
-          setTimeout(() => setMemoSaved(false), 2000);
-        }
-      } catch { /* ignore */ }
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [id, memo]);
 
   useEffect(() => {
     loadMemo();
