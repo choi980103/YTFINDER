@@ -153,7 +153,7 @@ export default function ChannelCard({
       >
         <div className="flex items-center justify-between">
           <div className="text-center flex-1">
-            <div className="mb-0.5 flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+            <div className="mb-0.5 flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
               떡상 지수
               <Tooltip text="조회/구독 비율(50%) + 성장률(30%) + 활동량(20%) 종합 점수" />
             </div>
@@ -184,7 +184,7 @@ export default function ChannelCard({
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className={`rounded-lg border p-2.5 ${getRatioBg(channel.viewToSubRatio)}`}>
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
+          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400">
             조회/구독 비율
             <Tooltip text="평균 조회수 / 구독자 수 × 100. 높을수록 알고리즘이 밀어주는 채널" />
           </div>
@@ -196,7 +196,7 @@ export default function ChannelCard({
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
-          <div className="text-[10px] uppercase tracking-wider text-zinc-500">
+          <div className="text-[10px] uppercase tracking-wider text-zinc-400">
             구독자
           </div>
           <div className="mt-0.5 text-sm font-bold text-zinc-200">
@@ -204,7 +204,7 @@ export default function ChannelCard({
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
-          <div className="text-[10px] uppercase tracking-wider text-zinc-500">
+          <div className="text-[10px] uppercase tracking-wider text-zinc-400">
             평균 조회수
           </div>
           <div className="mt-0.5 text-sm font-bold text-zinc-200">
@@ -212,7 +212,7 @@ export default function ChannelCard({
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
+          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400">
             성장률
             <Tooltip text="최근 구독자 증가 속도. 200% 이상이면 급성장 중" />
           </div>
@@ -226,7 +226,7 @@ export default function ChannelCard({
       {channel.engagementRate !== undefined && (
         <div className="mt-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
+            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400">
               참여율
               <Tooltip text="(좋아요 + 댓글) ÷ 조회수. 높을수록 시청자 반응이 좋은 채널" />
             </div>

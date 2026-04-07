@@ -49,7 +49,7 @@ export default function StatsOverview({ channels }: StatsOverviewProps) {
           key={stat.label}
           className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
         >
-          <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">
+          <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">
             {stat.label}
           </div>
           <div className={`mt-1 text-2xl font-black ${stat.color}`}>
