@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { isValidApiKey, isValidChannelId } from "@/lib/validate";
 
 function parseDuration(iso: string | undefined): number {
   if (!iso) return 0;
@@ -13,6 +15,12 @@ function parseDuration(iso: string | undefined): number {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const { allowed } = checkRateLimit(ip);
+    if (!allowed) {
+      return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
+    }
+
     const { apiKey, channelId } = await request.json();
 
     if (!apiKey || !channelId) {
@@ -20,6 +28,14 @@ export async function POST(request: NextRequest) {
         { error: "API 키와 채널 ID가 필요합니다" },
         { status: 400 }
       );
+    }
+
+    if (!isValidApiKey(apiKey)) {
+      return NextResponse.json({ error: "API 키 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+
+    if (!isValidChannelId(channelId)) {
+      return NextResponse.json({ error: "채널 ID 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
     // 1. 채널 상세 정보 (1유닛)

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { isValidApiKey } from "@/lib/validate";
 
 interface ShortsChannel {
   id: string;
@@ -165,6 +167,12 @@ function parseDuration(iso: string | undefined): number {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const { allowed } = checkRateLimit(ip);
+    if (!allowed) {
+      return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
+    }
+
     const { apiKey } = await request.json();
 
     if (!apiKey) {
@@ -172,6 +180,10 @@ export async function POST(request: NextRequest) {
         { error: "API 키가 필요합니다" },
         { status: 400 }
       );
+    }
+
+    if (!isValidApiKey(apiKey)) {
+      return NextResponse.json({ error: "API 키 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
     if (cache && Date.now() - cache.timestamp < CACHE_TTL) {

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { isValidApiKey } from "@/lib/validate";
 
 interface YouTubeChannel {
   id: string;
@@ -74,11 +76,21 @@ async function getVideoDetails(apiKey: string, videoIds: string[]) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const { allowed } = checkRateLimit(ip);
+    if (!allowed) {
+      return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
+    }
+
     const body = await request.json();
     const { apiKey, query } = body;
 
     if (!apiKey) {
       return NextResponse.json({ error: "API 키가 필요합니다" }, { status: 400 });
+    }
+
+    if (!isValidApiKey(apiKey)) {
+      return NextResponse.json({ error: "API 키 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
     const searchQuery = query || "한국 유튜브";
