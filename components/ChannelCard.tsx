@@ -58,6 +58,7 @@ interface ChannelCardProps {
   index: number;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
+  onHideChannel?: (id: string) => void;
   isTrending?: boolean;
 }
 
@@ -66,6 +67,7 @@ export default function ChannelCard({
   index,
   isFavorite,
   onToggleFavorite,
+  onHideChannel,
   isTrending,
 }: ChannelCardProps) {
   const isExplosive = channel.viewToSubRatio >= 1000;
@@ -92,6 +94,19 @@ export default function ChannelCard({
         <div className="absolute left-4 top-4 trend-badge rounded-full bg-gradient-to-r from-orange-500 to-amber-400 px-2.5 py-0.5 text-[10px] font-bold text-white">
           급상승
         </div>
+      )}
+
+      {/* Hide Button */}
+      {onHideChannel && (
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHideChannel(channel.id); }}
+          className="absolute right-2 top-14 z-10 flex h-9 w-9 items-center justify-center rounded-full text-zinc-700 opacity-0 transition-all hover:scale-110 hover:bg-white/10 hover:text-zinc-400 group-hover:opacity-100"
+          title="이 채널 숨기기"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+          </svg>
+        </button>
       )}
 
       {/* Favorite Button — 넓은 클릭 영역 */}

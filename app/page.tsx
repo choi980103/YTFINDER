@@ -29,6 +29,7 @@ export default function Home() {
   // 즐겨찾기 (순서 보존을 위해 배열도 관리)
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [favoriteOrder, setFavoriteOrder] = useState<string[]>([]);
+  const [hiddenChannels, setHiddenChannels] = useState<Set<string>>(new Set());
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showHiddenGems, setShowHiddenGems] = useState(false);
   const [showTrendingOnly, setShowTrendingOnly] = useState(false);
@@ -88,6 +89,12 @@ export default function Home() {
         setFavoriteOrder(arr);
       } catch { /* ignore */ }
     }
+    const savedHidden = localStorage.getItem("yt_hidden_channels");
+    if (savedHidden) {
+      try {
+        setHiddenChannels(new Set(JSON.parse(savedHidden)));
+      } catch { /* ignore */ }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -109,6 +116,15 @@ export default function Home() {
           return newO;
         });
       }
+      return next;
+    });
+  }, []);
+
+  const hideChannel = useCallback((id: string) => {
+    setHiddenChannels((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      localStorage.setItem("yt_hidden_channels", JSON.stringify([...next]));
       return next;
     });
   }, []);
@@ -288,7 +304,7 @@ export default function Home() {
 
   // 한국/해외 탭 → 카테고리/검색 → 정렬
   const filteredChannels = useMemo(() => {
-    let channels = [...sourceChannels];
+    let channels = sourceChannels.filter((ch) => !hiddenChannels.has(ch.id));
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -374,7 +390,7 @@ export default function Home() {
     }
 
     return channels;
-  }, [sourceChannels, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy]);
+  }, [sourceChannels, hiddenChannels, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy]);
 
   if (showLanding) {
     return (
@@ -506,6 +522,22 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
               필터 초기화
+            </button>
+          )}
+
+          {hiddenChannels.size > 0 && (
+            <button
+              onClick={() => {
+                setHiddenChannels(new Set());
+                localStorage.removeItem("yt_hidden_channels");
+              }}
+              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-400 transition-all hover:bg-white/10"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              숨긴 채널 {hiddenChannels.size}개 다시 보기
             </button>
           )}
         </div>
@@ -664,6 +696,7 @@ export default function Home() {
             favoriteOrder={favoriteOrder}
             onToggleFavorite={toggleFavorite}
             onReorderFavorites={reorderFavorites}
+            onHideChannel={hideChannel}
             showFavoritesOnly={showFavoritesOnly}
           />
         )}

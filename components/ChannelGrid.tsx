@@ -16,6 +16,7 @@ interface ChannelGridProps {
   favoriteOrder: string[];
   onToggleFavorite: (id: string) => void;
   onReorderFavorites: (fromIndex: number, toIndex: number) => void;
+  onHideChannel?: (id: string) => void;
   showFavoritesOnly: boolean;
 }
 
@@ -25,6 +26,7 @@ export default function ChannelGrid({
   favoriteOrder,
   onToggleFavorite,
   onReorderFavorites,
+  onHideChannel,
   showFavoritesOnly,
 }: ChannelGridProps) {
   const [page, setPage] = useState(0);
@@ -210,9 +212,9 @@ export default function ChannelGrid({
               <ChannelCard
                 channel={channel}
                 index={index}
-
                 isFavorite={favorites.has(channel.id)}
                 onToggleFavorite={onToggleFavorite}
+                onHideChannel={onHideChannel}
                 isTrending={trendingIds.has(channel.id)}
               />
             </div>
