@@ -430,6 +430,36 @@ export default function ChannelPage({
   const score = channelForScore ? calculateScore(channelForScore) : 0;
   const tier = getScoreTier(score);
 
+  // 예상 수익 계산 (월별)
+  const revenueData = useMemo(() => {
+    if (videos.length === 0) return null;
+
+    // 월별로 그룹핑
+    const monthMap = new Map<string, { views: number; count: number }>();
+    for (const v of videos) {
+      const d = new Date(v.publishedAt);
+      const key = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+      const entry = monthMap.get(key) || { views: 0, count: 0 };
+      entry.views += v.views;
+      entry.count += 1;
+      monthMap.set(key, entry);
+    }
+
+    const months = [...monthMap.entries()]
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(([month, data]) => ({
+        month,
+        revenue: Math.round((data.views / 2) * 0.3),
+        views: data.views,
+        videoCount: data.count,
+      }));
+
+    const totalRevenue = months.reduce((s, m) => s + m.revenue, 0);
+    const avgMonthlyRevenue = months.length > 0 ? Math.round(totalRevenue / months.length) : 0;
+
+    return { months, avgMonthlyRevenue };
+  }, [videos]);
+
   const similarChannels = useMemo(() => {
     if (!channel || allChannels.length === 0) return [];
     return findSimilarChannels(allChannels, id, channel.subscribers);
@@ -695,6 +725,41 @@ export default function ChannelPage({
             )}
           </div>
         </div>
+
+        {/* 예상 수익 */}
+        {revenueData && revenueData.months.length > 0 && (
+          <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-zinc-300">예상 쇼츠 수익</h2>
+              <Tooltip text="(조회수 ÷ 2) × 0.3원으로 계산. 실제 수익과 다를 수 있습니다." />
+            </div>
+
+            {/* 월 평균 */}
+            <div className="mb-4 rounded-xl bg-gradient-to-r from-[#00e5a0]/10 to-[#06b6d4]/10 border border-[#00e5a0]/20 p-4">
+              <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">월 평균 예상 수익</div>
+              <div className="mt-1 text-3xl font-black text-[#00e5a0]">
+                {revenueData.avgMonthlyRevenue.toLocaleString()}원
+              </div>
+            </div>
+
+            {/* 월별 상세 */}
+            <div className="space-y-2">
+              {revenueData.months.map((m) => (
+                <div key={m.month} className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2.5">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-zinc-400">{m.month}</span>
+                    <span className="text-[11px] text-zinc-600">{m.videoCount}개 영상 · 조회수 {formatNumber(m.views)}</span>
+                  </div>
+                  <span className="text-sm font-bold text-[#00e5a0]">{m.revenue.toLocaleString()}원</span>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-3 text-[10px] text-zinc-600">
+              * 쇼츠 조회수 기준 추정치이며, 실제 수익은 시청 지역·광고 단가·유효 조회 비율 등에 따라 달라질 수 있습니다.
+            </p>
+          </div>
+        )}
 
         {/* Charts Section */}
         {shortsVideos.length >= 2 && (
