@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface TooltipProps {
   text: string;
@@ -9,10 +10,23 @@ interface TooltipProps {
 
 export default function Tooltip({ text, children }: TooltipProps) {
   const [show, setShow] = useState(false);
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (show && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPos({
+        top: rect.top + window.scrollY - 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  }, [show]);
 
   return (
     <span
-      className="relative inline-flex"
+      ref={triggerRef}
+      className="inline-flex"
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
       onClick={() => setShow((v) => !v)}
@@ -32,12 +46,17 @@ export default function Tooltip({ text, children }: TooltipProps) {
           />
         </svg>
       )}
-      {show && (
-        <span className="absolute bottom-full left-1/2 z-50 mb-2 w-48 -translate-x-1/2 break-keep rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-xs leading-relaxed text-zinc-300 shadow-xl">
-          {text}
-          <span className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-white/10 bg-zinc-900" />
-        </span>
-      )}
+      {show &&
+        createPortal(
+          <span
+            className="pointer-events-none fixed z-[9999] w-48 -translate-x-1/2 -translate-y-full break-keep rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-xs leading-relaxed text-zinc-300 shadow-xl"
+            style={{ top: pos.top, left: pos.left }}
+          >
+            {text}
+            <span className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-white/10 bg-zinc-900" />
+          </span>,
+          document.body
+        )}
     </span>
   );
 }
