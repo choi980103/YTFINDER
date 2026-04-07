@@ -5,6 +5,15 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026.04.08",
+    items: [
+      "채널 카드에 월간 업로드 수 표시 (활동 중/휴면 한눈에 확인)",
+      "활동 중인 채널만 필터링하는 기능 추가",
+      "관심 없는 채널 숨기기 & 개별 복원 기능 추가",
+      "한국 쇼츠 채널에 집중하도록 개편",
+    ],
+  },
+  {
     date: "2026.04.07",
     items: [
       "영상 벤치마킹 기능 추가",
