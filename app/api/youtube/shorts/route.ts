@@ -143,7 +143,7 @@ async function batchGetVideoDetails(apiKey: string, allVideoIds: string[]) {
   const results = await Promise.all(
     chunks.map((ids) => getVideoDetails(apiKey, ids))
   );
-  const videoMap = new Map<string, { contentDetails: { duration: string }; statistics: { viewCount: string; likeCount?: string }; snippet?: { title: string } }>();
+  const videoMap = new Map<string, { contentDetails: { duration: string }; statistics: { viewCount: string; likeCount?: string; commentCount?: string }; snippet?: { title: string } }>();
   for (const items of results) {
     for (const item of items) {
       videoMap.set(item.id, item);
@@ -310,11 +310,15 @@ export async function POST(request: NextRequest) {
       const likes = shortsVideos.map((v) =>
         parseInt(v.statistics.likeCount || "0", 10)
       );
+      const comments = shortsVideos.map((v) =>
+        parseInt(v.statistics.commentCount || "0", 10)
+      );
       const avgViews = Math.round(
         views.reduce((a, b) => a + b, 0) / views.length
       );
       const totalViews = views.reduce((a, b) => a + b, 0);
       const totalLikes = likes.reduce((a, b) => a + b, 0);
+      const totalComments = comments.reduce((a, b) => a + b, 0);
 
       if (avgViews === 0) continue;
 
@@ -322,7 +326,7 @@ export async function POST(request: NextRequest) {
         ((avgViews / subscribers) * 100).toFixed(1)
       );
       const engagementRate = parseFloat(
-        ((totalLikes / totalViews) * 100).toFixed(2)
+        (((totalLikes + totalComments) / totalViews) * 100).toFixed(2)
       );
 
       const viewTrend = views.slice(0, 6);

@@ -228,7 +228,7 @@ export default function ChannelCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-500">
               참여율
-              <Tooltip text="좋아요 ÷ 조회수. 높을수록 시청자 반응이 좋은 콘텐츠" />
+              <Tooltip text="(좋아요 + 댓글) ÷ 조회수. 높을수록 시청자 반응이 좋은 채널" />
             </div>
             <span className={`text-xs font-bold ${
               channel.engagementRate >= 5 ? "text-[#00e5a0]" :
