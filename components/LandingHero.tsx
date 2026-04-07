@@ -11,7 +11,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
   const [guideOpen, setGuideOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col items-center px-4 pt-[15vh] text-center">
+    <div className="flex min-h-screen flex-col items-center px-4 pt-[15vh] pb-[15vh] text-center">
       {/* Logo / Title */}
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00e5a0] to-[#06b6d4] shadow-lg shadow-[#00e5a0]/20">
