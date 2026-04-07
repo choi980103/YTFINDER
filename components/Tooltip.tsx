@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 interface TooltipProps {
@@ -10,26 +10,34 @@ interface TooltipProps {
 
 export default function Tooltip({ text, children }: TooltipProps) {
   const [show, setShow] = useState(false);
-  const triggerRef = useRef<HTMLSpanElement>(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLSpanElement>(null);
 
-  useEffect(() => {
-    if (show && triggerRef.current) {
+  const updatePos = useCallback(() => {
+    if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       setPos({
-        top: rect.top + window.scrollY - 8,
-        left: rect.left + rect.width / 2,
+        top: rect.top - 8,
+        left: Math.max(100, Math.min(rect.left + rect.width / 2, window.innerWidth - 100)),
       });
     }
-  }, [show]);
+  }, []);
+
+  const handleEnter = () => {
+    updatePos();
+    setShow(true);
+  };
 
   return (
     <span
       ref={triggerRef}
       className="inline-flex"
-      onMouseEnter={() => setShow(true)}
+      onMouseEnter={handleEnter}
       onMouseLeave={() => setShow(false)}
-      onClick={() => setShow((v) => !v)}
+      onClick={() => {
+        if (!show) updatePos();
+        setShow((v) => !v);
+      }}
     >
       {children || (
         <svg
