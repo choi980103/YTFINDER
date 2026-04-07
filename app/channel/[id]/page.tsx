@@ -243,28 +243,76 @@ export default function ChannelPage({
   const [error, setError] = useState("");
   const [memo, setMemo] = useState("");
   const [memoSaved, setMemoSaved] = useState(false);
+  const [memoList, setMemoList] = useState<{ date: string; text: string }[]>([]);
   const [showShorts, setShowShorts] = useState<"all" | "shorts" | "long">("all");
   const [allChannels, setAllChannels] = useState<Channel[]>([]);
 
   const loadMemo = useCallback(() => {
     try {
       const memos = JSON.parse(localStorage.getItem("yt_memos") || "{}");
-      setMemo(memos[id] || "");
+      const data = memos[id];
+      if (Array.isArray(data)) {
+        setMemoList(data);
+      } else if (typeof data === "string" && data.trim()) {
+        // 기존 문자열 형식 → 목록으로 마이그레이션
+        const migrated = [{ date: new Date().toLocaleDateString("ko-KR"), text: data }];
+        setMemoList(migrated);
+        memos[id] = migrated;
+        localStorage.setItem("yt_memos", JSON.stringify(memos));
+      }
     } catch { /* ignore */ }
   }, [id]);
 
   const saveMemo = useCallback(() => {
+    if (!memo.trim()) return;
     try {
       const memos = JSON.parse(localStorage.getItem("yt_memos") || "{}");
-      if (memo.trim()) {
-        memos[id] = memo;
-      } else {
-        delete memos[id];
-      }
+      const today = new Date().toLocaleDateString("ko-KR");
+      const newEntry = { date: today, text: memo.trim() };
+      const list = Array.isArray(memos[id]) ? [...memos[id], newEntry] : [newEntry];
+      memos[id] = list;
       localStorage.setItem("yt_memos", JSON.stringify(memos));
+      setMemoList(list);
+      setMemo("");
       setMemoSaved(true);
       setTimeout(() => setMemoSaved(false), 2000);
     } catch { /* ignore */ }
+  }, [id, memo]);
+
+  const deleteMemo = useCallback((index: number) => {
+    try {
+      const memos = JSON.parse(localStorage.getItem("yt_memos") || "{}");
+      const list = Array.isArray(memos[id]) ? [...memos[id]] : [];
+      list.splice(index, 1);
+      if (list.length === 0) {
+        delete memos[id];
+      } else {
+        memos[id] = list;
+      }
+      localStorage.setItem("yt_memos", JSON.stringify(memos));
+      setMemoList(list);
+    } catch { /* ignore */ }
+  }, [id]);
+
+  // 자동 저장: 타이핑 멈추고 1초 후 저장
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const memos = JSON.parse(localStorage.getItem("yt_memos") || "{}");
+        const saved = memos[id] || "";
+        if (memo !== saved) {
+          if (memo.trim()) {
+            memos[id] = memo;
+          } else {
+            delete memos[id];
+          }
+          localStorage.setItem("yt_memos", JSON.stringify(memos));
+          setMemoSaved(true);
+          setTimeout(() => setMemoSaved(false), 2000);
+        }
+      } catch { /* ignore */ }
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [id, memo]);
 
   useEffect(() => {
@@ -698,26 +746,50 @@ export default function ChannelPage({
 
         {/* Memo */}
         <div className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-zinc-300">내 메모</h2>
+          <h2 className="mb-3 text-sm font-semibold text-zinc-300">내 메모</h2>
+
+          {/* 메모 기록 목록 */}
+          {memoList.length > 0 && (
+            <div className="mb-3 space-y-2">
+              {memoList.map((entry, i) => (
+                <div key={i} className="group flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2.5">
+                  <span className="shrink-0 text-[11px] text-zinc-600">{entry.date}</span>
+                  <p className="flex-1 text-sm text-zinc-300">{entry.text}</p>
+                  <button
+                    onClick={() => deleteMemo(i)}
+                    className="shrink-0 text-zinc-600 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 메모 입력 */}
+          <div className="flex gap-2">
+            <textarea
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveMemo(); } }}
+              placeholder="이 채널에 대한 메모를 남겨보세요..."
+              rows={2}
+              className="flex-1 resize-none rounded-lg border border-white/10 bg-white/5 p-3 text-sm text-white placeholder-zinc-600 outline-none transition-all focus:border-[#00e5a0]/50 focus:ring-1 focus:ring-[#00e5a0]/20"
+            />
             <button
               onClick={saveMemo}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+              disabled={!memo.trim()}
+              className={`shrink-0 self-end rounded-lg px-4 py-2.5 text-xs font-medium transition-all ${
                 memoSaved
                   ? "bg-[#00e5a0]/20 text-[#00e5a0]"
-                  : "bg-white/5 text-zinc-400 hover:bg-white/10"
+                  : "bg-white/5 text-zinc-400 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5"
               }`}
             >
               {memoSaved ? "저장됨!" : "저장"}
             </button>
           </div>
-          <textarea
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            placeholder="이 채널에 대한 메모를 남겨보세요..."
-            rows={3}
-            className="w-full resize-none rounded-lg border border-white/10 bg-white/5 p-3 text-sm text-white placeholder-zinc-600 outline-none transition-all focus:border-[#00e5a0]/50 focus:ring-1 focus:ring-[#00e5a0]/20"
-          />
         </div>
 
         {/* Recent Videos */}
