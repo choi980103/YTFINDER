@@ -15,6 +15,8 @@ import RecentlyViewed from "@/components/RecentlyViewed";
 import DailyDiscovery from "@/components/DailyDiscovery";
 import { saveChannelSnapshots } from "@/lib/history";
 import LandingHero from "@/components/LandingHero";
+import MemoOverview from "@/components/MemoOverview";
+import BenchmarkList from "@/components/BenchmarkList";
 
 type RegionTab = "kr" | "us" | "jp";
 
@@ -532,6 +534,12 @@ export default function Home() {
         <div className="mb-6">
           <RecentlyViewed />
         </div>
+
+        {/* 메모 모아보기 */}
+        <MemoOverview />
+
+        {/* 벤치마킹 영상 */}
+        <BenchmarkList />
 
         {/* Search & Filters */}
         <div className="mb-6">

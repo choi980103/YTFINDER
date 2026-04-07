@@ -17,6 +17,7 @@ import DetailChart from "@/components/DetailChart";
 import { addRecentlyViewed } from "@/lib/recentlyViewed";
 import { getChannelHistory, extractHistoryValues } from "@/lib/history";
 import RadarChart from "@/components/RadarChart";
+import { getBenchmarks, addBenchmark, removeBenchmark, type BenchmarkVideo } from "@/lib/benchmark";
 
 interface ChannelDetail {
   id: string;
@@ -244,6 +245,7 @@ export default function ChannelPage({
   const [memo, setMemo] = useState("");
   const [memoSaved, setMemoSaved] = useState(false);
   const [memoList, setMemoList] = useState<{ date: string; text: string }[]>([]);
+  const [benchmarkedIds, setBenchmarkedIds] = useState<Set<string>>(new Set());
   const [showShorts, setShowShorts] = useState<"all" | "shorts" | "long">("all");
   const [allChannels, setAllChannels] = useState<Channel[]>([]);
 
@@ -297,6 +299,10 @@ export default function ChannelPage({
 
   useEffect(() => {
     loadMemo();
+
+    // 벤치마킹 목록 로드
+    const bms = getBenchmarks();
+    setBenchmarkedIds(new Set(bms.map((b) => b.videoId)));
 
     // 비슷한 채널 추천용 데이터 로드
     try {
@@ -837,6 +843,40 @@ export default function ChannelPage({
                       <span>좋아요 {formatNumber(v.likes)}</span>
                       <span>{daysSince(v.publishedAt)}</span>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (benchmarkedIds.has(v.id)) {
+                          removeBenchmark(v.id);
+                          setBenchmarkedIds((prev) => { const next = new Set(prev); next.delete(v.id); return next; });
+                        } else {
+                          addBenchmark({
+                            videoId: v.id,
+                            title: v.title,
+                            thumbnail: v.thumbnail,
+                            channelId: channel!.id,
+                            channelName: channel!.name,
+                            views: v.views,
+                            likes: v.likes,
+                            duration: v.duration,
+                            isShort: v.isShort,
+                            addedAt: new Date().toLocaleDateString("ko-KR"),
+                          });
+                          setBenchmarkedIds((prev) => new Set(prev).add(v.id));
+                        }
+                      }}
+                      className={`mt-2 flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-all ${
+                        benchmarkedIds.has(v.id)
+                          ? "bg-violet-500/20 text-violet-400"
+                          : "bg-white/5 text-zinc-500 hover:bg-white/10 hover:text-zinc-300"
+                      }`}
+                    >
+                      <svg className="h-3 w-3" fill={benchmarkedIds.has(v.id) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                      </svg>
+                      {benchmarkedIds.has(v.id) ? "벤치마킹 중" : "벤치마킹"}
+                    </button>
                   </div>
                 </a>
               ))}
