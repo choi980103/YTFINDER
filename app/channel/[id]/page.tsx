@@ -303,14 +303,25 @@ export default function ChannelPage({
 
     async function fetchChannel() {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
         const res = await fetch("/api/youtube/channel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ apiKey, channelId: id }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
         const data = await res.json();
         if (!res.ok) {
-          setError(data.error || "채널 정보를 불러올 수 없습니다");
+          if (data.error?.includes("quota")) {
+            setError("API 할당량을 초과했습니다. 내일 오후 4시 이후에 다시 시도해주세요.");
+          } else if (data.error?.includes("API key")) {
+            setError("API 키가 유효하지 않습니다. 키를 다시 확인해주세요.");
+          } else {
+            setError(data.error || "채널 정보를 불러올 수 없습니다");
+          }
           return;
         }
         setChannel(data.channel);
@@ -328,8 +339,12 @@ export default function ChannelPage({
             timestamp: Date.now(),
           }));
         } catch { /* quota exceeded */ }
-      } catch {
-        setError("네트워크 오류가 발생했습니다");
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          setError("요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.");
+        } else {
+          setError("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -469,9 +484,17 @@ export default function ChannelPage({
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0f] gap-4">
         <p className="text-red-400">{error}</p>
-        <Link href="/" className="text-sm text-[#00e5a0] hover:underline">
-          ← 메인으로 돌아가기
-        </Link>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-white/10 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/20"
+          >
+            다시 시도
+          </button>
+          <Link href="/" className="text-sm text-[#00e5a0] hover:underline">
+            ← 메인으로 돌아가기
+          </Link>
+        </div>
       </div>
     );
   }
@@ -816,6 +839,10 @@ export default function ChannelPage({
           </div>
         )}
       </main>
+
+      <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-600">
+        &copy; 2026 시나브로. All rights reserved.
+      </footer>
     </div>
   );
 }

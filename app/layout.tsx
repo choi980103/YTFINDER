@@ -16,6 +16,22 @@ export const metadata: Metadata = {
   title: "YTFINDER - 떡상 유튜브 채널 분석 플랫폼",
   description:
     "구독자 수 대비 평균 조회수가 압도적으로 높은 유튜브 채널을 찾아주는 분석 플랫폼",
+  openGraph: {
+    title: "YTFINDER - 떡상 유튜브 채널 분석 플랫폼",
+    description: "구독자 대비 조회수가 비정상적으로 높은 쇼츠 채널을 찾아드립니다. 알고리즘이 밀어주는 떡상 직전 채널을 발견하세요!",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "YTFINDER",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "YTFINDER - 떡상 유튜브 채널 분석 플랫폼",
+    description: "구독자 대비 조회수가 비정상적으로 높은 쇼츠 채널을 찾아드립니다. 알고리즘이 밀어주는 떡상 직전 채널을 발견하세요!",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

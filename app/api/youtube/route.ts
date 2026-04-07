@@ -18,7 +18,8 @@ function containsKorean(text: string): boolean {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(text);
 }
 
-function parseDuration(iso: string): number {
+function parseDuration(iso: string | undefined): number {
+  if (!iso) return 0;
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return 0;
   return (
