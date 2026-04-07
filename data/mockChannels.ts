@@ -10,7 +10,7 @@ export interface Channel {
   recentVideos: number;
   growthRate: number;
   description: string;
-  region?: "kr" | "us" | "jp" | "global";
+  region?: "kr";
   viewTrend?: number[];
   createdAt?: string; // ISO date string
   videoTitles?: string[];
@@ -214,7 +214,7 @@ export const mockChannels: Channel[] = [
     recentVideos: 10,
     growthRate: 950,
     description: "Insane trick shots in 30 seconds",
-    region: "global",
+    region: "kr",
     viewTrend: [50000, 120000, 200000, 290000, 360000, 420000],
   },
   {
@@ -228,7 +228,7 @@ export const mockChannels: Channel[] = [
     recentVideos: 10,
     growthRate: 410,
     description: "60-second recipe tutorials that actually work",
-    region: "global",
+    region: "kr",
     viewTrend: [90000, 130000, 175000, 220000, 260000, 290000],
   },
   {
@@ -242,7 +242,7 @@ export const mockChannels: Channel[] = [
     recentVideos: 10,
     growthRate: 320,
     description: "Mind-blowing science facts in shorts",
-    region: "global",
+    region: "kr",
     viewTrend: [20000, 35000, 48000, 62000, 75000, 88000],
   },
   {
@@ -256,7 +256,7 @@ export const mockChannels: Channel[] = [
     recentVideos: 10,
     growthRate: 200,
     description: "The cutest pet moments caught on camera",
-    region: "global",
+    region: "kr",
     viewTrend: [190000, 220000, 245000, 270000, 290000, 310000],
   },
 ];

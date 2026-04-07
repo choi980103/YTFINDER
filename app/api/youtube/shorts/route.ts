@@ -14,7 +14,7 @@ interface ShortsChannel {
   recentVideos: number;
   growthRate: number;
   description: string;
-  region: "kr" | "us" | "jp" | "global";
+  region: "kr";
   viewTrend?: number[];
   createdAt?: string;
   videoTitles?: string[];
@@ -24,7 +24,7 @@ interface ShortsChannel {
 let cache: { channels: ShortsChannel[]; timestamp: number } | null = null;
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24시간
 
-// 검색 키워드 (국내 10개 + 글로벌 3개 + US 2개 + JP 2개 = 1700유닛)
+// 검색 키워드 (국내 10개 = 1000유닛)
 const SEARCH_QUERIES_KR = [
   "쇼츠",
   "shorts 챌린지",
@@ -36,22 +36,6 @@ const SEARCH_QUERIES_KR = [
   "쇼츠 밈 모음",
   "쇼츠 재미 편집",
   "쇼츠 랭킹",
-];
-
-const SEARCH_QUERIES_GLOBAL = [
-  "viral shorts 2026",
-  "shorts challenge trending",
-  "shorts funny moments",
-];
-
-const SEARCH_QUERIES_US = [
-  "shorts trending",
-  "shorts viral",
-];
-
-const SEARCH_QUERIES_JP = [
-  "ショート",
-  "shorts おすすめ",
 ];
 
 // mostPopular 카테고리 (1유닛 x N개 — 초저렴)
@@ -72,14 +56,6 @@ const POPULAR_CATEGORIES = [
   "28", // Science & Technology
 ];
 
-function containsKorean(text: string): boolean {
-  return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(text);
-}
-
-function containsJapanese(text: string): boolean {
-  return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(text);
-}
-
 // [100유닛] 쇼츠 검색 (한국)
 async function searchPopularShorts(apiKey: string, query: string) {
   const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&regionCode=KR&relevanceLanguage=ko&maxResults=50&key=${apiKey}`;
@@ -88,15 +64,6 @@ async function searchPopularShorts(apiKey: string, query: string) {
     const err = await res.json();
     throw new Error(err.error?.message || "쇼츠 검색 실패");
   }
-  return res.json();
-}
-
-// [100유닛] 쇼츠 검색 (글로벌 — 지역 지정 가능)
-async function searchGlobalShorts(apiKey: string, query: string, regionCode?: string) {
-  const regionParam = regionCode ? `&regionCode=${regionCode}` : "";
-  const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount${regionParam}&maxResults=50&key=${apiKey}`;
-  const res = await fetch(url);
-  if (!res.ok) return { items: [] };
   return res.json();
 }
 
@@ -198,70 +165,41 @@ export async function POST(request: NextRequest) {
     }
 
     // === 1단계: 채널 수집 ===
-    // A) search.list — 한국 10회(1000) + 글로벌 3회(300) + US 2회(200) + JP 2회(200) = 1700유닛
-    // B) mostPopular — 한국 14회(14) + US 14회(14) + JP 14회(14) = 42유닛
-    const [searchResultsKR, searchResultsGlobal, searchResultsUS, searchResultsJP, popularResultsKR, popularResultsUS, popularResultsJP] = await Promise.all([
+    // A) search.list — 한국 10회(1000유닛)
+    // B) mostPopular — 한국 14회(14유닛)
+    const [searchResultsKR, popularResultsKR] = await Promise.all([
       Promise.all(
         SEARCH_QUERIES_KR.map((q) => searchPopularShorts(apiKey, q))
       ),
       Promise.all(
-        SEARCH_QUERIES_GLOBAL.map((q) => searchGlobalShorts(apiKey, q))
-      ),
-      Promise.all(
-        SEARCH_QUERIES_US.map((q) => searchGlobalShorts(apiKey, q, "US"))
-      ),
-      Promise.all(
-        SEARCH_QUERIES_JP.map((q) => searchGlobalShorts(apiKey, q, "JP"))
-      ),
-      Promise.all(
         POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "KR"))
-      ),
-      Promise.all(
-        POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "US"))
-      ),
-      Promise.all(
-        POPULAR_CATEGORIES.map((cat) => getMostPopularVideos(apiKey, cat, "JP"))
       ),
     ]);
 
-    const channelMap = new Map<string, { title: string; region: "kr" | "us" | "jp" | "global" }>();
+    const channelMap = new Map<string, { title: string; region: "kr" }>();
 
-    // 소스별로 region 태깅하면서 채널 추출
-    function addChannels(results: { items?: { snippet?: { channelId: string; channelTitle: string } }[] }[], region: "kr" | "us" | "jp" | "global") {
-      for (const data of results) {
-        for (const item of data.items || []) {
-          const chId = item.snippet?.channelId;
-          if (chId && !channelMap.has(chId)) {
-            channelMap.set(chId, { title: item.snippet!.channelTitle, region });
-          }
+    // search 결과에서 채널 추출
+    for (const data of searchResultsKR) {
+      for (const item of data.items || []) {
+        const chId = item.snippet?.channelId;
+        if (chId && !channelMap.has(chId)) {
+          channelMap.set(chId, { title: item.snippet!.channelTitle, region: "kr" });
         }
       }
     }
-
-    // search 결과
-    addChannels(searchResultsKR, "kr");
-    addChannels(searchResultsUS, "us");
-    addChannels(searchResultsJP, "jp");
-    addChannels(searchResultsGlobal, "global");
 
     // mostPopular 결과에서 쇼츠(60초 이하) 채널만 추출
-    function addPopularChannels(results: { items?: { contentDetails?: { duration: string }; snippet?: { channelId: string; channelTitle: string } }[] }[], region: "kr" | "us" | "jp" | "global") {
-      for (const data of results) {
-        for (const item of data.items || []) {
-          const duration = parseDuration(item.contentDetails?.duration || "");
-          if (duration > 0 && duration <= 60) {
-            const chId = item.snippet?.channelId;
-            if (chId && !channelMap.has(chId)) {
-              channelMap.set(chId, { title: item.snippet!.channelTitle, region });
-            }
+    for (const data of popularResultsKR) {
+      for (const item of (data.items || []) as { contentDetails?: { duration: string }; snippet?: { channelId: string; channelTitle: string } }[]) {
+        const duration = parseDuration(item.contentDetails?.duration || "");
+        if (duration > 0 && duration <= 60) {
+          const chId = item.snippet?.channelId;
+          if (chId && !channelMap.has(chId)) {
+            channelMap.set(chId, { title: item.snippet!.channelTitle, region: "kr" });
           }
         }
       }
     }
-
-    addPopularChannels(popularResultsKR, "kr");
-    addPopularChannels(popularResultsUS, "us");
-    addPopularChannels(popularResultsJP, "jp");
 
     const uniqueIds = [...channelMap.keys()];
     if (uniqueIds.length === 0) {
@@ -355,12 +293,7 @@ export async function POST(request: NextRequest) {
         .map((v) => v.snippet?.title || "")
         .filter((t) => t.length > 0);
 
-      // channelMap에서 region 가져오기 (언어 감지로 보정)
-      const mappedRegion = channelMap.get(ch.id)?.region || "global";
-      const text = ch.snippet.title + (ch.snippet.description || "");
-      const hasKorean = containsKorean(text);
-      const hasJapanese = containsJapanese(text);
-      const region = hasKorean ? "kr" : hasJapanese ? "jp" : mappedRegion;
+      const region = "kr" as const;
 
       channels.push({
         id: ch.id,

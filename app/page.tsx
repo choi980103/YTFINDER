@@ -19,15 +19,12 @@ import MemoOverview from "@/components/MemoOverview";
 import BenchmarkList from "@/components/BenchmarkList";
 import ChannelCompare from "@/components/ChannelCompare";
 
-type RegionTab = "kr" | "us" | "jp";
-
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [sortBy, setSortBy] = useState("ratio");
   const [subRange, setSubRange] = useState<SubRange>("all");
   const [channelAge, setChannelAge] = useState<ChannelAge>("all");
-  const [regionTab, setRegionTab] = useState<RegionTab>("kr");
 
   // 즐겨찾기 (순서 보존을 위해 배열도 관리)
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -290,13 +287,6 @@ export default function Home() {
   const filteredChannels = useMemo(() => {
     let channels = [...sourceChannels];
 
-    // 지역 필터 (global 검색 결과는 US에 포함)
-    channels = channels.filter((ch) => {
-      const r = ch.region || "kr";
-      if (regionTab === "us") return r === "us" || r === "global";
-      return r === regionTab;
-    });
-
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       channels = channels.filter(
@@ -374,7 +364,7 @@ export default function Home() {
     }
 
     return channels;
-  }, [sourceChannels, regionTab, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, sortBy]);
+  }, [sourceChannels, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, sortBy]);
 
   if (showLanding) {
     return (
@@ -414,28 +404,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* 한국 / 미국 / 일본 탭 + 즐겨찾기 */}
+        {/* 필터 버튼 */}
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
-          <div className="flex items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.02] p-1">
-            {([
-              { key: "kr" as const, label: "한국" },
-              { key: "us" as const, label: "미국" },
-              { key: "jp" as const, label: "일본" },
-            ]).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setRegionTab(tab.key)}
-                className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all sm:flex-none sm:px-5 sm:py-2 ${
-                  regionTab === tab.key
-                    ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/10"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowFavoritesOnly((v) => !v)}
