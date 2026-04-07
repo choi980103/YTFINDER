@@ -1,5 +1,7 @@
 "use client";
 
+import ChangelogBell from "@/components/ChangelogBell";
+
 interface HeaderProps {
   onApiKeyClick: () => void;
   isConnected: boolean;
@@ -39,6 +41,7 @@ export default function Header({ onApiKeyClick, isConnected }: HeaderProps) {
 
         {/* Right side */}
         <div className="flex items-center gap-2 sm:gap-4">
+          <ChangelogBell />
           <div className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-400 sm:flex">
             <span
               className={`h-2 w-2 rounded-full ${isConnected ? "bg-[#00e5a0] pulse-green" : "bg-zinc-600"}`}
