@@ -317,7 +317,7 @@ export default function ChannelPage({
       return;
     }
 
-    const DETAIL_CACHE_KEY = `yt_channel_${id}`;
+    const DETAIL_CACHE_KEY = `yt_channel_v2_${id}`;
     const DETAIL_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
     // 캐시 확인

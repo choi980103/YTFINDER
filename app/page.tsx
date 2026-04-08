@@ -192,7 +192,7 @@ export default function Home() {
 
   const isConnected = apiKey.length > 0;
 
-  const CLIENT_CACHE_KEY = "yt_shorts_cache";
+  const CLIENT_CACHE_KEY = "yt_shorts_cache_v2";
   const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
   async function fetchShortsChannels(key: string, forceRefresh = false) {
