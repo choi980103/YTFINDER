@@ -18,6 +18,8 @@ interface ChannelGridProps {
   onReorderFavorites: (fromIndex: number, toIndex: number) => void;
   onHideChannel?: (id: string) => void;
   showFavoritesOnly: boolean;
+  page?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export default function ChannelGrid({
@@ -28,8 +30,12 @@ export default function ChannelGrid({
   onReorderFavorites,
   onHideChannel,
   showFavoritesOnly,
+  page: externalPage,
+  onPageChange,
 }: ChannelGridProps) {
-  const [page, setPage] = useState(0);
+  const [internalPage, setInternalPage] = useState(0);
+  const page = externalPage ?? internalPage;
+  const setPage = onPageChange ?? setInternalPage;
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -268,7 +274,7 @@ export default function ChannelGrid({
       {totalPages > 1 && (
         <div className="mt-8 flex items-center justify-center gap-2">
           <button
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            onClick={() => setPage(Math.max(0, safePage - 1))}
             disabled={safePage === 0}
             className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
           >
@@ -290,7 +296,7 @@ export default function ChannelGrid({
           ))}
 
           <button
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            onClick={() => setPage(Math.min(totalPages - 1, safePage + 1))}
             disabled={safePage === totalPages - 1}
             className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
           >

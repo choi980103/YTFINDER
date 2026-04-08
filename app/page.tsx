@@ -29,28 +29,43 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 
 const TAB_IDS = new Set<string>(TABS.map((t) => t.id));
 
-function getTabFromHash(): TabId {
-  if (typeof window === "undefined") return "dashboard";
+function parseHash(): { tab: TabId; page: number } {
+  if (typeof window === "undefined") return { tab: "dashboard", page: 0 };
   const hash = window.location.hash.replace("#", "");
-  return TAB_IDS.has(hash) ? (hash as TabId) : "dashboard";
+  const [tabPart, pagePart] = hash.split(":");
+  const tab = TAB_IDS.has(tabPart) ? (tabPart as TabId) : "dashboard";
+  const page = pagePart ? Math.max(0, parseInt(pagePart, 10) || 0) : 0;
+  return { tab, page };
 }
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const [gridPage, setGridPage] = useState(0);
 
-  // 마운트 시 hash에서 탭 복원 + 뒤로가기 감지
+  // 마운트 시 hash에서 탭+페이지 복원 + 뒤로가기 감지
   useEffect(() => {
-    setActiveTab(getTabFromHash());
-    const onHashChange = () => setActiveTab(getTabFromHash());
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    const restore = () => {
+      const { tab, page } = parseHash();
+      setActiveTab(tab);
+      setGridPage(page);
+    };
+    restore();
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
   }, []);
 
-  // 탭 변경 시 hash 업데이트
+  // 탭 변경 시 hash 업데이트 (페이지 0으로 리셋)
   const changeTab = useCallback((tab: TabId) => {
     setActiveTab(tab);
+    setGridPage(0);
     window.location.hash = tab;
   }, []);
+
+  // 페이지 변경 시 hash 업데이트 (pushState로 뒤로가기 지원)
+  const changeGridPage = useCallback((page: number) => {
+    setGridPage(page);
+    history.pushState(null, "", `#${activeTab}:${page}`);
+  }, [activeTab]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [sortBy, setSortBy] = useState("ratio");
@@ -797,6 +812,8 @@ export default function Home() {
                 onReorderFavorites={reorderFavorites}
                 onHideChannel={hideChannel}
                 showFavoritesOnly={showFavoritesOnly}
+                page={gridPage}
+                onPageChange={changeGridPage}
               />
             )}
           </>
