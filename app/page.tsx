@@ -27,8 +27,30 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: "activity", label: "내 활동", icon: "📁" },
 ];
 
+const TAB_IDS = new Set<string>(TABS.map((t) => t.id));
+
+function getTabFromHash(): TabId {
+  if (typeof window === "undefined") return "dashboard";
+  const hash = window.location.hash.replace("#", "");
+  return TAB_IDS.has(hash) ? (hash as TabId) : "dashboard";
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+
+  // 마운트 시 hash에서 탭 복원 + 뒤로가기 감지
+  useEffect(() => {
+    setActiveTab(getTabFromHash());
+    const onHashChange = () => setActiveTab(getTabFromHash());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  // 탭 변경 시 hash 업데이트
+  const changeTab = useCallback((tab: TabId) => {
+    setActiveTab(tab);
+    window.location.hash = tab;
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [sortBy, setSortBy] = useState("ratio");
@@ -454,7 +476,7 @@ export default function Home() {
           {TABS.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => changeTab(tab.id)}
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? "bg-white/10 text-white shadow-sm"
