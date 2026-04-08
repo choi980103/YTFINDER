@@ -69,53 +69,62 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "채널을 찾을 수 없습니다" }, { status: 404 });
     }
 
-    // 2. 최근 영상 목록 (1유닛)
+    // 2. 최근 영상 목록 (페이지네이션으로 최대 300개)
     const uploadsId = ch.contentDetails?.relatedPlaylists?.uploads;
     let recentVideos: { id: string; title: string; thumbnail: string; publishedAt: string; views: number; likes: number; duration: number; isShort: boolean }[] = [];
 
     if (uploadsId) {
-      const plRes = await fetch(
-        `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails,snippet&playlistId=${uploadsId}&maxResults=20&key=${apiKey}`
-      );
-      if (plRes.ok) {
+      // 페이지네이션으로 영상 ID 수집 (최대 300개, 6번 호출)
+      const allVideoIds: string[] = [];
+      let nextPageToken: string | undefined;
+      const MAX_VIDEOS = 300;
+
+      while (allVideoIds.length < MAX_VIDEOS) {
+        const pageParam = nextPageToken ? `&pageToken=${nextPageToken}` : "";
+        const plRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${uploadsId}&maxResults=50${pageParam}&key=${apiKey}`
+        );
+        if (!plRes.ok) break;
         const plData = await plRes.json();
-        const videoIds = plData.items?.map(
+        const ids = plData.items?.map(
           (item: { contentDetails: { videoId: string } }) => item.contentDetails.videoId
         ) || [];
+        allVideoIds.push(...ids);
+        nextPageToken = plData.nextPageToken;
+        if (!nextPageToken) break;
+      }
 
-        // 3. 영상 상세 (1유닛)
-        if (videoIds.length > 0) {
-          const vRes = await fetch(
-            `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet&id=${videoIds.join(",")}&key=${apiKey}`
-          );
-          if (vRes.ok) {
-            const vData = await vRes.json();
-            recentVideos = (vData.items || []).map(
-              (v: {
-                id: string;
-                snippet: { title: string; thumbnails: { medium?: { url: string } }; publishedAt: string };
-                statistics: { viewCount: string; likeCount: string };
-                contentDetails: { duration: string };
-              }) => {
-                const dur = parseDuration(v.contentDetails.duration);
-                return {
-                  id: v.id,
-                  title: v.snippet.title,
-                  thumbnail: v.snippet.thumbnails?.medium?.url || "",
-                  publishedAt: v.snippet.publishedAt,
-                  views: parseInt(v.statistics.viewCount || "0", 10),
-                  likes: parseInt(v.statistics.likeCount || "0", 10),
-                  duration: dur,
-                  isShort: dur <= 60,
-                };
-              }
-            );
+      // 영상 상세 (50개씩 나눠서 호출)
+      for (let i = 0; i < allVideoIds.length; i += 50) {
+        const batch = allVideoIds.slice(i, i + 50);
+        const vRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet&id=${batch.join(",")}&key=${apiKey}`
+        );
+        if (!vRes.ok) continue;
+        const vData = await vRes.json();
+        const videos = (vData.items || []).map(
+          (v: {
+            id: string;
+            snippet: { title: string; thumbnails: { medium?: { url: string } }; publishedAt: string };
+            statistics: { viewCount: string; likeCount: string };
+            contentDetails: { duration: string };
+          }) => {
+            const dur = parseDuration(v.contentDetails.duration);
+            return {
+              id: v.id,
+              title: v.snippet.title,
+              thumbnail: v.snippet.thumbnails?.medium?.url || "",
+              publishedAt: v.snippet.publishedAt,
+              views: parseInt(v.statistics.viewCount || "0", 10),
+              likes: parseInt(v.statistics.likeCount || "0", 10),
+              duration: dur,
+              isShort: dur <= 60,
+            };
           }
-        }
+        );
+        recentVideos.push(...videos);
       }
     }
-
-    // 총 3유닛
     return NextResponse.json({
       channel: {
         id: ch.id,
