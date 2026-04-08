@@ -314,7 +314,16 @@ export default function Home() {
 
   // 한국/해외 탭 → 카테고리/검색 → 정렬
   const filteredChannels = useMemo(() => {
+    // 기본: 숨긴 채널 제외
     let channels = sourceChannels.filter((ch) => !hiddenChannels.has(ch.id));
+
+    // 기본: 최근 3개월 이내 업로드가 없는 채널 제외
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    channels = channels.filter((ch) => {
+      if (!ch.lastUploadDate) return true; // 데이터 없으면 일단 포함
+      return new Date(ch.lastUploadDate) >= threeMonthsAgo;
+    });
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
