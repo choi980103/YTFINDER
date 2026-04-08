@@ -387,11 +387,15 @@ export default function ChannelPage({
     fetchChannel();
   }, [id, loadMemo]);
 
+  const [showAllVideos, setShowAllVideos] = useState(false);
+
   const filteredVideos = videos.filter((v) => {
     if (showShorts === "shorts") return v.isShort;
     if (showShorts === "long") return !v.isShort;
     return true;
   });
+
+  const displayedVideos = showAllVideos ? filteredVideos : filteredVideos.slice(0, 10);
 
   const shortsVideos = videos.filter((v) => v.isShort);
   const shortsAvgViews =
@@ -851,7 +855,7 @@ export default function ChannelPage({
               {(["all", "shorts", "long"] as const).map((type) => (
                 <button
                   key={type}
-                  onClick={() => setShowShorts(type)}
+                  onClick={() => { setShowShorts(type); setShowAllVideos(false); }}
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                     showShorts === type
                       ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f]"
@@ -868,7 +872,7 @@ export default function ChannelPage({
             <p className="py-10 text-center text-sm text-zinc-600">해당하는 영상이 없습니다</p>
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {filteredVideos.map((v) => (
+              {displayedVideos.map((v) => (
                 <a
                   key={v.id}
                   href={`https://www.youtube.com/watch?v=${v.id}`}
@@ -946,6 +950,30 @@ export default function ChannelPage({
                 </a>
               ))}
             </div>
+          )}
+
+          {!showAllVideos && filteredVideos.length > 10 && (
+            <button
+              onClick={() => setShowAllVideos(true)}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 text-sm font-medium text-zinc-400 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-zinc-200"
+            >
+              나머지 {filteredVideos.length - 10}개 더보기
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+          )}
+
+          {showAllVideos && filteredVideos.length > 10 && (
+            <button
+              onClick={() => setShowAllVideos(false)}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 text-sm font-medium text-zinc-400 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-zinc-200"
+            >
+              접기
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+              </svg>
+            </button>
           )}
         </div>
 
