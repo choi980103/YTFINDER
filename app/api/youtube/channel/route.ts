@@ -21,17 +21,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
     }
 
-    const { apiKey, channelId } = await request.json();
+    const { apiKey, channelId: rawChannelId, handle } = await request.json();
 
-    if (!apiKey || !channelId) {
+    if (!apiKey || (!rawChannelId && !handle)) {
       return NextResponse.json(
-        { error: "API 키와 채널 ID가 필요합니다" },
+        { error: "API 키와 채널 ID 또는 핸들이 필요합니다" },
         { status: 400 }
       );
     }
 
     if (!isValidApiKey(apiKey)) {
       return NextResponse.json({ error: "API 키 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+
+    // @핸들로 채널 ID 조회 (1유닛)
+    let channelId = rawChannelId;
+    if (!channelId && handle) {
+      const handleRes = await fetch(
+        `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${encodeURIComponent(handle)}&key=${apiKey}`
+      );
+      if (handleRes.ok) {
+        const handleData = await handleRes.json();
+        if (handleData.items && handleData.items.length > 0) {
+          channelId = handleData.items[0].id;
+        }
+      }
+      if (!channelId) {
+        return NextResponse.json({ error: "해당 핸들의 채널을 찾을 수 없습니다." }, { status: 404 });
+      }
     }
 
     if (!isValidChannelId(channelId)) {

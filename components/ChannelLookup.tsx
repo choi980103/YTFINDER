@@ -79,25 +79,26 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
 
     try {
       const parsed = parseInput(trimmed);
-      let channelId: string | null = null;
+
+      // 채널 ID 또는 핸들 기반 → 서버 API로 분석 (3~4유닛)
+      // 채널명 검색 → search API fallback (103유닛)
+      let res: Response;
 
       if (parsed.type === "id") {
-        channelId = parsed.value;
+        res = await fetch("/api/youtube/channel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey, channelId: parsed.value }),
+        });
       } else if (parsed.type === "handle") {
-        // @핸들 → forHandle API로 직접 조회 (1유닛)
-        const handleRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${parsed.value}&key=${apiKey}`
-        );
-        if (handleRes.ok) {
-          const handleData = await handleRes.json();
-          if (handleData.items && handleData.items.length > 0) {
-            channelId = handleData.items[0].id;
-          }
-        }
-      }
-
-      // 핸들로도 못 찾으면 검색으로 fallback
-      if (!channelId && parsed.type === "search") {
+        res = await fetch("/api/youtube/channel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey, handle: parsed.value }),
+        });
+      } else {
+        // 채널명 검색으로 ID 찾기
+        let channelId: string | null = null;
         const searchRes = await fetch(`/api/youtube`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,19 +110,16 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
             channelId = searchData.channels[0].id;
           }
         }
+        if (!channelId) {
+          setError("채널을 찾을 수 없습니다. 채널 URL이나 정확한 이름을 입력해주세요.");
+          return;
+        }
+        res = await fetch("/api/youtube/channel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey, channelId }),
+        });
       }
-
-      if (!channelId) {
-        setError("채널을 찾을 수 없습니다. 채널 URL이나 정확한 이름을 입력해주세요.");
-        return;
-      }
-
-      // 채널 상세 분석
-      const res = await fetch("/api/youtube/channel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, channelId }),
-      });
 
       if (!res.ok) {
         const data = await res.json();
