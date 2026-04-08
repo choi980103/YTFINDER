@@ -172,7 +172,7 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
       <div className="mb-4">
         <h3 className="text-sm font-bold text-white">꿀채널인지 알아보기</h3>
         <p className="mt-1 text-xs text-zinc-500">
-          채널 URL이나 이름을 입력하면 꿀통 지수를 분석해드려요
+          채널 URL을 붙여넣으면 더 빠르고 정확해요 (채널명 검색도 가능)
         </p>
       </div>
 
