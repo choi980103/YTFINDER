@@ -14,6 +14,16 @@ const subRanges: { value: SubRange; label: string }[] = [
 
 export type ChannelAge = "all" | "1year";
 
+export type RevenueRange = "all" | "50만+" | "150만+" | "300만+" | "1000만+";
+
+const revenueRanges: { value: RevenueRange; label: string }[] = [
+  { value: "all", label: "전체" },
+  { value: "50만+", label: "50만+" },
+  { value: "150만+", label: "150만+" },
+  { value: "300만+", label: "300만+" },
+  { value: "1000만+", label: "1000만+" },
+];
+
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -23,6 +33,8 @@ interface SearchBarProps {
   onSubRangeChange: (range: SubRange) => void;
   channelAge: ChannelAge;
   onChannelAgeChange: (age: ChannelAge) => void;
+  revenueRange: RevenueRange;
+  onRevenueRangeChange: (range: RevenueRange) => void;
 }
 
 export default function SearchBar({
@@ -34,12 +46,15 @@ export default function SearchBar({
   onSubRangeChange,
   channelAge,
   onChannelAgeChange,
+  revenueRange,
+  onRevenueRangeChange,
 }: SearchBarProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const activeFilterCount =
     (subRange !== "all" ? 1 : 0) +
-    (channelAge !== "all" ? 1 : 0);
+    (channelAge !== "all" ? 1 : 0) +
+    (revenueRange !== "all" ? 1 : 0);
 
   return (
     <div className="space-y-4">
@@ -133,6 +148,23 @@ export default function SearchBar({
               최근 1년 이내 생성
             </button>
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-zinc-500">월 예상 수익</span>
+          {revenueRanges.map((r) => (
+            <button
+              key={r.value}
+              onClick={() => onRevenueRangeChange(r.value)}
+              className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
+                revenueRange === r.value
+                  ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/20"
+                  : "border border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>

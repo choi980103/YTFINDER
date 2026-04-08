@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
-import SearchBar, { type SubRange, type ChannelAge } from "@/components/SearchBar";
+import SearchBar, { type SubRange, type ChannelAge, type RevenueRange } from "@/components/SearchBar";
 import ChannelGrid from "@/components/ChannelGrid";
 import { calculateScore } from "@/lib/score";
 import StatsOverview from "@/components/StatsOverview";
@@ -71,6 +71,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState("ratio");
   const [subRange, setSubRange] = useState<SubRange>("all");
   const [channelAge, setChannelAge] = useState<ChannelAge>("all");
+  const [revenueRange, setRevenueRange] = useState<RevenueRange>("all");
 
   // 즐겨찾기 (순서 보존을 위해 배열도 관리)
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -87,6 +88,7 @@ export default function Home() {
     selectedCategory !== "전체" ||
     subRange !== "all" ||
     channelAge !== "all" ||
+    revenueRange !== "all" ||
     showFavoritesOnly ||
     showHiddenGems ||
     showTrendingOnly ||
@@ -98,6 +100,7 @@ export default function Home() {
     setSortBy("ratio");
     setSubRange("all");
     setChannelAge("all");
+    setRevenueRange("all");
     setShowFavoritesOnly(false);
     setShowHiddenGems(false);
     setShowTrendingOnly(false);
@@ -402,6 +405,19 @@ export default function Home() {
       });
     }
 
+    // 월 예상 수익 필터: (avgViews × monthlyUploads ÷ 2) × 0.3
+    if (revenueRange !== "all") {
+      const minRevenue = revenueRange === "50만+" ? 500000
+        : revenueRange === "150만+" ? 1500000
+        : revenueRange === "300만+" ? 3000000
+        : 10000000;
+      channels = channels.filter((ch) => {
+        const uploads = ch.monthlyUploads ?? 0;
+        const revenue = (ch.avgViews * uploads / 2) * 0.3;
+        return revenue >= minRevenue;
+      });
+    }
+
     // 히든 젬: 구독자 5만 이하 + 비율 200% 이상
     if (showHiddenGems) {
       channels = channels.filter(
@@ -446,7 +462,7 @@ export default function Home() {
     }
 
     return channels;
-  }, [sourceChannels, hiddenChannels, searchQuery, selectedCategory, subRange, channelAge, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy]);
+  }, [sourceChannels, hiddenChannels, searchQuery, selectedCategory, subRange, channelAge, revenueRange, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy]);
 
   if (showLanding) {
     return (
@@ -699,6 +715,8 @@ export default function Home() {
                 onSubRangeChange={setSubRange}
                 channelAge={channelAge}
                 onChannelAgeChange={setChannelAge}
+                revenueRange={revenueRange}
+                onRevenueRangeChange={setRevenueRange}
               />
               {isConnected && (
                 <div className="mt-3 flex flex-wrap items-center gap-3">
