@@ -90,7 +90,7 @@ async function getChannelStats(apiKey: string, channelIds: string[]) {
 }
 
 // [1유닛] playlistItems
-async function getRecentVideoIds(apiKey: string, uploadsPlaylistId: string, maxResults = 10) {
+async function getRecentVideoIds(apiKey: string, uploadsPlaylistId: string, maxResults = 50) {
   const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${uploadsPlaylistId}&maxResults=${maxResults}&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) return [];
@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
     // === 3단계: 최근 영상 ID (1유닛 x N회) ===
     const videoIdResults = await Promise.all(
       limited.map((ch: { contentDetails: { relatedPlaylists: { uploads: string } } }) =>
-        getRecentVideoIds(apiKey, ch.contentDetails.relatedPlaylists.uploads, 10)
+        getRecentVideoIds(apiKey, ch.contentDetails.relatedPlaylists.uploads, 50)
       )
     );
 
