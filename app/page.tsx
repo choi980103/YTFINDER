@@ -526,14 +526,14 @@ export default function Home() {
         {/* ─── 대시보드 탭 ─── */}
         {activeTab === "dashboard" && (
           <>
-            {/* Stats */}
-            <div className="mb-6">
-              <StatsOverview channels={filteredChannels} />
-            </div>
-
             {/* 꿀채널인지 알아보기 */}
             <div className="mb-6">
               <ChannelLookup apiKey={apiKey} />
+            </div>
+
+            {/* Stats */}
+            <div className="mb-6">
+              <StatsOverview channels={filteredChannels} />
             </div>
 
             {/* 오늘의 발견 */}

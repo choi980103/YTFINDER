@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   calculateHoneyScore,
@@ -45,6 +45,19 @@ function parseInput(input: string): { type: "id"; value: string } | { type: "han
   return { type: "search", value: input.trim() };
 }
 
+const LOOKUP_HISTORY_KEY = "yt_lookup_history";
+const MAX_HISTORY = 10;
+
+interface LookupHistoryItem {
+  id: string;
+  name: string;
+  thumbnail: string;
+  honeyScore: number;
+  honeyTier: string;
+  monthlyRevenue: number;
+  searchedAt: string;
+}
+
 interface ChannelLookupProps {
   apiKey: string;
 }
@@ -63,6 +76,31 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<LookupResult | null>(null);
+  const [history, setHistory] = useState<LookupHistoryItem[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LOOKUP_HISTORY_KEY);
+      if (saved) setHistory(JSON.parse(saved));
+    } catch { /* ignore */ }
+  }, []);
+
+  function saveToHistory(item: LookupHistoryItem) {
+    setHistory((prev) => {
+      const filtered = prev.filter((h) => h.id !== item.id);
+      const next = [item, ...filtered].slice(0, MAX_HISTORY);
+      localStorage.setItem(LOOKUP_HISTORY_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
+  function removeFromHistory(id: string) {
+    setHistory((prev) => {
+      const next = prev.filter((h) => h.id !== id);
+      localStorage.setItem(LOOKUP_HISTORY_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
 
   async function handleLookup() {
     const trimmed = input.trim();
@@ -163,13 +201,26 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
       const honeyScore = calculateHoneyScore(channel);
       const score = calculateScore(channel);
 
+      const honeyTier = getHoneyTier(honeyScore);
+      const monthlyRevenue = calculateMonthlyRevenue(channel);
+
       setResult({
         channel,
         honeyScore,
-        honeyTier: getHoneyTier(honeyScore),
-        monthlyRevenue: calculateMonthlyRevenue(channel),
+        honeyTier,
+        monthlyRevenue,
         score,
         scoreTier: getScoreTier(score),
+      });
+
+      saveToHistory({
+        id: channel.id,
+        name: channel.name,
+        thumbnail: channel.thumbnail,
+        honeyScore,
+        honeyTier,
+        monthlyRevenue,
+        searchedAt: new Date().toISOString(),
       });
     } catch {
       setError("네트워크 오류가 발생했습니다.");
@@ -179,10 +230,17 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-      <div className="mb-4">
-        <h3 className="text-sm font-bold text-white">꿀채널인지 알아보기</h3>
-        <p className="mt-1 text-xs text-zinc-500">
+    <div className="relative overflow-hidden rounded-2xl border border-yellow-400/20 bg-gradient-to-br from-yellow-400/[0.05] to-amber-500/[0.03] p-5 sm:p-6">
+      {/* 배경 글로우 */}
+      <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-yellow-400/10 blur-3xl" />
+      <div className="absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-amber-500/10 blur-3xl" />
+
+      <div className="relative mb-4">
+        <div className="mb-1 flex items-center gap-2">
+          <span className="text-lg">🍯</span>
+          <h3 className="text-base font-bold text-white sm:text-lg">꿀채널인지 알아보기</h3>
+        </div>
+        <p className="text-xs text-zinc-400">
           채널 URL을 붙여넣으면 더 빠르고 정확해요 (채널명 검색도 가능)
         </p>
       </div>
@@ -296,6 +354,60 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
                 {result.channel.monthlyUploads ?? 0}개
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 검색 기록 */}
+      {history.length > 0 && (
+        <div className="relative mt-5 border-t border-white/[0.06] pt-4">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-xs font-semibold text-zinc-400">최근 검색</span>
+            <button
+              onClick={() => {
+                setHistory([]);
+                localStorage.removeItem(LOOKUP_HISTORY_KEY);
+              }}
+              className="text-[11px] text-zinc-600 hover:text-zinc-400 transition-colors"
+            >
+              전체 삭제
+            </button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {history.map((item) => (
+              <Link
+                key={item.id}
+                href={`/channel/${item.id}`}
+                className="group relative flex shrink-0 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 transition-all hover:border-yellow-400/20 hover:bg-white/[0.04]"
+              >
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromHistory(item.id); }}
+                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-500 opacity-0 transition-all hover:bg-zinc-700 hover:text-zinc-300 group-hover:opacity-100"
+                >
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                {item.thumbnail ? (
+                  <img src={item.thumbnail} alt={item.name} className="h-8 w-8 rounded-full object-cover ring-1 ring-white/10" />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-xs font-bold text-white">
+                    {item.name.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="truncate text-xs font-medium text-zinc-300 max-w-[100px]">{item.name}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-[10px] font-bold ${getHoneyColor(getHoneyTier(item.honeyScore))}`}>
+                      {item.honeyTier} {item.honeyScore}
+                    </span>
+                    <span className="text-[10px] text-zinc-500">
+                      {formatRevenue(item.monthlyRevenue)}원
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       )}
