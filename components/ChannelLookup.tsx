@@ -29,7 +29,7 @@ function formatRevenue(num: number): string {
 }
 
 /** YouTube URL에서 채널 ID 또는 @핸들 추출 */
-function parseInput(input: string): { type: "id"; value: string } | { type: "handle"; value: string } | { type: "search"; value: string } {
+function parseInput(input: string): { type: "id"; value: string } | { type: "handle"; value: string } | { type: "invalid"; value: string } {
   // /channel/UCxxxx 형식
   const channelMatch = input.match(/\/channel\/(UC[\w-]+)/);
   if (channelMatch) return { type: "id", value: channelMatch[1] };
@@ -41,8 +41,8 @@ function parseInput(input: string): { type: "id"; value: string } | { type: "han
   const handleMatch = input.match(/@([\w.-]+)/);
   if (handleMatch) return { type: "handle", value: handleMatch[1] };
 
-  // 그 외 → 검색
-  return { type: "search", value: input.trim() };
+  // 그 외 → 지원하지 않는 형식
+  return { type: "invalid", value: input.trim() };
 }
 
 const LOOKUP_HISTORY_KEY = "yt_lookup_history";
@@ -118,8 +118,6 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
     try {
       const parsed = parseInput(trimmed);
 
-      // 채널 ID 또는 핸들 기반 → 서버 API로 분석 (3~4유닛)
-      // 채널명 검색 → search API fallback (103유닛)
       let res: Response;
 
       if (parsed.type === "id") {
@@ -135,28 +133,9 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
           body: JSON.stringify({ apiKey, handle: parsed.value }),
         });
       } else {
-        // 채널명 검색으로 ID 찾기
-        let channelId: string | null = null;
-        const searchRes = await fetch(`/api/youtube`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey, query: parsed.value, category: undefined }),
-        });
-        if (searchRes.ok) {
-          const searchData = await searchRes.json();
-          if (searchData.channels && searchData.channels.length > 0) {
-            channelId = searchData.channels[0].id;
-          }
-        }
-        if (!channelId) {
-          setError("채널을 찾을 수 없습니다. 채널 URL이나 정확한 이름을 입력해주세요.");
-          return;
-        }
-        res = await fetch("/api/youtube/channel", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey, channelId }),
-        });
+        setError("채널 URL 또는 @핸들을 입력해주세요. (예: youtube.com/@채널명)");
+        setIsLoading(false);
+        return;
       }
 
       if (!res.ok) {
@@ -241,7 +220,7 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
           <h3 className="text-base font-bold text-white sm:text-lg">꿀채널인지 알아보기</h3>
         </div>
         <p className="text-xs text-zinc-400">
-          채널 URL을 붙여넣으면 더 빠르고 정확해요 (채널명 검색도 가능)
+          유튜브 채널 URL 또는 @핸들을 붙여넣어 주세요
         </p>
       </div>
 
@@ -252,7 +231,7 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleLookup()}
-          placeholder="채널 URL 또는 채널명 입력..."
+          placeholder="youtube.com/@채널명 또는 @핸들 입력..."
           className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition-all focus:border-yellow-400/50 focus:ring-1 focus:ring-yellow-400/20"
         />
         <button
