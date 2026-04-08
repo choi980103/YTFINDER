@@ -19,7 +19,16 @@ import MemoOverview from "@/components/MemoOverview";
 import BenchmarkList from "@/components/BenchmarkList";
 import ChannelCompare from "@/components/ChannelCompare";
 
+type TabId = "dashboard" | "explore" | "activity";
+
+const TABS: { id: TabId; label: string; icon: string }[] = [
+  { id: "dashboard", label: "대시보드", icon: "📊" },
+  { id: "explore", label: "채널 탐색", icon: "🔍" },
+  { id: "activity", label: "내 활동", icon: "📁" },
+];
+
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [sortBy, setSortBy] = useState("ratio");
@@ -421,7 +430,7 @@ export default function Home() {
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
         {/* Hero */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             쇼츠 떡상 채널을 <span className="gradient-text">발견</span>하세요
           </h2>
@@ -431,321 +440,354 @@ export default function Home() {
           </p>
         </div>
 
-        {/* 필터 버튼 */}
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
-          <div className="flex items-center gap-2">
+        {/* 탭 네비게이션 */}
+        <div className="mb-6 flex items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5">
+          {TABS.map((tab) => (
             <button
-              onClick={() => setShowFavoritesOnly((v) => !v)}
-              className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
-                showFavoritesOnly
-                  ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
-                  : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? "bg-white/10 text-white shadow-sm"
+                  : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
               }`}
             >
-              <svg
-                className={`h-4 w-4 ${showFavoritesOnly ? "fill-amber-400" : "fill-none"}`}
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                />
-              </svg>
-              즐겨찾기
-              {favorites.size > 0 && (
-                <span className="rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
-                  {favorites.size}
-                </span>
+              <span className="text-base">{tab.icon}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* ─── 대시보드 탭 ─── */}
+        {activeTab === "dashboard" && (
+          <>
+            {/* Stats */}
+            <div className="mb-6">
+              <StatsOverview channels={filteredChannels} />
+            </div>
+
+            {/* 오늘의 발견 */}
+            <div className="mb-6">
+              <DailyDiscovery channels={filteredChannels} />
+            </div>
+
+            {/* TOP 3 Spotlight */}
+            <div className="mb-6">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-600">
+                떡상 지수 TOP 3
+              </div>
+              <TopSpotlight channels={filteredChannels} />
+            </div>
+          </>
+        )}
+
+        {/* ─── 채널 탐색 탭 ─── */}
+        {activeTab === "explore" && (
+          <>
+            {/* 필터 버튼 */}
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowFavoritesOnly((v) => !v)}
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                    showFavoritesOnly
+                      ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                  }`}
+                >
+                  <svg
+                    className={`h-4 w-4 ${showFavoritesOnly ? "fill-amber-400" : "fill-none"}`}
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                    />
+                  </svg>
+                  즐겨찾기
+                  {favorites.size > 0 && (
+                    <span className="rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
+                      {favorites.size}
+                    </span>
+                  )}
+                </button>
+
+                <div className="group/gem relative">
+                  <button
+                    onClick={() => setShowHiddenGems((v) => !v)}
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                      showHiddenGems
+                        ? "border-purple-400/30 bg-purple-400/10 text-purple-400"
+                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <span className="text-base">💎</span>
+                    히든 젬
+                  </button>
+                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/gem:visible group-hover/gem:opacity-100">
+                    구독자 5만 이하이지만 조회/구독 비율이 200% 이상인 채널. 아직 덜 알려졌지만 알고리즘을 타고 있는 숨겨진 보석!
+                  </div>
+                </div>
+
+                <div className="group/trend relative">
+                  <button
+                    onClick={() => setShowTrendingOnly((v) => !v)}
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                      showTrendingOnly
+                        ? "border-orange-400/30 bg-orange-400/10 text-orange-400"
+                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <span className="text-base">🔥</span>
+                    <span className={showTrendingOnly ? "text-orange-400" : "text-orange-400/70"}>급상승</span>
+                  </button>
+                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/trend:visible group-hover/trend:opacity-100">
+                    성장률이 평균의 1.5배 이상이고 200% 이상인 채널. 지금 가장 빠르게 성장 중인 채널만 모아보기!
+                  </div>
+                </div>
+
+                <div className="group/active relative">
+                  <button
+                    onClick={() => setShowActiveOnly((v) => !v)}
+                    className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
+                      showActiveOnly
+                        ? "border-green-400/30 bg-green-400/10 text-green-400"
+                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <span className="text-base">📡</span>
+                    활동 중
+                  </button>
+                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/active:visible group-hover/active:opacity-100">
+                    최근 30일 내 영상을 올린 채널만 보기. 꾸준히 활동 중인 채널을 찾을 수 있어요!
+                  </div>
+                </div>
+              </div>
+
+              {hasActiveFilters && (
+                <button
+                  onClick={resetFilters}
+                  className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 transition-all hover:bg-red-500/20"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  필터 초기화
+                </button>
               )}
-            </button>
 
-            <div className="group/gem relative">
-              <button
-                onClick={() => setShowHiddenGems((v) => !v)}
-                className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
-                  showHiddenGems
-                    ? "border-purple-400/30 bg-purple-400/10 text-purple-400"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
-                }`}
-              >
-                <span className="text-base">💎</span>
-                히든 젬
-              </button>
-              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/gem:visible group-hover/gem:opacity-100">
-                구독자 5만 이하이지만 조회/구독 비율이 200% 이상인 채널. 아직 덜 알려졌지만 알고리즘을 타고 있는 숨겨진 보석!
-              </div>
-            </div>
-
-            <div className="group/trend relative">
-              <button
-                onClick={() => setShowTrendingOnly((v) => !v)}
-                className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
-                  showTrendingOnly
-                    ? "border-orange-400/30 bg-orange-400/10 text-orange-400"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
-                }`}
-              >
-                <span className="text-base">🔥</span>
-                <span className={showTrendingOnly ? "text-orange-400" : "text-orange-400/70"}>급상승</span>
-              </button>
-              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/trend:visible group-hover/trend:opacity-100">
-                성장률이 평균의 1.5배 이상이고 200% 이상인 채널. 지금 가장 빠르게 성장 중인 채널만 모아보기!
-              </div>
-            </div>
-
-            <div className="group/active relative">
-              <button
-                onClick={() => setShowActiveOnly((v) => !v)}
-                className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
-                  showActiveOnly
-                    ? "border-green-400/30 bg-green-400/10 text-green-400"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
-                }`}
-              >
-                <span className="text-base">📡</span>
-                활동 중
-              </button>
-              <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/active:visible group-hover/active:opacity-100">
-                최근 30일 내 영상을 올린 채널만 보기. 꾸준히 활동 중인 채널을 찾을 수 있어요!
-              </div>
-            </div>
-          </div>
-
-          {hasActiveFilters && (
-            <button
-              onClick={resetFilters}
-              className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 transition-all hover:bg-red-500/20"
-            >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              필터 초기화
-            </button>
-          )}
-
-          {hiddenChannels.size > 0 && (
-            <div className="relative">
-              <button
-                onClick={() => setShowHiddenList((v) => !v)}
-                className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-400 transition-all hover:bg-white/10"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                숨긴 채널 {hiddenChannels.size}개
-                <svg className={`h-3 w-3 transition-transform ${showHiddenList ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
-              </button>
-              {showHiddenList && (
-                <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-white/10 bg-zinc-900 p-3 shadow-2xl">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-400">숨긴 채널 목록</span>
-                    <button
-                      onClick={() => {
-                        setHiddenChannels(new Set());
-                        localStorage.removeItem("yt_hidden_channels");
-                        setShowHiddenList(false);
-                      }}
-                      className="text-[11px] text-zinc-500 hover:text-zinc-300"
-                    >
-                      전체 복원
-                    </button>
-                  </div>
-                  <div className="flex max-h-48 flex-col gap-1 overflow-y-auto">
-                    {[...hiddenChannels].map((id) => {
-                      const ch = sourceChannels.find((c) => c.id === id);
-                      return (
-                        <div key={id} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
-                          <span className="truncate text-xs text-zinc-300">{ch?.name || id}</span>
-                          <button
-                            onClick={() => {
-                              setHiddenChannels((prev) => {
-                                const next = new Set(prev);
-                                next.delete(id);
-                                if (next.size === 0) {
-                                  localStorage.removeItem("yt_hidden_channels");
-                                } else {
-                                  localStorage.setItem("yt_hidden_channels", JSON.stringify([...next]));
-                                }
-                                return next;
-                              });
-                            }}
-                            className="shrink-0 ml-2 rounded-md bg-white/10 px-2 py-1 text-[10px] font-medium text-zinc-300 hover:bg-white/20"
-                          >
-                            복원
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {hiddenChannels.size > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowHiddenList((v) => !v)}
+                    className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-400 transition-all hover:bg-white/10"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    숨긴 채널 {hiddenChannels.size}개
+                    <svg className={`h-3 w-3 transition-transform ${showHiddenList ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+                  {showHiddenList && (
+                    <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-white/10 bg-zinc-900 p-3 shadow-2xl">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-zinc-400">숨긴 채널 목록</span>
+                        <button
+                          onClick={() => {
+                            setHiddenChannels(new Set());
+                            localStorage.removeItem("yt_hidden_channels");
+                            setShowHiddenList(false);
+                          }}
+                          className="text-[11px] text-zinc-500 hover:text-zinc-300"
+                        >
+                          전체 복원
+                        </button>
+                      </div>
+                      <div className="flex max-h-48 flex-col gap-1 overflow-y-auto">
+                        {[...hiddenChannels].map((id) => {
+                          const ch = sourceChannels.find((c) => c.id === id);
+                          return (
+                            <div key={id} className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
+                              <span className="truncate text-xs text-zinc-300">{ch?.name || id}</span>
+                              <button
+                                onClick={() => {
+                                  setHiddenChannels((prev) => {
+                                    const next = new Set(prev);
+                                    next.delete(id);
+                                    if (next.size === 0) {
+                                      localStorage.removeItem("yt_hidden_channels");
+                                    } else {
+                                      localStorage.setItem("yt_hidden_channels", JSON.stringify([...next]));
+                                    }
+                                    return next;
+                                  });
+                                }}
+                                className="shrink-0 ml-2 rounded-md bg-white/10 px-2 py-1 text-[10px] font-medium text-zinc-300 hover:bg-white/20"
+                              >
+                                복원
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
 
-        {/* Stats */}
-        <div className="mb-6">
-          <StatsOverview channels={filteredChannels} />
-        </div>
-
-        {/* 오늘의 발견 */}
-        <div className="mb-6">
-          <DailyDiscovery channels={filteredChannels} />
-        </div>
-
-        {/* TOP 3 Spotlight */}
-        <div className="mb-6">
-          <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-600">
-            떡상 지수 TOP 3
-          </div>
-          <TopSpotlight channels={filteredChannels} />
-        </div>
-
-        {/* 최근 본 채널 */}
-        <div className="mb-6">
-          <RecentlyViewed />
-        </div>
-
-        {/* 메모 모아보기 */}
-        <MemoOverview />
-
-        {/* 벤치마킹 영상 */}
-        <BenchmarkList />
-
-        {/* 채널 비교 */}
-        <ChannelCompare channels={sourceChannels} />
-
-        {/* Search & Filters */}
-        <div className="mb-6">
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            subRange={subRange}
-            onSubRangeChange={setSubRange}
-            channelAge={channelAge}
-            onChannelAgeChange={setChannelAge}
-          />
-          {isConnected && (
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => fetchShortsChannels(apiKey, true)}
-                disabled={isLoading}
-                className="rounded-xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-5 py-2.5 text-sm font-semibold text-[#0a0a0f] transition-opacity hover:opacity-90 disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="h-4 w-4 animate-spin"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    분석 중...
-                  </span>
-                ) : (
-                  "쇼츠 떡상 채널 새로고침"
-                )}
-              </button>
-              <button
-                onClick={() => fetchChannels()}
-                disabled={isLoading}
-                className="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/10 disabled:opacity-50"
-              >
-                키워드로 검색
-              </button>
+            {/* Search & Filters */}
+            <div className="mb-6">
+              <SearchBar
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                subRange={subRange}
+                onSubRangeChange={setSubRange}
+                channelAge={channelAge}
+                onChannelAgeChange={setChannelAge}
+              />
+              {isConnected && (
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => fetchShortsChannels(apiKey, true)}
+                    disabled={isLoading}
+                    className="rounded-xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-5 py-2.5 text-sm font-semibold text-[#0a0a0f] transition-opacity hover:opacity-90 disabled:opacity-50"
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="h-4 w-4 animate-spin"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        분석 중...
+                      </span>
+                    ) : (
+                      "쇼츠 떡상 채널 새로고침"
+                    )}
+                  </button>
+                  <button
+                    onClick={() => fetchChannels()}
+                    disabled={isLoading}
+                    className="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/10 disabled:opacity-50"
+                  >
+                    키워드로 검색
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Error */}
-        {error && (
-          <div className="mb-6 flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-            <span>{error}</span>
-            <button
-              onClick={() => { setError(""); fetchShortsChannels(apiKey, true); }}
-              className="ml-4 shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/20"
-            >
-              다시 시도
-            </button>
-          </div>
+            {/* Error */}
+            {error && (
+              <div className="mb-6 flex items-center justify-between rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                <span>{error}</span>
+                <button
+                  onClick={() => { setError(""); fetchShortsChannels(apiKey, true); }}
+                  className="ml-4 shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/20"
+                >
+                  다시 시도
+                </button>
+              </div>
+            )}
+
+            {/* Loading — Skeleton */}
+            {(isLoading || !isReady) && (
+              <div className="mb-6">
+                <div className="mb-4 flex items-center gap-3 text-sm text-[#06b6d4]">
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  {isLoading ? "YouTube 쇼츠 채널을 분석하고 있습니다..." : "채널 데이터를 불러오는 중..."}
+                </div>
+                <SkeletonGrid />
+              </div>
+            )}
+
+            {/* Data source indicator */}
+            {dataSource === "live" && liveChannels.length > 0 && !isLoading && (
+              <div className="mb-4 flex items-center gap-2 text-xs text-[#00e5a0]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#00e5a0]" />
+                실제 YouTube 쇼츠 데이터를 표시하고 있습니다
+              </div>
+            )}
+            {dataSource === "mock" && !isLoading && (
+              <div className="mb-4 flex items-center gap-2 text-xs text-zinc-600">
+                <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
+                샘플 데이터 표시 중 &mdash; API 키를 연동하면 실제 쇼츠 떡상 채널로
+                자동 전환됩니다
+              </div>
+            )}
+
+            {/* Channel Grid */}
+            {!isLoading && isReady && (
+              <ChannelGrid
+                channels={filteredChannels}
+                favorites={favorites}
+                favoriteOrder={favoriteOrder}
+                onToggleFavorite={toggleFavorite}
+                onReorderFavorites={reorderFavorites}
+                onHideChannel={hideChannel}
+                showFavoritesOnly={showFavoritesOnly}
+              />
+            )}
+          </>
         )}
 
-        {/* Loading — Skeleton */}
-        {(isLoading || !isReady) && (
-          <div className="mb-6">
-            <div className="mb-4 flex items-center gap-3 text-sm text-[#06b6d4]">
-              <svg
-                className="h-4 w-4 animate-spin"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              {isLoading ? "YouTube 쇼츠 채널을 분석하고 있습니다..." : "채널 데이터를 불러오는 중..."}
+        {/* ─── 내 활동 탭 ─── */}
+        {activeTab === "activity" && (
+          <>
+            {/* 최근 본 채널 */}
+            <div className="mb-6">
+              <RecentlyViewed />
             </div>
-            <SkeletonGrid />
-          </div>
-        )}
 
-        {/* Data source indicator */}
-        {dataSource === "live" && liveChannels.length > 0 && !isLoading && (
-          <div className="mb-4 flex items-center gap-2 text-xs text-[#00e5a0]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#00e5a0]" />
-            실제 YouTube 쇼츠 데이터를 표시하고 있습니다
-          </div>
-        )}
-        {dataSource === "mock" && !isLoading && (
-          <div className="mb-4 flex items-center gap-2 text-xs text-zinc-600">
-            <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
-            샘플 데이터 표시 중 &mdash; API 키를 연동하면 실제 쇼츠 떡상 채널로
-            자동 전환됩니다
-          </div>
-        )}
+            {/* 메모 모아보기 */}
+            <MemoOverview />
 
-        {/* Channel Grid — 로딩 중엔 숨김 (스켈레톤으로 대체) */}
-        {!isLoading && isReady && (
-          <ChannelGrid
-            channels={filteredChannels}
-            favorites={favorites}
-            favoriteOrder={favoriteOrder}
-            onToggleFavorite={toggleFavorite}
-            onReorderFavorites={reorderFavorites}
-            onHideChannel={hideChannel}
-            showFavoritesOnly={showFavoritesOnly}
-          />
+            {/* 벤치마킹 영상 */}
+            <BenchmarkList />
+
+            {/* 채널 비교 */}
+            <ChannelCompare channels={sourceChannels} />
+          </>
         )}
       </main>
 
