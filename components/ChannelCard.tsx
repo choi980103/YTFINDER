@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Channel } from "@/data/mockChannels";
 import Sparkline from "./Sparkline";
 import Tooltip from "./Tooltip";
-import { calculateScore, getScoreTier, getScoreLabel, getScoreColor, getScoreBg } from "@/lib/score";
+import { calculateScore, getScoreTier, getScoreLabel, getScoreColor, getScoreBg, calculateHoneyScore, calculateMonthlyRevenue, getHoneyTier, getHoneyLabel, getHoneyColor, getHoneyBg } from "@/lib/score";
 
 function formatNumber(num: number): string {
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M";
@@ -73,6 +73,9 @@ export default function ChannelCard({
   const isExplosive = channel.viewToSubRatio >= 1000;
   const score = calculateScore(channel);
   const tier = getScoreTier(score);
+  const honeyScore = calculateHoneyScore(channel);
+  const honeyTier = getHoneyTier(honeyScore);
+  const monthlyRevenue = calculateMonthlyRevenue(channel);
   const router = useRouter();
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -175,25 +178,22 @@ export default function ChannelCard({
         </div>
       </div>
 
-      {/* 떡상 지수 + Sparkline Row */}
-      <div
-        className={`mb-4 rounded-xl border p-3 ${getScoreBg(tier)}`}
-      >
+      {/* 꿀통 지수 (메인) */}
+      <div className={`mb-3 rounded-xl border p-3 ${getHoneyBg(honeyTier)}`}>
         <div className="flex items-center justify-between">
           <div className="text-center flex-1">
             <div className="mb-0.5 flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
-              떡상 지수
-              <Tooltip text="조회/구독 비율(50%) + 성장률(30%) + 활동량(20%) 종합 점수" />
+              꿀통 지수
+              <Tooltip text="월 예상 수익(50%) + 조회/구독 비율(25%) + 업로드 빈도(25%) 종합 점수" />
             </div>
-            <div
-              className={`text-3xl font-black tabular-nums ${getScoreColor(tier)} ${score >= 80 ? "ratio-glow" : ""}`}
-            >
-              {score}
+            <div className={`text-3xl font-black tabular-nums ${getHoneyColor(honeyTier)} ${honeyScore >= 80 ? "ratio-glow" : ""}`}>
+              {honeyScore}
             </div>
-            <div
-              className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getScoreBg(tier)} ${getScoreColor(tier)}`}
-            >
-              {tier} · {getScoreLabel(tier)}
+            <div className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getHoneyBg(honeyTier)} ${getHoneyColor(honeyTier)}`}>
+              {honeyTier} · {getHoneyLabel(honeyTier)}
+            </div>
+            <div className="mt-1.5 text-[11px] font-semibold text-zinc-400">
+              월 예상 <span className={getHoneyColor(honeyTier)}>{monthlyRevenue.toLocaleString()}원</span>
             </div>
           </div>
           {/* Sparkline */}
@@ -206,6 +206,22 @@ export default function ChannelCard({
               />
             </div>
           )}
+        </div>
+      </div>
+
+      {/* 떡상 지수 (서브) */}
+      <div className={`mb-4 rounded-xl border p-2.5 ${getScoreBg(tier)}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+            떡상 지수
+            <Tooltip text="조회/구독 비율(50%) + 성장률(30%) + 활동량(20%) 종합 점수" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`text-sm font-black tabular-nums ${getScoreColor(tier)}`}>{score}</span>
+            <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${getScoreBg(tier)} ${getScoreColor(tier)}`}>
+              {tier} · {getScoreLabel(tier)}
+            </span>
+          </div>
         </div>
       </div>
 

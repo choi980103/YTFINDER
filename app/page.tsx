@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import SearchBar, { type SubRange, type ChannelAge, type RevenueRange } from "@/components/SearchBar";
 import ChannelGrid from "@/components/ChannelGrid";
-import { calculateScore } from "@/lib/score";
+import { calculateScore, calculateHoneyScore } from "@/lib/score";
 import StatsOverview from "@/components/StatsOverview";
 import ApiKeyModal from "@/components/ApiKeyModal";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -68,7 +68,7 @@ export default function Home() {
   }, [activeTab]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("전체");
-  const [sortBy, setSortBy] = useState("ratio");
+  const [sortBy, setSortBy] = useState("honey");
   const [subRange, setSubRange] = useState<SubRange>("all");
   const [channelAge, setChannelAge] = useState<ChannelAge>("all");
   const [revenueRange, setRevenueRange] = useState<RevenueRange>("all");
@@ -97,7 +97,7 @@ export default function Home() {
   const resetFilters = useCallback(() => {
     setSearchQuery("");
     setSelectedCategory("전체");
-    setSortBy("ratio");
+    setSortBy("honey");
     setSubRange("all");
     setChannelAge("all");
     setRevenueRange("all");
@@ -444,6 +444,9 @@ export default function Home() {
     }
 
     switch (sortBy) {
+      case "honey":
+        channels.sort((a, b) => calculateHoneyScore(b) - calculateHoneyScore(a));
+        break;
       case "score":
         channels.sort((a, b) => calculateScore(b) - calculateScore(a));
         break;
@@ -494,11 +497,10 @@ export default function Home() {
         {/* Hero */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            쇼츠 떡상 채널을 <span className="gradient-text">발견</span>하세요
+            숨겨진 <span className="gradient-text">꿀통 채널</span>을 발견하세요
           </h2>
           <p className="mt-2 text-sm text-zinc-500">
-            구독자 대비 쇼츠 조회수가 비정상적으로 높은 채널 = 알고리즘이
-            밀어주는 떡상 직전 채널
+            쇼츠로 실제 수익을 내고 있는 숨겨진 채널, 알고리즘이 밀어주는 진짜 꿀통을 찾아드립니다
           </p>
         </div>
 
@@ -536,7 +538,7 @@ export default function Home() {
             {/* TOP 3 Spotlight */}
             <div className="mb-6">
               <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-600">
-                떡상 지수 TOP 3
+                꿀통 지수 TOP 3
               </div>
               <TopSpotlight channels={filteredChannels} />
             </div>

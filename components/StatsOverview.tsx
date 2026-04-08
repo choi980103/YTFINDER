@@ -1,19 +1,26 @@
 "use client";
 
 import { Channel } from "@/data/mockChannels";
+import { calculateHoneyScore, calculateMonthlyRevenue } from "@/lib/score";
 
 interface StatsOverviewProps {
   channels: Channel[];
+}
+
+function formatRevenue(num: number): string {
+  if (num >= 10000000) return (num / 10000000).toFixed(1) + "천만";
+  if (num >= 10000) return Math.round(num / 10000) + "만";
+  return num.toLocaleString();
 }
 
 export default function StatsOverview({ channels }: StatsOverviewProps) {
   const totalChannels = channels.length;
   const avgRatio =
     channels.reduce((sum, ch) => sum + ch.viewToSubRatio, 0) / totalChannels || 0;
-  const explosiveCount = channels.filter(
-    (ch) => ch.viewToSubRatio >= 1000
-  ).length;
-  const topGrowth = Math.max(...channels.map((ch) => ch.growthRate), 0);
+  const honeyChannels = channels.filter((ch) => calculateHoneyScore(ch) >= 60).length;
+  const topRevenue = channels.length > 0
+    ? Math.max(...channels.map((ch) => calculateMonthlyRevenue(ch)))
+    : 0;
 
   const stats = [
     {
@@ -29,16 +36,16 @@ export default function StatsOverview({ channels }: StatsOverviewProps) {
       color: "text-[#06b6d4]",
     },
     {
-      label: "폭발적 성장 채널",
-      value: explosiveCount.toString(),
+      label: "꿀통 채널",
+      value: honeyChannels.toString(),
       suffix: "개",
-      color: "text-[#00e5a0]",
+      color: "text-yellow-400",
     },
     {
-      label: "최고 성장률",
-      value: `+${topGrowth}`,
-      suffix: "%",
-      color: "text-amber-400",
+      label: "최고 월 수익",
+      value: formatRevenue(topRevenue),
+      suffix: "원",
+      color: "text-[#00e5a0]",
     },
   ];
 

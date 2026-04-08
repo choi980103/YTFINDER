@@ -90,6 +90,7 @@ export default function SearchBar({
           onChange={(e) => onSortChange(e.target.value)}
           className="cursor-pointer rounded-xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 outline-none transition-all hover:bg-zinc-800 focus:border-[#00e5a0]/50"
         >
+          <option value="honey" className="bg-zinc-900 text-zinc-200">꿀통 지수순</option>
           <option value="score" className="bg-zinc-900 text-zinc-200">떡상 지수순</option>
           <option value="ratio" className="bg-zinc-900 text-zinc-200">조회수/구독자 비율순</option>
           <option value="growth" className="bg-zinc-900 text-zinc-200">성장률순</option>
