@@ -29,7 +29,11 @@ function formatRevenue(num: number): string {
 }
 
 /** YouTube URL에서 채널 ID 또는 @핸들 추출 */
-function parseInput(input: string): { type: "id"; value: string } | { type: "handle"; value: string } | { type: "invalid"; value: string } {
+function parseInput(raw: string): { type: "id"; value: string } | { type: "handle"; value: string } | { type: "invalid"; value: string } {
+  // 퍼센트 인코딩 디코딩 (한글 핸들 지원)
+  let input = raw;
+  try { input = decodeURIComponent(raw); } catch { /* ignore */ }
+
   // /channel/UCxxxx 형식
   const channelMatch = input.match(/\/channel\/(UC[\w-]+)/);
   if (channelMatch) return { type: "id", value: channelMatch[1] };
@@ -37,8 +41,8 @@ function parseInput(input: string): { type: "id"; value: string } | { type: "han
   // 순수 UC 채널 ID
   if (input.startsWith("UC") && input.length >= 20) return { type: "id", value: input.trim() };
 
-  // @handle 형식 (URL에 포함된 것도 추출)
-  const handleMatch = input.match(/@([\w.-]+)/);
+  // @handle 형식 (한글, 영문, 숫자, 하이픈, 점 등 지원)
+  const handleMatch = input.match(/@([^/?&\s]+)/);
   if (handleMatch) return { type: "handle", value: handleMatch[1] };
 
   // 그 외 → 지원하지 않는 형식
