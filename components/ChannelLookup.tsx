@@ -28,20 +28,21 @@ function formatRevenue(num: number): string {
   return num.toLocaleString();
 }
 
-/** YouTube URL에서 채널 ID 추출 */
-function extractChannelId(input: string): string | null {
-  // @handle 형식
-  const handleMatch = input.match(/@[\w.-]+/);
-  if (handleMatch) return null; // handle은 검색으로 처리
-
+/** YouTube URL에서 채널 ID 또는 @핸들 추출 */
+function parseInput(input: string): { type: "id"; value: string } | { type: "handle"; value: string } | { type: "search"; value: string } {
   // /channel/UCxxxx 형식
   const channelMatch = input.match(/\/channel\/(UC[\w-]+)/);
-  if (channelMatch) return channelMatch[1];
+  if (channelMatch) return { type: "id", value: channelMatch[1] };
 
   // 순수 UC 채널 ID
-  if (input.startsWith("UC") && input.length >= 20) return input.trim();
+  if (input.startsWith("UC") && input.length >= 20) return { type: "id", value: input.trim() };
 
-  return null;
+  // @handle 형식 (URL에 포함된 것도 추출)
+  const handleMatch = input.match(/@([\w.-]+)/);
+  if (handleMatch) return { type: "handle", value: handleMatch[1] };
+
+  // 그 외 → 검색
+  return { type: "search", value: input.trim() };
 }
 
 interface ChannelLookupProps {
@@ -77,19 +78,31 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
     setResult(null);
 
     try {
-      let channelId = extractChannelId(trimmed);
+      const parsed = parseInput(trimmed);
+      let channelId: string | null = null;
 
-      // 채널 ID를 못 추출했으면 검색으로 찾기
-      if (!channelId) {
-        const query = trimmed.replace(/^@/, "").replace(/https?:\/\/.*\//g, "");
-        const searchRes = await fetch(
-          `/api/youtube`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ apiKey, query, category: undefined }),
-          }
+      if (parsed.type === "id") {
+        channelId = parsed.value;
+      } else if (parsed.type === "handle") {
+        // @핸들 → forHandle API로 직접 조회 (1유닛)
+        const handleRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${parsed.value}&key=${apiKey}`
         );
+        if (handleRes.ok) {
+          const handleData = await handleRes.json();
+          if (handleData.items && handleData.items.length > 0) {
+            channelId = handleData.items[0].id;
+          }
+        }
+      }
+
+      // 핸들로도 못 찾으면 검색으로 fallback
+      if (!channelId && parsed.type === "search") {
+        const searchRes = await fetch(`/api/youtube`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey, query: parsed.value, category: undefined }),
+        });
         if (searchRes.ok) {
           const searchData = await searchRes.json();
           if (searchData.channels && searchData.channels.length > 0) {
