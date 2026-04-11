@@ -5,6 +5,12 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026.04.11",
+    items: [
+      "🔥 오늘의 Top 100 탭 신규 추가 — 최근 3일 이내 한국에서 가장 뜨거운 영상을 조회수 순으로 확인 (전체/쇼츠/롱폼 필터)",
+    ],
+  },
+  {
     date: "2026.04.08",
     items: [
       "꿀통 지수 도입 — 수익 기반으로 채널 가치 평가",
