@@ -24,7 +24,7 @@ interface Props {
   apiKey: string;
 }
 
-const CLIENT_CACHE_KEY = "yt_top100_cache_v1";
+const CLIENT_CACHE_KEY = "yt_top100_cache_v2";
 const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
 function formatNumber(n: number): string {
@@ -187,7 +187,12 @@ export default function Top100Videos({ apiKey }: Props) {
             <span className="gradient-text">🔥 오늘의 Top 100</span>
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            지금 한국에서 가장 뜨거운 YouTube 영상을 조회수 순으로
+            최근 3일 이내 한국에서 가장 뜨거운 영상을 조회수 순으로
+            {videos.length > 0 && videos.length < 100 && (
+              <span className="ml-1 text-amber-400/80">
+                · {videos.length}개 표시
+              </span>
+            )}
             {lastUpdated && (
               <span className="ml-2 text-zinc-600">
                 · {new Date(lastUpdated).toLocaleTimeString("ko-KR", {
@@ -309,7 +314,9 @@ export default function Top100Videos({ apiKey }: Props) {
       {!isLoading && filteredVideos.length === 0 && !error && (
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] py-16 text-center">
           <p className="text-sm text-zinc-500">
-            해당 조건의 영상이 없습니다.
+            {videos.length === 0
+              ? "최근 3일 이내 인기 영상을 찾지 못했어요. 잠시 후 다시 시도해주세요."
+              : "해당 조건의 영상이 없습니다."}
           </p>
         </div>
       )}
@@ -402,7 +409,7 @@ export default function Top100Videos({ apiKey }: Props) {
           <code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
             videos.list (chart=mostPopular)
           </code>
-          로 수집 · 6시간마다 자동 갱신
+          로 수집 · 최근 3일 이내 영상만 · 6시간마다 자동 갱신
         </p>
       )}
     </div>

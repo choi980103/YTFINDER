@@ -39,6 +39,9 @@ const POPULAR_CATEGORIES = [
 let cache: { videos: TopVideo[]; timestamp: number } | null = null;
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
+// 최근 N일 이내 영상만 표시
+const RECENT_DAYS = 3;
+
 function parseDuration(iso: string | undefined): number {
   if (!iso) return 0;
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -144,8 +147,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 조회수 순 정렬 → 상위 100개만
+    // 최근 N일 이내 영상만 필터 → 조회수 순 정렬 → 상위 100개
+    const cutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000;
     const videos = [...videoMap.values()]
+      .filter((v) => new Date(v.publishedAt).getTime() >= cutoff)
       .sort((a, b) => b.views - a.views)
       .slice(0, 100);
 
