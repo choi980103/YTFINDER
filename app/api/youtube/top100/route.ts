@@ -1,0 +1,160 @@
+import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { isValidApiKey } from "@/lib/validate";
+
+export interface TopVideo {
+  id: string;
+  title: string;
+  thumbnail: string;
+  channelId: string;
+  channelTitle: string;
+  views: number;
+  likes: number;
+  comments: number;
+  duration: number; // 초
+  isShort: boolean;
+  publishedAt: string;
+  categoryId: string;
+}
+
+// mostPopular 카테고리 (1유닛 x N = 초저렴)
+const POPULAR_CATEGORIES = [
+  "1",  // Film & Animation
+  "2",  // Autos & Vehicles
+  "10", // Music
+  "15", // Pets & Animals
+  "17", // Sports
+  "19", // Travel & Events
+  "20", // Gaming
+  "22", // People & Blogs
+  "23", // Comedy
+  "24", // Entertainment
+  "25", // News & Politics
+  "26", // Howto & Style
+  "27", // Education
+  "28", // Science & Technology
+];
+
+// 메모리 캐시 (서버 사이드)
+let cache: { videos: TopVideo[]; timestamp: number } | null = null;
+const CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
+
+function parseDuration(iso: string | undefined): number {
+  if (!iso) return 0;
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return 0;
+  return (
+    parseInt(match[1] || "0") * 3600 +
+    parseInt(match[2] || "0") * 60 +
+    parseInt(match[3] || "0")
+  );
+}
+
+// [1유닛] 카테고리별 인기 동영상 조회
+async function getMostPopular(apiKey: string, categoryId: string) {
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=KR&videoCategoryId=${categoryId}&maxResults=50&key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) return { items: [], categoryId };
+  const data = await res.json();
+  return { items: data.items || [], categoryId };
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const { allowed } = checkRateLimit(ip);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." },
+        { status: 429 }
+      );
+    }
+
+    const { apiKey } = await request.json();
+
+    if (!apiKey) {
+      return NextResponse.json({ error: "API 키가 필요합니다" }, { status: 400 });
+    }
+
+    if (!isValidApiKey(apiKey)) {
+      return NextResponse.json(
+        { error: "API 키 형식이 올바르지 않습니다." },
+        { status: 400 }
+      );
+    }
+
+    // 캐시 확인
+    if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
+      return NextResponse.json({ videos: cache.videos, cached: true });
+    }
+
+    // === mostPopular 14개 카테고리 병렬 호출 (총 14유닛) ===
+    const results = await Promise.all(
+      POPULAR_CATEGORIES.map((cat) => getMostPopular(apiKey, cat))
+    );
+
+    // 영상 수집 + 중복 제거
+    const videoMap = new Map<string, TopVideo>();
+
+    for (const { items, categoryId } of results) {
+      for (const item of items as {
+        id: string;
+        snippet: {
+          title: string;
+          channelId: string;
+          channelTitle: string;
+          publishedAt: string;
+          thumbnails: {
+            medium?: { url: string };
+            high?: { url: string };
+            default?: { url: string };
+          };
+        };
+        contentDetails: { duration: string };
+        statistics: {
+          viewCount?: string;
+          likeCount?: string;
+          commentCount?: string;
+        };
+      }[]) {
+        if (videoMap.has(item.id)) continue;
+
+        const duration = parseDuration(item.contentDetails.duration);
+        const views = parseInt(item.statistics.viewCount || "0", 10);
+        if (views === 0) continue;
+
+        videoMap.set(item.id, {
+          id: item.id,
+          title: item.snippet.title,
+          thumbnail:
+            item.snippet.thumbnails?.medium?.url ||
+            item.snippet.thumbnails?.high?.url ||
+            item.snippet.thumbnails?.default?.url ||
+            "",
+          channelId: item.snippet.channelId,
+          channelTitle: item.snippet.channelTitle,
+          views,
+          likes: parseInt(item.statistics.likeCount || "0", 10),
+          comments: parseInt(item.statistics.commentCount || "0", 10),
+          duration,
+          isShort: duration > 0 && duration <= 60,
+          publishedAt: item.snippet.publishedAt,
+          categoryId,
+        });
+      }
+    }
+
+    // 조회수 순 정렬 → 상위 100개만
+    const videos = [...videoMap.values()]
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 100);
+
+    cache = { videos, timestamp: Date.now() };
+
+    return NextResponse.json({ videos });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

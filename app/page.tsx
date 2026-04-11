@@ -19,12 +19,14 @@ import MemoOverview from "@/components/MemoOverview";
 import BenchmarkList from "@/components/BenchmarkList";
 import ChannelCompare from "@/components/ChannelCompare";
 import ChannelLookup from "@/components/ChannelLookup";
+import Top100Videos from "@/components/Top100Videos";
 
-type TabId = "dashboard" | "explore" | "activity";
+type TabId = "dashboard" | "explore" | "top100" | "activity";
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: "dashboard", label: "대시보드", icon: "📊" },
   { id: "explore", label: "채널 탐색", icon: "🔍" },
+  { id: "top100", label: "Top 100", icon: "🔥" },
   { id: "activity", label: "내 활동", icon: "📁" },
 ];
 
@@ -843,6 +845,11 @@ export default function Home() {
               />
             )}
           </>
+        )}
+
+        {/* ─── Top 100 탭 ─── */}
+        {activeTab === "top100" && (
+          <Top100Videos apiKey={apiKey} />
         )}
 
         {/* ─── 내 활동 탭 ─── */}
