@@ -255,31 +255,53 @@ export default function Top100Videos({ apiKey }: Props) {
         </div>
       )}
 
-      {/* 로딩 */}
+      {/* 로딩 — 스켈레톤 */}
       {isLoading && videos.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] py-16">
-          <svg
-            className="mb-4 h-8 w-8 animate-spin text-[#06b6d4]"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-            />
-          </svg>
-          <p className="text-sm text-zinc-400">
+        <div>
+          <div className="mb-4 flex items-center gap-2 text-sm text-[#06b6d4]">
+            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
             오늘의 Top 100을 불러오는 중...
-          </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            {[...Array(10)].map((_, i) => (
+              <div
+                key={i}
+                style={{ animationDelay: `${i * 40}ms` }}
+                className="card-animate flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 sm:gap-4"
+              >
+                {/* 순위 */}
+                <div className="flex w-8 shrink-0 items-center justify-center sm:w-10">
+                  <div className="h-6 w-5 rounded bg-white/10 skeleton-pulse" />
+                </div>
+                {/* 썸네일 */}
+                <div className="h-16 w-28 shrink-0 rounded-lg bg-white/10 skeleton-pulse sm:h-20 sm:w-36" />
+                {/* 제목 + 메타 */}
+                <div className="min-w-0 flex-1">
+                  <div className="h-4 w-full max-w-md rounded bg-white/10 skeleton-pulse" />
+                  <div className="mt-2 h-3 w-3/4 max-w-sm rounded bg-white/[0.07] skeleton-pulse" />
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-3 w-16 rounded bg-white/[0.07] skeleton-pulse" />
+                    <div className="h-3 w-12 rounded bg-white/[0.07] skeleton-pulse" />
+                    <div className="h-3 w-14 rounded bg-white/[0.07] skeleton-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
