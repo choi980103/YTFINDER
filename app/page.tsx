@@ -20,6 +20,7 @@ import BenchmarkList from "@/components/BenchmarkList";
 import ChannelCompare from "@/components/ChannelCompare";
 import ChannelLookup from "@/components/ChannelLookup";
 import Top100Videos from "@/components/Top100Videos";
+import AccessCodeGate from "@/components/AccessCodeGate";
 
 type TabId = "dashboard" | "explore" | "top100" | "activity";
 
@@ -472,6 +473,7 @@ export default function Home() {
 
   if (showLanding) {
     return (
+      <AccessCodeGate>
       <div className="min-h-screen bg-[#0a0a0f] bg-grid">
         <LandingHero
           onGetStarted={() => {
@@ -486,10 +488,12 @@ export default function Home() {
           }}
         />
       </div>
+      </AccessCodeGate>
     );
   }
 
   return (
+    <AccessCodeGate>
     <div className="flex min-h-screen flex-col bg-grid">
       <Header
         onApiKeyClick={() => setIsModalOpen(true)}
@@ -887,5 +891,6 @@ export default function Home() {
       {/* Scroll to top */}
       <ScrollToTop />
     </div>
+    </AccessCodeGate>
   );
 }

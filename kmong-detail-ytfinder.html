@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YTFINDER 크몽 상세페이지</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #0a0a0f;
+      color: #fff;
+      width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── Section common ── */
+    section {
+      padding: 80px 60px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #00e5a0;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: #a1a1aa;
+      line-height: 1.7;
+      max-width: 640px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #00e5a0, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 100px 60px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,229,160,0.08) 0%, transparent 60%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #f87171;
+      margin-bottom: 32px;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #f87171;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .hero-logo-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #00e5a0, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(0,229,160,0.2);
+    }
+
+    .hero-logo h1 {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .hero-tagline {
+      font-size: 22px;
+      color: #e4e4e7;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .hero-sub {
+      font-size: 15px;
+      color: #71717a;
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-price-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 28px 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero-price-label {
+      font-size: 13px;
+      color: #a1a1aa;
+      margin-bottom: 4px;
+    }
+
+    .hero-price-original {
+      font-size: 16px;
+      color: #52525b;
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+
+    .hero-price {
+      font-size: 44px;
+      font-weight: 900;
+    }
+
+    .hero-price-note {
+      font-size: 12px;
+      color: #f87171;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* ── Pain Points ── */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .pain-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .pain-card .icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .pain-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #f4f4f5;
+    }
+
+    .pain-card p {
+      font-size: 14px;
+      color: #71717a;
+      line-height: 1.6;
+    }
+
+    /* ── Features ── */
+    .feature-list {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .feature-item h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .feature-item p {
+      font-size: 14px;
+      color: #a1a1aa;
+      line-height: 1.6;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-top: 8px;
+    }
+
+    /* ── Tabs Preview ── */
+    .tabs-section {
+      text-align: center;
+    }
+
+    .tabs-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 40px 0 32px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color: #71717a;
+    }
+
+    .tab-btn.active {
+      background: rgba(0,229,160,0.1);
+      border-color: rgba(0,229,160,0.3);
+      color: #00e5a0;
+    }
+
+    .tab-desc-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 12px;
+      text-align: left;
+    }
+
+    .tab-desc-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .tab-desc-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-desc-card p {
+      font-size: 13px;
+      color: #71717a;
+      line-height: 1.6;
+    }
+
+    /* ── Comparison ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 14px 12px;
+      text-align: center;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .compare-table th {
+      background: rgba(255,255,255,0.03);
+      font-weight: 700;
+      font-size: 13px;
+      color: #a1a1aa;
+    }
+
+    .compare-table th:last-child {
+      color: #00e5a0;
+    }
+
+    .compare-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: #d4d4d8;
+    }
+
+    .compare-table td {
+      color: #71717a;
+    }
+
+    .compare-table td:last-child {
+      color: #e4e4e7;
+    }
+
+    .check { color: #00e5a0; font-weight: 700; font-size: 18px; }
+    .cross { color: #52525b; font-size: 18px; }
+
+    .compare-highlight {
+      background: rgba(0,229,160,0.03) !important;
+    }
+
+    /* ── Reviews / Social proof ── */
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .review-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .review-stars {
+      color: #fbbf24;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .review-text {
+      font-size: 14px;
+      color: #d4d4d8;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .review-author {
+      font-size: 12px;
+      color: #52525b;
+      font-weight: 600;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 100%, rgba(0,229,160,0.06) 0%, transparent 60%);
+      padding: 80px 60px;
+    }
+
+    .cta-section .section-title {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #00e5a0, #06b6d4);
+      color: #0a0a0f;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 16px 40px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      margin-top: 32px;
+      box-shadow: 0 8px 32px rgba(0,229,160,0.25);
+    }
+
+    .guarantee {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 24px;
+    }
+
+    .guarantee-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #71717a;
+    }
+
+    .guarantee-item .g-icon {
+      color: #00e5a0;
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .faq-q {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e4e4e7;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .faq-a {
+      font-size: 14px;
+      color: #71717a;
+      line-height: 1.7;
+      padding-left: 24px;
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      padding: 48px 60px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 900;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #71717a;
+      margin-top: 4px;
+    }
+
+    /* ── Included ── */
+    .included-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 40px;
+    }
+
+    .included-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #d4d4d8;
+    }
+
+    .included-item .i-check {
+      color: #00e5a0;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ████ HERO ████ -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      초기 멤버 한정 특가 — 곧 가격이 인상됩니다
+    </div>
+
+    <div class="hero-logo">
+      <div class="hero-logo-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <h1>YT<span class="gradient-text">FINDER</span></h1>
+    </div>
+
+    <p class="hero-tagline">숨겨진 꿀통 채널을 가장 먼저 발견하세요</p>
+    <p class="hero-sub">
+      쇼츠로 실제 수익을 내고 있는 숨겨진 채널, 알고리즘이 밀어주는 진짜 꿀통을 찾아드립니다.<br>
+      실시간 YouTube 데이터를 분석해서 수익성 높은 채널을 발굴합니다.
+    </p>
+
+    <div class="hero-price-box">
+      <span class="hero-price-label">평생이용권 (초기 멤버 한정)</span>
+      <span class="hero-price-original">₩299,000</span>
+      <span class="hero-price"><span class="gradient-text">₩199,000</span></span>
+      <span class="hero-price-note">⚡ 한정 수량 소진 시 가격 인상 예정</span>
+    </div>
+  </section>
+
+  <!-- ████ STATS ████ -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-number gradient-text">300+</div>
+      <div class="stat-label">분석 채널 수</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number gradient-text">15+</div>
+      <div class="stat-label">분석 카테고리</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number gradient-text">24/7</div>
+      <div class="stat-label">실시간 업데이트</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number gradient-text">100%</div>
+      <div class="stat-label">웹 기반 (설치 불필요)</div>
+    </div>
+  </div>
+
+  <!-- ████ PAIN POINTS ████ -->
+  <section>
+    <div class="section-label">Problem</div>
+    <div class="section-title">이런 고민, 해보셨나요?</div>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="icon">😩</div>
+        <h3>수익 나는 채널을 찾기 어렵다</h3>
+        <p>진짜 돈이 되는 꿀통 채널은 어디 있는지, 어떤 콘텐츠가 수익성이 높은지 감이 안 잡히죠.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🔍</div>
+        <h3>경쟁 채널 분석이 번거롭다</h3>
+        <p>하나하나 찾아보기엔 시간이 너무 오래 걸리고 체계적으로 비교하기 어렵습니다.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">📉</div>
+        <h3>내 채널 성장이 정체됐다</h3>
+        <p>구독자는 안 늘고, 수익도 안 나고... 뭘 해야 성장할 수 있는지 파악이 안 됩니다.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">💸</div>
+        <h3>해외 분석 툴은 비싸다</h3>
+        <p>vidIQ, TubeBuddy 같은 해외 툴은 월 구독료가 부담스럽고 한국 시장에 맞지 않습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ SOLUTION — FEATURES ████ -->
+  <section>
+    <div class="section-label">Solution</div>
+    <div class="section-title">YTFINDER가 <span class="gradient-text">전부 해결</span>합니다</div>
+    <p class="section-desc">현직 유튜브 크리에이터 4년차가 직접 만든 분석 도구. 크리에이터가 진짜 필요한 기능만 담았습니다.</p>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(0,229,160,0.1);">📊</div>
+        <div>
+          <h3>꿀통 지수 스코어링</h3>
+          <p>조회수/구독자 비율 + 수익성 + 성장률을 종합 분석한 독자적 스코어링 시스템. 숨겨진 꿀통 채널을 숫자로 확인하세요.</p>
+          <span class="feature-tag" style="background:rgba(0,229,160,0.1);color:#00e5a0;">핵심 기능</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(6,182,212,0.1);">🌍</div>
+        <div>
+          <h3>글로벌 트렌드 분석</h3>
+          <p>한국뿐 아니라 미국, 일본 등 해외 쇼츠 트렌드까지 한눈에 파악. 글로벌 진출을 고민 중이라면 필수입니다.</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(168,85,247,0.1);">💎</div>
+        <div>
+          <h3>히든 꿀통 자동 발굴</h3>
+          <p>아직 덜 알려졌지만 수익성이 높고 폭발적으로 성장 중인 채널을 자동으로 찾아냅니다. 남들보다 먼저 꿀통을 선점하세요.</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(251,191,36,0.1);">⚡</div>
+        <div>
+          <h3>오늘의 Top 100 영상</h3>
+          <p>매일 업데이트되는 인기 쇼츠 영상 순위. 지금 가장 핫한 콘텐츠가 무엇인지 실시간으로 확인하세요.</p>
+          <span class="feature-tag" style="background:rgba(251,191,36,0.1);color:#fbbf24;">인기 기능</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(244,114,182,0.1);">🔬</div>
+        <div>
+          <h3>채널 비교 & 벤치마크</h3>
+          <p>내 채널과 경쟁 채널을 나란히 비교 분석. 어디서 차이가 나는지 한눈에 파악하고 전략을 세울 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(34,197,94,0.1);">📁</div>
+        <div>
+          <h3>내 활동 & 메모</h3>
+          <p>즐겨찾기, 최근 본 채널, 메모 기능으로 관심 채널을 체계적으로 관리할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ 4 TABS ████ -->
+  <section class="tabs-section">
+    <div class="section-label">Interface</div>
+    <div class="section-title">직관적인 <span class="gradient-text">4개 탭</span> 구성</div>
+    <p class="section-desc" style="margin:0 auto;">필요한 정보에 빠르게 접근할 수 있도록 목적별로 분류했습니다.</p>
+
+    <div class="tabs-bar">
+      <div class="tab-btn active">📊 대시보드</div>
+      <div class="tab-btn">🔍 채널 탐색</div>
+      <div class="tab-btn">🔥 Top 100</div>
+      <div class="tab-btn">📁 내 활동</div>
+    </div>
+
+    <div class="tab-desc-list">
+      <div class="tab-desc-card">
+        <h4>📊 대시보드</h4>
+        <p>전체 트렌드 요약, 오늘의 꿀통 채널, 추천 채널을 한 화면에서 확인</p>
+      </div>
+      <div class="tab-desc-card">
+        <h4>🔍 채널 탐색</h4>
+        <p>카테고리별, 구독자 수, 채널 나이, 수익 등 다양한 필터로 채널 검색</p>
+      </div>
+      <div class="tab-desc-card">
+        <h4>🔥 Top 100</h4>
+        <p>매일 갱신되는 인기 쇼츠 영상 순위. 최근 3일 이내 핫한 영상만 선별</p>
+      </div>
+      <div class="tab-desc-card">
+        <h4>📁 내 활동</h4>
+        <p>즐겨찾기, 최근 본 채널, 메모, 벤치마크 등 내 분석 활동을 한곳에서 관리</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ COMPARISON ████ -->
+  <section>
+    <div class="section-label">Comparison</div>
+    <div class="section-title">다른 분석 툴과 <span class="gradient-text">비교</span>해보세요</div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="text-align:left;">항목</th>
+          <th>A사</th>
+          <th>B사</th>
+          <th>C사</th>
+          <th>D사</th>
+          <th>YTFINDER</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>꿀통 지수 스코어링</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="compare-highlight"><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>히든 꿀통 채널 발굴</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="compare-highlight"><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>쇼츠 특화 분석</td>
+          <td><span class="cross">✕</span></td>
+          <td>일부</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="compare-highlight"><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>채널 비교 분석</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✓</span></td>
+          <td class="compare-highlight"><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>글로벌 트렌드</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td class="compare-highlight"><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>평생이용권</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td class="compare-highlight"><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>가격</td>
+          <td>월 99,950원~</td>
+          <td>월 59,800원~</td>
+          <td>월 12,900원~</td>
+          <td>월 29,000원~</td>
+          <td class="compare-highlight" style="color:#00e5a0;font-weight:700;">199,000원 (평생)</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ████ INCLUDED ████ -->
+  <section>
+    <div class="section-label">What's included</div>
+    <div class="section-title">평생이용권에 <span class="gradient-text">포함된 것들</span></div>
+
+    <div class="included-grid">
+      <div class="included-item"><span class="i-check">✓</span> 꿀통 지수 분석</div>
+      <div class="included-item"><span class="i-check">✓</span> 글로벌 트렌드</div>
+      <div class="included-item"><span class="i-check">✓</span> Top 100 영상</div>
+      <div class="included-item"><span class="i-check">✓</span> 채널 비교 분석</div>
+      <div class="included-item"><span class="i-check">✓</span> 벤치마크 기능</div>
+      <div class="included-item"><span class="i-check">✓</span> 채널 상세 분석</div>
+      <div class="included-item"><span class="i-check">✓</span> 즐겨찾기 & 메모</div>
+      <div class="included-item"><span class="i-check">✓</span> 향후 업데이트 무료</div>
+      <div class="included-item"><span class="i-check">✓</span> 1:1 사용법 안내</div>
+    </div>
+  </section>
+
+  <!-- ████ REVIEWS ████ -->
+  <section>
+    <div class="section-label">Reviews</div>
+    <div class="section-title">이용자 <span class="gradient-text">후기</span></div>
+
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"쇼츠 채널 운영하는데 어떤 콘텐츠가 뜨는지 한눈에 보여서 기획할 때 정말 유용해요. 꿀통 지수 진짜 신기합니다."</div>
+        <div class="review-author">구독자 5만 유튜버 A님</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"vidIQ 쓰다가 갈아탔는데, 한국 쇼츠에 특화되어 있어서 훨씬 실용적이에요. 가격도 평생이용권이라 부담 없습니다."</div>
+        <div class="review-author">구독자 10만 유튜버 B님</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"경쟁 채널 분석하느라 시간 엄청 쓰고 있었는데, 채널 비교 기능으로 한번에 해결됐습니다. 진작 알았으면 좋았을걸요."</div>
+        <div class="review-author">구독자 3만 유튜버 C님</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"히든 꿀통 기능으로 찾은 채널 레퍼런스가 진짜 도움됐어요. 남들 모르는 꿀통 채널을 먼저 발견하는 느낌!"</div>
+        <div class="review-author">구독자 8만 유튜버 D님</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ FAQ ████ -->
+  <section>
+    <div class="section-label">FAQ</div>
+    <div class="section-title">자주 묻는 <span class="gradient-text">질문</span></div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">💬 평생이용권이면 정말 평생 사용 가능한가요?</div>
+        <div class="faq-a">네, 한 번 구매하시면 서비스가 유지되는 한 평생 사용 가능합니다. 추가 결제 없이 향후 업데이트도 무료로 제공됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">💬 별도 프로그램 설치가 필요한가요?</div>
+        <div class="faq-a">아니요! 100% 웹 기반 서비스라 브라우저만 있으면 PC, 태블릿, 모바일 어디서든 사용 가능합니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">💬 YouTube API 키는 뭔가요? 어렵지 않나요?</div>
+        <div class="faq-a">Google에서 무료로 발급받을 수 있는 키입니다. 구매 후 상세한 발급 가이드를 제공해드리며, 5분이면 완료됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">💬 환불이 가능한가요?</div>
+        <div class="faq-a">크몽 정책에 따라 구매 후 일정 기간 내 환불이 가능합니다. 자세한 사항은 크몽 환불 정책을 참고해주세요.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">💬 초기 멤버 특가는 언제까지인가요?</div>
+        <div class="faq-a">한정 수량이 소진되면 즉시 가격이 인상됩니다. 정확한 종료 시점은 별도 공지 없이 변경될 수 있으니 빠른 구매를 권장드립니다.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ████ FINAL CTA ████ -->
+  <section class="cta-section">
+    <div class="section-label">Get started</div>
+    <div class="section-title">지금 시작하면 <span class="gradient-text">평생</span> 사용할 수 있습니다</div>
+    <p class="section-desc" style="margin:0 auto;">초기 멤버 한정 특가 ₩199,000 — 이 가격은 다시 오지 않습니다.</p>
+
+    <div class="cta-btn">🚀 초기 멤버로 시작하기</div>
+
+    <div class="guarantee">
+      <div class="guarantee-item">
+        <span class="g-icon">🔒</span> 안전한 크몽 결제
+      </div>
+      <div class="guarantee-item">
+        <span class="g-icon">♾️</span> 평생 무료 업데이트
+      </div>
+      <div class="guarantee-item">
+        <span class="g-icon">💬</span> 1:1 사용법 안내
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

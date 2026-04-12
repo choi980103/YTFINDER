@@ -19,6 +19,7 @@ import { getChannelHistory, extractHistoryValues } from "@/lib/history";
 import RadarChart from "@/components/RadarChart";
 import { getBenchmarks, addBenchmark, removeBenchmark, type BenchmarkVideo } from "@/lib/benchmark";
 import ChannelDetailSkeleton from "@/components/ChannelDetailSkeleton";
+import AccessCodeGate from "@/components/AccessCodeGate";
 
 interface ChannelDetail {
   id: string;
@@ -496,6 +497,7 @@ export default function ChannelPage({
   if (!channel) return null;
 
   return (
+    <AccessCodeGate>
     <div className="min-h-screen bg-[#0a0a0f] bg-grid text-zinc-100">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
@@ -955,5 +957,6 @@ export default function ChannelPage({
         &copy; 2026 시나브로. All rights reserved.
       </footer>
     </div>
+    </AccessCodeGate>
   );
 }
