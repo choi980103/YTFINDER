@@ -4,20 +4,6 @@ import { useState, useEffect, useRef } from "react";
 
 // ── 설정 ──
 const REQUIRE_ALL = false;
-
-const VALID_CODES = new Set([
-  "YTFINDER-EARLY-001",
-  "YTFINDER-EARLY-002",
-  "YTFINDER-EARLY-003",
-  "YTFINDER-EARLY-004",
-  "YTFINDER-EARLY-005",
-  "YTFINDER-EARLY-006",
-  "YTFINDER-EARLY-007",
-  "YTFINDER-EARLY-008",
-  "YTFINDER-EARLY-009",
-  "YTFINDER-EARLY-010",
-]);
-
 const STORAGE_KEY = "yt_access_code";
 
 interface AccessCodeGateProps {
@@ -34,9 +20,26 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
 
   useEffect(() => {
     const storedCode = localStorage.getItem(STORAGE_KEY);
-    if (storedCode && VALID_CODES.has(storedCode)) {
-      setIsAuthorized(true);
-      setIsChecking(false);
+    if (storedCode) {
+      // 저장된 코드를 서버에서 재검증
+      fetch("/api/access-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: storedCode }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.valid) {
+            setIsAuthorized(true);
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        })
+        .catch(() => {
+          // 네트워크 오류 시 일단 통과 (오프라인 대응)
+          setIsAuthorized(true);
+        })
+        .finally(() => setIsChecking(false));
       return;
     }
     if (!REQUIRE_ALL) {
@@ -50,16 +53,27 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
     setIsChecking(false);
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmed = code.trim().toUpperCase();
     if (!trimmed) return;
-    if (VALID_CODES.has(trimmed)) {
-      localStorage.setItem(STORAGE_KEY, trimmed);
-      setSuccess(true);
-      setError("");
-      setTimeout(() => setIsAuthorized(true), 800);
-    } else {
-      setError("유효하지 않은 코드입니다. 코드를 다시 확인해주세요.");
+    try {
+      const res = await fetch("/api/access-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: trimmed }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        localStorage.setItem(STORAGE_KEY, trimmed);
+        setSuccess(true);
+        setError("");
+        setTimeout(() => setIsAuthorized(true), 800);
+      } else {
+        setError(data.error || "유효하지 않은 코드입니다.");
+        setSuccess(false);
+      }
+    } catch {
+      setError("서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.");
       setSuccess(false);
     }
   };
