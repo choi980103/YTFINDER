@@ -68,7 +68,11 @@ function formatRelativeDate(iso: string): string {
 export default function Top100Videos({ apiKey }: Props) {
   const [videos, setVideos] = useState<TopVideo[]>([]);
   const [filter, setFilter] = useState<VideoFilter>("all");
-  const [region, setRegion] = useState<Region>("KR");
+  const [region, setRegion] = useState<Region>(() => {
+    if (typeof window === "undefined") return "KR";
+    const saved = sessionStorage.getItem("yt_top100_region");
+    return saved && ["KR", "JP", "US"].includes(saved) ? (saved as Region) : "KR";
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -236,6 +240,7 @@ export default function Top100Videos({ apiKey }: Props) {
               if (r.id !== region) {
                 setFilter("all");
                 setRegion(r.id);
+                sessionStorage.setItem("yt_top100_region", r.id);
               }
             }}
             className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
