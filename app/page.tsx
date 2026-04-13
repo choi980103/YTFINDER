@@ -33,13 +33,21 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 
 const TAB_IDS = new Set<string>(TABS.map((t) => t.id));
 
+const SESSION_TAB_KEY = "yt_active_tab";
+
 function parseHash(): { tab: TabId; page: number } {
   if (typeof window === "undefined") return { tab: "dashboard", page: 0 };
   const hash = window.location.hash.replace("#", "");
   const [tabPart, pagePart] = hash.split(":");
-  const tab = TAB_IDS.has(tabPart) ? (tabPart as TabId) : "dashboard";
-  const page = pagePart ? Math.max(0, parseInt(pagePart, 10) || 0) : 0;
-  return { tab, page };
+  if (TAB_IDS.has(tabPart)) {
+    return { tab: tabPart as TabId, page: pagePart ? Math.max(0, parseInt(pagePart, 10) || 0) : 0 };
+  }
+  // hash 없으면 sessionStorage에서 복원
+  const saved = sessionStorage.getItem(SESSION_TAB_KEY);
+  if (saved && TAB_IDS.has(saved)) {
+    return { tab: saved as TabId, page: 0 };
+  }
+  return { tab: "dashboard", page: 0 };
 }
 
 export default function Home() {
@@ -63,6 +71,7 @@ export default function Home() {
     setActiveTab(tab);
     setGridPage(0);
     window.location.hash = tab;
+    sessionStorage.setItem(SESSION_TAB_KEY, tab);
   }, []);
 
   // 페이지 변경 시 hash 업데이트 (pushState로 뒤로가기 지원)
