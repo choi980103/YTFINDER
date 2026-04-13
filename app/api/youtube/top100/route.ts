@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey } from "@/lib/validate";
+import { verifyAccess } from "@/lib/verifyAccess";
 
 export interface TopVideo {
   id: string;
@@ -68,6 +69,9 @@ async function getMostPopular(apiKey: string, categoryId: string, region: Region
 
 export async function POST(request: NextRequest) {
   try {
+    const denied = verifyAccess(request);
+    if (denied) return denied;
+
     const ip = request.headers.get("x-forwarded-for") || "unknown";
     const { allowed } = checkRateLimit(ip);
     if (!allowed) {

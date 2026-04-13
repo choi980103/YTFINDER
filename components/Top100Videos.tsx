@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface TopVideo {
   id: string;
@@ -111,7 +112,7 @@ export default function Top100Videos({ apiKey }: Props) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-        const res = await fetch("/api/youtube/top100", {
+        const res = await fetchWithAuth("/api/youtube/top100", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ apiKey: key, region: reg }),

@@ -21,6 +21,7 @@ import ChannelCompare from "@/components/ChannelCompare";
 import ChannelLookup from "@/components/ChannelLookup";
 import Top100Videos from "@/components/Top100Videos";
 import AccessCodeGate from "@/components/AccessCodeGate";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 type TabId = "dashboard" | "explore" | "top100" | "activity";
 
@@ -231,7 +232,7 @@ export default function Home() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const res = await fetch("/api/youtube/shorts", {
+      const res = await fetchWithAuth("/api/youtube/shorts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ apiKey: key }),
@@ -286,7 +287,7 @@ export default function Home() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-        const res = await fetch("/api/youtube", {
+        const res = await fetchWithAuth("/api/youtube", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

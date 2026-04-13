@@ -3,6 +3,7 @@
 import { use, useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import Sparkline from "@/components/Sparkline";
 import Tooltip from "@/components/Tooltip";
 import { Channel } from "@/data/mockChannels";
@@ -344,7 +345,7 @@ export default function ChannelPage({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-        const res = await fetch("/api/youtube/channel", {
+        const res = await fetchWithAuth("/api/youtube/channel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ apiKey, channelId: id }),

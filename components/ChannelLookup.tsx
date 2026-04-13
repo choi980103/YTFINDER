@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   calculateHoneyScore,
   calculateMonthlyRevenue,
@@ -125,13 +126,13 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
       let res: Response;
 
       if (parsed.type === "id") {
-        res = await fetch("/api/youtube/channel", {
+        res = await fetchWithAuth("/api/youtube/channel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ apiKey, channelId: parsed.value }),
         });
       } else if (parsed.type === "handle") {
-        res = await fetch("/api/youtube/channel", {
+        res = await fetchWithAuth("/api/youtube/channel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ apiKey, handle: parsed.value }),
