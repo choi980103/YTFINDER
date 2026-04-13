@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Sparkline from "@/components/Sparkline";
 import Tooltip from "@/components/Tooltip";
 import { Channel } from "@/data/mockChannels";
@@ -240,6 +241,7 @@ export default function ChannelPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const [channel, setChannel] = useState<ChannelDetail | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -502,12 +504,22 @@ export default function ChannelPage({
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            뒤로가기
+          </button>
+          <div className="h-4 w-px bg-white/10" />
           <Link
             href="/"
             className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
             목록으로
           </Link>
