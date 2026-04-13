@@ -5,6 +5,13 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026.04.14",
+    items: [
+      "🌏 Top 100 해외 버전 추가 — 일본(JP), 미국(US) 인기 영상도 확인 가능 (국가 탭 전환)",
+      "🔙 뒤로가기 시 이전 탭·국가 선택 상태 복원 — 채널 상세에서 돌아와도 보던 화면 그대로",
+    ],
+  },
+  {
     date: "2026.04.11",
     items: [
       "🔥 오늘의 Top 100 탭 신규 추가 — 최근 3일 이내 한국에서 가장 뜨거운 영상을 조회수 순으로 확인 (전체/쇼츠/롱폼 필터)",
