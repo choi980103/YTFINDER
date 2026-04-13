@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 
 // ── 설정 ──
-const REQUIRE_ALL = false;
+const REQUIRE_ALL = true;
 const STORAGE_KEY = "yt_access_code";
 
 interface AccessCodeGateProps {
