@@ -12,6 +12,7 @@ const VALID_CODES = new Set([
   "YTFINDER-EARLY-008",
   "YTFINDER-EARLY-009",
   "YTFINDER-EARLY-010",
+  "YTFINDER-FREE-TRIAL",
 ]);
 
 export async function POST(req: Request) {
