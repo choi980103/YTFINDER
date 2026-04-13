@@ -19,12 +19,19 @@ interface TopVideo {
 }
 
 type VideoFilter = "all" | "shorts" | "long";
+type Region = "KR" | "JP" | "US";
+
+const REGION_CONFIG: { id: Region; flag: string; label: string; desc: string }[] = [
+  { id: "KR", flag: "🇰🇷", label: "한국", desc: "한국에서 가장 뜨거운 영상" },
+  { id: "JP", flag: "🇯🇵", label: "일본", desc: "일본에서 가장 뜨거운 영상" },
+  { id: "US", flag: "🇺🇸", label: "미국", desc: "미국에서 가장 뜨거운 영상" },
+];
 
 interface Props {
   apiKey: string;
 }
 
-const CLIENT_CACHE_KEY = "yt_top100_cache_v2";
+const CLIENT_CACHE_PREFIX = "yt_top100_cache_v3";
 const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
 function formatNumber(n: number): string {
@@ -61,17 +68,22 @@ function formatRelativeDate(iso: string): string {
 export default function Top100Videos({ apiKey }: Props) {
   const [videos, setVideos] = useState<TopVideo[]>([]);
   const [filter, setFilter] = useState<VideoFilter>("all");
+  const [region, setRegion] = useState<Region>("KR");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
 
+  const cacheKey = `${CLIENT_CACHE_PREFIX}_${region}`;
+
   const fetchTop100 = useCallback(
-    async (key: string, forceRefresh = false) => {
+    async (key: string, reg: Region, forceRefresh = false) => {
       if (!key) return;
+
+      const storageKey = `${CLIENT_CACHE_PREFIX}_${reg}`;
 
       if (!forceRefresh) {
         try {
-          const cached = localStorage.getItem(CLIENT_CACHE_KEY);
+          const cached = localStorage.getItem(storageKey);
           if (cached) {
             const { videos: cachedVideos, timestamp } = JSON.parse(cached);
             if (
@@ -98,7 +110,7 @@ export default function Top100Videos({ apiKey }: Props) {
         const res = await fetch("/api/youtube/top100", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey: key }),
+          body: JSON.stringify({ apiKey: key, region: reg }),
           signal: controller.signal,
         });
 
@@ -124,12 +136,14 @@ export default function Top100Videos({ apiKey }: Props) {
           setLastUpdated(ts);
           try {
             localStorage.setItem(
-              CLIENT_CACHE_KEY,
+              storageKey,
               JSON.stringify({ videos: data.videos, timestamp: ts })
             );
           } catch {
             /* quota exceeded */
           }
+        } else {
+          setVideos([]);
         }
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
@@ -146,9 +160,9 @@ export default function Top100Videos({ apiKey }: Props) {
 
   useEffect(() => {
     if (apiKey) {
-      fetchTop100(apiKey);
+      fetchTop100(apiKey, region);
     }
-  }, [apiKey, fetchTop100]);
+  }, [apiKey, region, fetchTop100]);
 
   const filteredVideos = useMemo(() => {
     if (filter === "shorts") return videos.filter((v) => v.isShort);
@@ -187,7 +201,7 @@ export default function Top100Videos({ apiKey }: Props) {
             <span className="gradient-text">🔥 오늘의 Top 100</span>
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            최근 3일 이내 한국에서 가장 뜨거운 영상을 조회수 순으로
+            최근 3일 이내 {REGION_CONFIG.find((r) => r.id === region)?.desc}을 조회수 순으로
             {videos.length > 0 && videos.length < 100 && (
               <span className="ml-1 text-amber-400/80">
                 · {videos.length}개 표시
@@ -205,12 +219,35 @@ export default function Top100Videos({ apiKey }: Props) {
           </p>
         </div>
         <button
-          onClick={() => fetchTop100(apiKey, true)}
+          onClick={() => fetchTop100(apiKey, region, true)}
           disabled={isLoading}
           className="rounded-xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-5 py-2.5 text-sm font-semibold text-[#0a0a0f] transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {isLoading ? "불러오는 중..." : "새로고침"}
         </button>
+      </div>
+
+      {/* 국가 선택 */}
+      <div className="mb-4 flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5">
+        {REGION_CONFIG.map((r) => (
+          <button
+            key={r.id}
+            onClick={() => {
+              if (r.id !== region) {
+                setFilter("all");
+                setRegion(r.id);
+              }
+            }}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+              region === r.id
+                ? "bg-white/10 text-white shadow-sm"
+                : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
+            }`}
+          >
+            <span className="text-base">{r.flag}</span>
+            <span>{r.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* 서브 필터 */}
@@ -251,7 +288,7 @@ export default function Top100Videos({ apiKey }: Props) {
           <button
             onClick={() => {
               setError("");
-              fetchTop100(apiKey, true);
+              fetchTop100(apiKey, region, true);
             }}
             className="ml-4 shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/20"
           >

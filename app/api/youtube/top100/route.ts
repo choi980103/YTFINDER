@@ -35,8 +35,12 @@ const POPULAR_CATEGORIES = [
   "28", // Science & Technology
 ];
 
-// 메모리 캐시 (서버 사이드)
-let cache: { videos: TopVideo[]; timestamp: number } | null = null;
+// 지원 국가
+const SUPPORTED_REGIONS = ["KR", "JP", "US"] as const;
+type Region = (typeof SUPPORTED_REGIONS)[number];
+
+// 메모리 캐시 (서버 사이드, 국가별)
+const cacheMap = new Map<Region, { videos: TopVideo[]; timestamp: number }>();
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
 // 최근 N일 이내 영상만 표시
@@ -54,8 +58,8 @@ function parseDuration(iso: string | undefined): number {
 }
 
 // [1유닛] 카테고리별 인기 동영상 조회
-async function getMostPopular(apiKey: string, categoryId: string) {
-  const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=KR&videoCategoryId=${categoryId}&maxResults=50&key=${apiKey}`;
+async function getMostPopular(apiKey: string, categoryId: string, region: Region) {
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=${categoryId}&maxResults=50&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) return { items: [], categoryId };
   const data = await res.json();
@@ -73,7 +77,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { apiKey } = await request.json();
+    const { apiKey, region: rawRegion } = await request.json();
 
     if (!apiKey) {
       return NextResponse.json({ error: "API 키가 필요합니다" }, { status: 400 });
@@ -86,14 +90,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 캐시 확인
-    if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
-      return NextResponse.json({ videos: cache.videos, cached: true });
+    // 국가 코드 검증 (기본값: KR)
+    const region: Region = SUPPORTED_REGIONS.includes(rawRegion as Region)
+      ? (rawRegion as Region)
+      : "KR";
+
+    // 캐시 확인 (국가별)
+    const cached = cacheMap.get(region);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      return NextResponse.json({ videos: cached.videos, cached: true });
     }
 
     // === mostPopular 14개 카테고리 병렬 호출 (총 14유닛) ===
     const results = await Promise.all(
-      POPULAR_CATEGORIES.map((cat) => getMostPopular(apiKey, cat))
+      POPULAR_CATEGORIES.map((cat) => getMostPopular(apiKey, cat, region))
     );
 
     // 영상 수집 + 중복 제거
@@ -154,7 +164,7 @@ export async function POST(request: NextRequest) {
       .sort((a, b) => b.views - a.views)
       .slice(0, 100);
 
-    cache = { videos, timestamp: Date.now() };
+    cacheMap.set(region, { videos, timestamp: Date.now() });
 
     return NextResponse.json({ videos });
   } catch (error) {
