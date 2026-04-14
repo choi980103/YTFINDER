@@ -37,8 +37,8 @@ const SEARCH_QUERIES_KR = [
   "쇼츠 꿀팁",
   "쇼츠 웃긴 편집",
   "쇼츠 밈 모음",
-  "쇼츠 재미 편집",
-  "쇼츠 랭킹",
+  "해외 쇼츠",
+  "블박 쇼츠",
 ];
 
 // mostPopular 카테고리 (1유닛 x N개 — 초저렴)
@@ -59,9 +59,12 @@ const POPULAR_CATEGORIES = [
   "28", // Science & Technology
 ];
 
-// [100유닛] 쇼츠 검색 (한국)
+// [100유닛] 쇼츠 검색 (한국) — 최근 3개월 내 업로드만
 async function searchPopularShorts(apiKey: string, query: string) {
-  const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&regionCode=KR&relevanceLanguage=ko&maxResults=50&key=${apiKey}`;
+  const publishedAfter = new Date();
+  publishedAfter.setMonth(publishedAfter.getMonth() - 3);
+  const publishedAfterIso = publishedAfter.toISOString();
+  const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&regionCode=KR&relevanceLanguage=ko&publishedAfter=${publishedAfterIso}&maxResults=50&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) {
     const err = await res.json();
@@ -336,11 +339,18 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    channels.sort((a, b) => b.viewToSubRatio - a.viewToSubRatio);
+    // 최근 3개월 내 업로드가 0개인 채널 제거
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    const activeChannels = channels.filter(
+      (ch) => ch.lastUploadDate && new Date(ch.lastUploadDate) >= ninetyDaysAgo
+    );
 
-    cache = { channels, timestamp: Date.now() };
+    activeChannels.sort((a, b) => b.viewToSubRatio - a.viewToSubRatio);
 
-    return NextResponse.json({ channels });
+    cache = { channels: activeChannels, timestamp: Date.now() };
+
+    return NextResponse.json({ channels: activeChannels });
   } catch (error) {
     const message =
       error instanceof Error
