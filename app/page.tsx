@@ -780,7 +780,7 @@ export default function Home() {
                         분석 중...
                       </span>
                     ) : (
-                      "쇼츠 떡상 채널 새로고침"
+                      "쇼츠 꿀통 채널 새로고침"
                     )}
                   </button>
                   <button

@@ -202,7 +202,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
         <ul className="space-y-1.5 text-[11px] leading-relaxed text-red-300/70">
           <li className="flex items-start gap-1.5">
             <span className="mt-0.5 text-red-400">•</span>
-            <span><span className="font-semibold text-red-300">&quot;쇼츠 떡상 채널 새로고침&quot; 버튼은 1번이면 충분합니다.</span> 이후 접속 시 캐시된 데이터가 자동 표시됩니다.</span>
+            <span><span className="font-semibold text-red-300">&quot;쇼츠 꿀통 채널 새로고침&quot; 버튼은 1번이면 충분합니다.</span> 이후 접속 시 캐시된 데이터가 자동 표시됩니다.</span>
           </li>
           <li className="flex items-start gap-1.5">
             <span className="mt-0.5 text-red-400">•</span>
