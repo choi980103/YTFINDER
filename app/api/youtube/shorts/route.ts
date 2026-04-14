@@ -342,9 +342,12 @@ export async function POST(request: NextRequest) {
     // 최근 3개월 내 업로드가 0개인 채널 제거
     const ninetyDaysAgo = new Date();
     ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-    const activeChannels = channels.filter(
-      (ch) => ch.lastUploadDate && new Date(ch.lastUploadDate) >= ninetyDaysAgo
-    );
+    const hasKorean = /[가-힣]/;
+    const activeChannels = channels.filter((ch) => {
+      if (!ch.lastUploadDate || new Date(ch.lastUploadDate) < ninetyDaysAgo) return false;
+      const combined = `${ch.name} ${ch.description} ${(ch.videoTitles || []).join(" ")}`;
+      return hasKorean.test(combined);
+    });
 
     activeChannels.sort((a, b) => b.viewToSubRatio - a.viewToSubRatio);
 
