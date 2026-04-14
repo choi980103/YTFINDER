@@ -464,6 +464,13 @@ export default function Home() {
       case "score":
         channels.sort((a, b) => calculateScore(b) - calculateScore(a));
         break;
+      case "revenue":
+        channels.sort((a, b) => {
+          const revA = a.avgViews * (a.monthlyUploads ?? 0) / 2 * 0.3;
+          const revB = b.avgViews * (b.monthlyUploads ?? 0) / 2 * 0.3;
+          return revB - revA;
+        });
+        break;
       case "ratio":
         channels.sort((a, b) => b.viewToSubRatio - a.viewToSubRatio);
         break;

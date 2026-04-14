@@ -92,6 +92,7 @@ export default function SearchBar({
         >
           <option value="honey" className="bg-zinc-900 text-zinc-200">꿀통 지수순</option>
           <option value="score" className="bg-zinc-900 text-zinc-200">떡상 지수순</option>
+          <option value="revenue" className="bg-zinc-900 text-zinc-200">월 예상 수익순</option>
           <option value="ratio" className="bg-zinc-900 text-zinc-200">조회수/구독자 비율순</option>
           <option value="growth" className="bg-zinc-900 text-zinc-200">성장률순</option>
           <option value="views" className="bg-zinc-900 text-zinc-200">평균 조회수순</option>
