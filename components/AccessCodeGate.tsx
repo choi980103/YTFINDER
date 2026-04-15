@@ -129,12 +129,16 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
 
         {/* 가격 박스 */}
         <div className="relative inline-flex flex-col items-center rounded-2xl border border-white/[0.08] bg-white/[0.03] px-8 py-6 sm:px-12 sm:py-7">
-          <span className="text-xs text-zinc-500">평생이용권 (초기 멤버 한정)</span>
-          <span className="mt-1 text-sm text-zinc-600 line-through">₩299,000</span>
-          <span className="mt-1 text-4xl font-black sm:text-5xl">
-            <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">₩199,000</span>
+          <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-3.5 py-1.5 text-[11px] font-extrabold tracking-wider text-white shadow-lg shadow-red-500/35">
+            🔥 런칭 기념 50% OFF
           </span>
-          <span className="mt-2 text-xs font-semibold text-red-400">한정 수량 소진 시 가격 인상 예정</span>
+          <span className="text-xs text-zinc-500">평생이용권 (초기 멤버 한정)</span>
+          <span className="mt-1 text-sm text-zinc-600 line-through">정가 ₩299,000</span>
+          <span className="mt-1 flex items-center gap-3 text-4xl font-black sm:text-5xl">
+            <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">₩149,000</span>
+            <span className="rounded-lg bg-red-500 px-2 py-0.5 text-base font-black text-white sm:text-lg">-50%</span>
+          </span>
+          <span className="mt-2 text-xs font-semibold text-red-400">⚡ 지금이 <b className="text-red-300">반값</b>으로 평생 이용할 수 있는 마지막 기회 · 100개 판매마다 인상</span>
         </div>
 
         {/* CTA */}
@@ -274,7 +278,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
                 <td className="px-3 py-3 text-center text-xs">월 59,800원~</td>
                 <td className="px-3 py-3 text-center text-xs">월 12,900원~</td>
                 <td className="px-3 py-3 text-center text-xs">월 29,000원~</td>
-                <td className="px-3 py-3 text-center bg-[#00e5a0]/[0.03] text-sm font-bold text-[#00e5a0]">199,000원 (평생)</td>
+                <td className="px-3 py-3 text-center bg-[#00e5a0]/[0.03] text-sm font-bold text-[#00e5a0]">149,000원 (평생)</td>
               </tr>
             </tbody>
           </table>
@@ -340,7 +344,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
 
         <p className="relative mb-3 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Get started</p>
         <h2 className="relative mb-2 text-2xl font-black sm:text-3xl">지금 시작하면 <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">평생</span> 사용할 수 있습니다</h2>
-        <p className="relative mx-auto mb-10 max-w-md text-sm text-zinc-500">초기 멤버 한정 특가 ₩199,000 — 이 가격은 다시 오지 않습니다.</p>
+        <p className="relative mx-auto mb-10 max-w-md text-sm text-zinc-500">정가 ₩299,000 → <b className="text-red-300">반값(50% OFF)</b> ₩149,000 — 이 가격은 다시 오지 않습니다.</p>
 
         {/* 코드 입력 카드 */}
         <div className="relative mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-[#12121a] p-6 shadow-2xl">
