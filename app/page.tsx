@@ -898,18 +898,24 @@ export default function Home() {
                     {favoriteOrder
                       .map((id) => {
                         const ch = sourceChannels.find((c) => c.id === id);
-                        if (!ch) {
-                          // sourceChannels에 없는 경우 (URL 검색으로 추가된 채널 등) localStorage에서 찾기
-                          try {
-                            const cached = localStorage.getItem(`yt_channel_${id}`);
-                            if (cached) {
-                              const data = JSON.parse(cached);
-                              return { id, name: data.channel?.name || data.name || id, thumbnail: data.channel?.thumbnail || data.thumbnail || "" };
-                            }
-                          } catch { /* ignore */ }
-                          return { id, name: id, thumbnail: "" };
-                        }
-                        return { id: ch.id, name: ch.name, thumbnail: ch.thumbnail || "" };
+                        if (ch) return { id: ch.id, name: ch.name, thumbnail: ch.thumbnail || "" };
+                        // sourceChannels에 없는 경우: 상세페이지 캐시 → 검색 기록 순으로 탐색
+                        try {
+                          const detailCache = localStorage.getItem(`yt_channel_v2_${id}`);
+                          if (detailCache) {
+                            const { channel: cached } = JSON.parse(detailCache);
+                            if (cached?.name) return { id, name: cached.name, thumbnail: cached.thumbnail || "" };
+                          }
+                        } catch { /* ignore */ }
+                        try {
+                          const lookupHistory = localStorage.getItem("yt_lookup_history");
+                          if (lookupHistory) {
+                            const items = JSON.parse(lookupHistory);
+                            const found = items.find((h: { id: string }) => h.id === id);
+                            if (found) return { id, name: found.name, thumbnail: found.thumbnail || "" };
+                          }
+                        } catch { /* ignore */ }
+                        return { id, name: id, thumbnail: "" };
                       })
                       .map((ch) => (
                         <Link
