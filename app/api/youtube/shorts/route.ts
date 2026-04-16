@@ -27,7 +27,7 @@ interface ShortsChannel {
 let cache: { channels: ShortsChannel[]; timestamp: number } | null = null;
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24시간
 
-// 검색 키워드 (국내 10개 = 1000유닛)
+// 검색 키워드 (국내 12개 = 1200유닛)
 const SEARCH_QUERIES_KR = [
   "쇼츠",
   "shorts 챌린지",
@@ -39,6 +39,8 @@ const SEARCH_QUERIES_KR = [
   "쇼츠 밈 모음",
   "해외 쇼츠",
   "블박 쇼츠",
+  "쇼츠 게임 하이라이트",
+  "쇼츠 반려동물",
 ];
 
 // mostPopular 카테고리 (1유닛 x N개 — 초저렴)
