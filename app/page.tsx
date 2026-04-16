@@ -5,7 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import SearchBar, { type SubRange, type ChannelAge, type RevenueRange } from "@/components/SearchBar";
 import ChannelGrid from "@/components/ChannelGrid";
-import { calculateScore, calculateHoneyScore } from "@/lib/score";
+import { calculateScore, calculateHoneyScore, calculateMonthlyRevenue } from "@/lib/score";
 import StatsOverview from "@/components/StatsOverview";
 import ApiKeyModal from "@/components/ApiKeyModal";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -898,13 +898,37 @@ export default function Home() {
                     {favoriteOrder
                       .map((id) => {
                         const ch = sourceChannels.find((c) => c.id === id);
-                        if (ch) return { id: ch.id, name: ch.name, thumbnail: ch.thumbnail || "" };
+                        if (ch) {
+                          const revenue = calculateMonthlyRevenue(ch);
+                          return { id: ch.id, name: ch.name, thumbnail: ch.thumbnail || "", revenue };
+                        }
                         // sourceChannels에 없는 경우: 상세페이지 캐시 → 검색 기록 순으로 탐색
                         try {
                           const detailCache = localStorage.getItem(`yt_channel_v2_${id}`);
                           if (detailCache) {
-                            const { channel: cached } = JSON.parse(detailCache);
-                            if (cached?.name) return { id, name: cached.name, thumbnail: cached.thumbnail || "" };
+                            const { channel: cached, videos } = JSON.parse(detailCache);
+                            if (cached?.name) {
+                              // 캐시된 영상 데이터로 수익 계산
+                              const shorts = (videos || []).filter((v: { isShort: boolean }) => v.isShort);
+                              const avgViews = shorts.length > 0
+                                ? Math.round(shorts.reduce((s: number, v: { views: number }) => s + v.views, 0) / shorts.length)
+                                : 0;
+                              const viewToSubRatio = cached.subscribers > 0
+                                ? parseFloat(((avgViews / cached.subscribers) * 100).toFixed(1))
+                                : 0;
+                              const thirtyDaysAgo = new Date();
+                              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                              const monthlyUploads = shorts.filter(
+                                (v: { publishedAt: string }) => new Date(v.publishedAt) >= thirtyDaysAgo
+                              ).length;
+                              const tempCh: Channel = {
+                                id, name: cached.name, thumbnail: cached.thumbnail || "",
+                                subscribers: cached.subscribers || 0, avgViews, viewToSubRatio,
+                                category: "쇼츠", recentVideos: shorts.length, growthRate: 0,
+                                description: "", monthlyUploads,
+                              };
+                              return { id, name: cached.name, thumbnail: cached.thumbnail || "", revenue: calculateMonthlyRevenue(tempCh) };
+                            }
                           }
                         } catch { /* ignore */ }
                         try {
@@ -912,10 +936,10 @@ export default function Home() {
                           if (lookupHistory) {
                             const items = JSON.parse(lookupHistory);
                             const found = items.find((h: { id: string }) => h.id === id);
-                            if (found) return { id, name: found.name, thumbnail: found.thumbnail || "" };
+                            if (found) return { id, name: found.name, thumbnail: found.thumbnail || "", revenue: found.monthlyRevenue || 0 };
                           }
                         } catch { /* ignore */ }
-                        return { id, name: id, thumbnail: "" };
+                        return { id, name: id, thumbnail: "", revenue: 0 };
                       })
                       .map((ch) => (
                         <Link
@@ -936,6 +960,11 @@ export default function Home() {
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="truncate text-sm font-medium text-zinc-200">{ch.name}</div>
+                            {ch.revenue > 0 && (
+                              <div className="mt-0.5 text-xs text-emerald-400">
+                                월 예상 {ch.revenue >= 10000000 ? `${(ch.revenue / 10000000).toFixed(1)}천만` : ch.revenue >= 10000 ? `${Math.round(ch.revenue / 10000)}만` : ch.revenue.toLocaleString()}원
+                              </div>
+                            )}
                           </div>
                           <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(ch.id); }}
