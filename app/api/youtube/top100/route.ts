@@ -58,13 +58,23 @@ function parseDuration(iso: string | undefined): number {
   );
 }
 
-// [1유닛] 카테고리별 인기 동영상 조회
+// [1유닛/페이지] 카테고리별 인기 동영상 조회 — 3페이지(150개)까지
 async function getMostPopular(apiKey: string, categoryId: string, region: Region) {
-  const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=${categoryId}&maxResults=50&key=${apiKey}`;
-  const res = await fetch(url);
-  if (!res.ok) return { items: [], categoryId };
-  const data = await res.json();
-  return { items: data.items || [], categoryId };
+  const allItems: unknown[] = [];
+  let pageToken: string | undefined;
+
+  for (let page = 0; page < 3; page++) {
+    const tokenParam = pageToken ? `&pageToken=${pageToken}` : "";
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=id,snippet,contentDetails,statistics&chart=mostPopular&regionCode=${region}&videoCategoryId=${categoryId}&maxResults=50${tokenParam}&key=${apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) break;
+    const data = await res.json();
+    allItems.push(...(data.items || []));
+    if (!data.nextPageToken) break; // 더 이상 페이지 없으면 중단
+    pageToken = data.nextPageToken;
+  }
+
+  return { items: allItems, categoryId };
 }
 
 export async function POST(request: NextRequest) {
@@ -105,7 +115,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ videos: cached.videos, cached: true });
     }
 
-    // === mostPopular 14개 카테고리 병렬 호출 (총 14유닛) ===
+    // === mostPopular 14개 카테고리 병렬 호출 (카테고리당 최대 3페이지, 최대 42유닛) ===
     const results = await Promise.all(
       POPULAR_CATEGORIES.map((cat) => getMostPopular(apiKey, cat, region))
     );
