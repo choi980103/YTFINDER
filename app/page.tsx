@@ -29,7 +29,7 @@ type TabId = "dashboard" | "explore" | "top100" | "activity";
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: "dashboard", label: "대시보드", icon: "📊" },
   { id: "explore", label: "채널 탐색", icon: "🔍" },
-  { id: "top100", label: "Top 100", icon: "🔥" },
+  { id: "top100", label: "Top 300", icon: "🔥" },
   { id: "activity", label: "내 활동", icon: "📁" },
 ];
 

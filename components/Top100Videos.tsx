@@ -130,7 +130,7 @@ export default function Top100Videos({ apiKey }: Props) {
           } else if (data.error?.includes("API key")) {
             setError("API 키가 유효하지 않습니다. 키를 다시 확인해주세요.");
           } else {
-            setError(data.error || "Top 100 영상을 불러오지 못했습니다");
+            setError(data.error || "Top 300 영상을 불러오지 못했습니다");
           }
           return;
         }
@@ -185,7 +185,7 @@ export default function Top100Videos({ apiKey }: Props) {
         <p className="text-sm text-zinc-500">
           상단의 &ldquo;API 키 설정&rdquo; 버튼을 눌러 YouTube API 키를 입력하면
           <br />
-          실시간 Top 100 영상 데이터를 볼 수 있어요.
+          실시간 Top 300 영상 데이터를 볼 수 있어요.
         </p>
       </div>
     );
@@ -203,11 +203,11 @@ export default function Top100Videos({ apiKey }: Props) {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            <span className="gradient-text">🔥 오늘의 Top 100</span>
+            <span className="gradient-text">🔥 오늘의 Top 300</span>
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
             최근 3일 이내 {REGION_CONFIG.find((r) => r.id === region)?.desc}을 조회수 순으로
-            {videos.length > 0 && videos.length < 100 && (
+            {videos.length > 0 && videos.length < 300 && (
               <span className="ml-1 text-amber-400/80">
                 · {videos.length}개 표시
               </span>
@@ -322,7 +322,7 @@ export default function Top100Videos({ apiKey }: Props) {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
               />
             </svg>
-            오늘의 Top 100을 불러오는 중...
+            오늘의 Top 300을 불러오는 중...
           </div>
           <div className="flex flex-col gap-2">
             {[...Array(10)].map((_, i) => (

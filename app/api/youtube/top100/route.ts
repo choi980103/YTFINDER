@@ -161,12 +161,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 최근 N일 이내 영상만 필터 → 조회수 순 정렬 → 상위 100개
+    // 최근 N일 이내 영상만 필터 → 조회수 순 정렬 → 상위 300개
     const cutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000;
     const videos = [...videoMap.values()]
       .filter((v) => new Date(v.publishedAt).getTime() >= cutoff)
       .sort((a, b) => b.views - a.views)
-      .slice(0, 100);
+      .slice(0, 300);
 
     cacheMap.set(region, { videos, timestamp: Date.now() });
 
