@@ -5,6 +5,14 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026.04.16",
+    items: [
+      "⭐ 채널 상세페이지에서 즐겨찾기 추가/해제 가능",
+      "📁 내 활동 탭에 즐겨찾기 섹션 추가 — 찜한 채널 + 월 예상 수익 한눈에 확인",
+      "🔥 Top 100 → Top 300 확장 — 추가 유닛 소모 없이 더 많은 인기 영상 확인",
+    ],
+  },
+  {
     date: "2026.04.14",
     items: [
       "🌏 Top 100 해외 버전 추가 — 일본(JP), 미국(US) 인기 영상도 확인 가능 (국가 탭 전환)",
