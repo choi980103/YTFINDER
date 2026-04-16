@@ -65,6 +65,8 @@ interface LookupHistoryItem {
 
 interface ChannelLookupProps {
   apiKey: string;
+  favorites?: Set<string>;
+  onToggleFavorite?: (id: string) => void;
 }
 
 interface LookupResult {
@@ -76,7 +78,7 @@ interface LookupResult {
   scoreTier: ReturnType<typeof getScoreTier>;
 }
 
-export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
+export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: ChannelLookupProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -288,12 +290,38 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
                 <span>평균 조회수 {formatNumber(result.channel.avgViews)}</span>
               </div>
             </div>
-            <Link
-              href={`/channel/${result.channel.id}`}
-              className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/10"
-            >
-              상세보기
-            </Link>
+            <div className="flex shrink-0 items-center gap-1.5">
+              {onToggleFavorite && (
+                <button
+                  onClick={() => onToggleFavorite(result.channel.id)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 transition-all hover:bg-white/10 hover:scale-110 active:scale-95"
+                  title={favorites?.has(result.channel.id) ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                >
+                  <svg
+                    className={`h-4 w-4 transition-colors ${
+                      favorites?.has(result.channel.id)
+                        ? "fill-amber-400 text-amber-400"
+                        : "fill-none text-zinc-500 hover:text-amber-400"
+                    }`}
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                    />
+                  </svg>
+                </button>
+              )}
+              <Link
+                href={`/channel/${result.channel.id}`}
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-white/10"
+              >
+                상세보기
+              </Link>
+            </div>
           </div>
 
           {/* 꿀통 지수 + 떡상 지수 */}
@@ -359,11 +387,7 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1">
             {history.map((item) => (
-              <Link
-                key={item.id}
-                href={`/channel/${item.id}`}
-                className="group relative flex shrink-0 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 transition-all hover:border-yellow-400/20 hover:bg-white/[0.04]"
-              >
+              <div key={item.id} className="group relative flex shrink-0 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 transition-all hover:border-yellow-400/20 hover:bg-white/[0.04]">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromHistory(item.id); }}
                   className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-500 opacity-0 transition-all hover:bg-zinc-700 hover:text-zinc-300 group-hover:opacity-100"
@@ -372,25 +396,43 @@ export default function ChannelLookup({ apiKey }: ChannelLookupProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
-                {item.thumbnail ? (
-                  <img src={item.thumbnail} alt={item.name} className="h-8 w-8 rounded-full object-cover ring-1 ring-white/10" />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-xs font-bold text-white">
-                    {item.name.charAt(0)}
-                  </div>
+                {onToggleFavorite && (
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(item.id); }}
+                    className="absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-500 opacity-0 transition-all hover:bg-zinc-700 hover:text-amber-400 group-hover:opacity-100"
+                    title={favorites?.has(item.id) ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                  >
+                    <svg
+                      className={`h-3 w-3 ${favorites?.has(item.id) ? "fill-amber-400 text-amber-400" : "fill-none"}`}
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                    </svg>
+                  </button>
                 )}
-                <div className="min-w-0">
-                  <div className="truncate text-xs font-medium text-zinc-300 max-w-[100px]">{item.name}</div>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`text-[10px] font-bold ${getHoneyColor(getHoneyTier(item.honeyScore))}`}>
-                      {item.honeyTier} {item.honeyScore}
-                    </span>
-                    <span className="text-[10px] text-zinc-500">
-                      {formatRevenue(item.monthlyRevenue)}원
-                    </span>
+                <Link href={`/channel/${item.id}`} className="flex items-center gap-2.5">
+                  {item.thumbnail ? (
+                    <img src={item.thumbnail} alt={item.name} className="h-8 w-8 rounded-full object-cover ring-1 ring-white/10" />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-xs font-bold text-white">
+                      {item.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="truncate text-xs font-medium text-zinc-300 max-w-[100px]">{item.name}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[10px] font-bold ${getHoneyColor(getHoneyTier(item.honeyScore))}`}>
+                        {item.honeyTier} {item.honeyScore}
+                      </span>
+                      <span className="text-[10px] text-zinc-500">
+                        {formatRevenue(item.monthlyRevenue)}원
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         </div>

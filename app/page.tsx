@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import Header from "@/components/Header";
 import SearchBar, { type SubRange, type ChannelAge, type RevenueRange } from "@/components/SearchBar";
 import ChannelGrid from "@/components/ChannelGrid";
@@ -551,7 +552,7 @@ export default function Home() {
           <>
             {/* 꿀채널인지 알아보기 */}
             <div className="mb-6">
-              <ChannelLookup apiKey={apiKey} />
+              <ChannelLookup apiKey={apiKey} favorites={favorites} onToggleFavorite={toggleFavorite} />
             </div>
 
             {/* Stats */}
@@ -876,6 +877,76 @@ export default function Home() {
         {/* ─── 내 활동 탭 ─── */}
         {activeTab === "activity" && (
           <>
+            {/* 즐겨찾기 */}
+            <div className="mb-6">
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <svg className="h-4 w-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                  </svg>
+                  <h3 className="text-sm font-semibold text-zinc-300">즐겨찾기</h3>
+                  {favorites.size > 0 && (
+                    <span className="rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
+                      {favorites.size}
+                    </span>
+                  )}
+                </div>
+                {favorites.size === 0 ? (
+                  <p className="text-xs text-zinc-600">아직 즐겨찾기한 채널이 없어요. 채널 카드의 ⭐ 버튼을 눌러 추가해보세요!</p>
+                ) : (
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {favoriteOrder
+                      .map((id) => {
+                        const ch = sourceChannels.find((c) => c.id === id);
+                        if (!ch) {
+                          // sourceChannels에 없는 경우 (URL 검색으로 추가된 채널 등) localStorage에서 찾기
+                          try {
+                            const cached = localStorage.getItem(`yt_channel_${id}`);
+                            if (cached) {
+                              const data = JSON.parse(cached);
+                              return { id, name: data.channel?.name || data.name || id, thumbnail: data.channel?.thumbnail || data.thumbnail || "" };
+                            }
+                          } catch { /* ignore */ }
+                          return { id, name: id, thumbnail: "" };
+                        }
+                        return { id: ch.id, name: ch.name, thumbnail: ch.thumbnail || "" };
+                      })
+                      .map((ch) => (
+                        <Link
+                          key={ch.id}
+                          href={`/channel/${ch.id}`}
+                          className="group flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] p-3 transition-all hover:border-amber-400/20 hover:bg-white/[0.06]"
+                        >
+                          {ch.thumbnail ? (
+                            <img
+                              src={ch.thumbnail}
+                              alt={ch.name}
+                              className="h-10 w-10 rounded-full object-cover ring-1 ring-white/10"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 text-sm font-bold text-white">
+                              {ch.name.charAt(0)}
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-medium text-zinc-200">{ch.name}</div>
+                          </div>
+                          <button
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(ch.id); }}
+                            className="flex h-8 w-8 items-center justify-center rounded-full text-amber-400 opacity-0 transition-all hover:bg-white/10 group-hover:opacity-100"
+                            title="즐겨찾기 해제"
+                          >
+                            <svg className="h-4 w-4 fill-amber-400" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                            </svg>
+                          </button>
+                        </Link>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* 최근 본 채널 */}
             <div className="mb-6">
               <RecentlyViewed />
