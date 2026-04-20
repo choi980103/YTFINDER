@@ -11,7 +11,12 @@ export function maskError(
 ): NextResponse {
   const detail = error instanceof Error ? error.message : String(error);
   console.error(`[${context}]`, detail);
-  return NextResponse.json({ error: publicMessage }, { status: 500 });
+  // 한글 메시지는 개발자가 직접 던진 사용자용 안내로 간주하고 그대로 노출.
+  // 그 외(스택 트레이스/내부 기술 오류)는 마스킹.
+  const isSafeMessage =
+    error instanceof Error && /[가-힣]/.test(error.message);
+  const message = isSafeMessage ? error.message : publicMessage;
+  return NextResponse.json({ error: message }, { status: 500 });
 }
 
 /**

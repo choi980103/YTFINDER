@@ -69,8 +69,15 @@ async function searchPopularShorts(apiKey: string, query: string) {
   const res = await fetch(url);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    console.error("[shorts/search]", err?.error?.message || res.statusText);
-    throw new Error("쇼츠 검색에 실패했습니다");
+    const reason = err?.error?.errors?.[0]?.reason || "";
+    console.error("[shorts/search]", reason, err?.error?.message || res.statusText);
+    if (reason === "quotaExceeded" || reason === "rateLimitExceeded") {
+      throw new Error("YouTube API 일일 할당량(10,000유닛)을 모두 사용했어요. 내일 00시(PST 기준) 이후 다시 시도하거나 다른 API 키를 사용해주세요.");
+    }
+    if (res.status === 403) {
+      throw new Error("API 키가 유효하지 않거나 YouTube Data API v3가 활성화되지 않았어요. Google Cloud Console에서 확인해주세요.");
+    }
+    throw new Error("쇼츠 검색에 실패했어요. API 키를 다시 확인해주세요.");
   }
   return res.json();
 }
