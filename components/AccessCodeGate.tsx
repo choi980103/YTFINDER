@@ -146,7 +146,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           <button onClick={scrollToCode} className="rounded-2xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-8 py-3.5 text-sm font-bold text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/20 transition-all hover:shadow-[#00e5a0]/30 hover:scale-[1.02] active:scale-[0.98]">
             액세스 코드 입력하기
           </button>
-          <a href="https://kmong.com" target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-zinc-400 transition-all hover:bg-white/[0.06] hover:text-zinc-200">
+          <a href="https://kmong.com/gig/762851" target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-zinc-400 transition-all hover:bg-white/[0.06] hover:text-zinc-200">
             구매하러 가기
           </a>
         </div>
@@ -380,7 +380,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           <div className="mt-4 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
             <p className="text-[11px] leading-relaxed text-zinc-500">
               아직 코드가 없으신가요?{" "}
-              <a href="https://kmong.com" target="_blank" rel="noopener noreferrer" className="text-[#06b6d4] underline underline-offset-2 hover:text-[#00e5a0]">크몽에서 구매하기</a>
+              <a href="https://kmong.com/gig/762851" target="_blank" rel="noopener noreferrer" className="text-[#06b6d4] underline underline-offset-2 hover:text-[#00e5a0]">크몽에서 구매하기</a>
             </p>
           </div>
         </div>
