@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
+import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
 
 interface ShortsChannel {
   id: string;
@@ -67,8 +68,9 @@ async function searchPopularShorts(apiKey: string, query: string) {
   const url = `https://www.googleapis.com/youtube/v3/search?part=id,snippet&q=${encodeURIComponent(query)}&type=video&videoDuration=short&order=viewCount&regionCode=KR&relevanceLanguage=ko&publishedAfter=${publishedAfterIso}&maxResults=50&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || "쇼츠 검색 실패");
+    const err = await res.json().catch(() => ({}));
+    console.error("[shorts/search]", err?.error?.message || res.statusText);
+    throw new Error("쇼츠 검색에 실패했습니다");
   }
   return res.json();
 }
@@ -87,8 +89,9 @@ async function getChannelStats(apiKey: string, channelIds: string[]) {
   const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet,contentDetails&id=${ids}&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || "채널 통계 요청 실패");
+    const err = await res.json().catch(() => ({}));
+    console.error("[shorts/channels]", err?.error?.message || res.statusText);
+    throw new Error("채널 통계 요청에 실패했습니다");
   }
   return res.json();
 }
@@ -147,18 +150,26 @@ function parseDuration(iso: string | undefined): number {
 
 export async function POST(request: NextRequest) {
   try {
+    const originBlocked = verifySameOrigin(request);
+    if (originBlocked) return originBlocked;
+
     const denied = verifyAccess(request);
     if (denied) return denied;
 
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = checkRateLimit(ip);
     if (!allowed) {
+      console.warn("[shorts] rate limit exceeded", { ip });
       return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
     }
 
-    const { apiKey } = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+    const { apiKey } = body as { apiKey?: unknown };
 
-    if (!apiKey) {
+    if (typeof apiKey !== "string" || !apiKey) {
       return NextResponse.json(
         { error: "API 키가 필요합니다" },
         { status: 400 }
@@ -355,10 +366,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ channels: activeChannels });
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "알 수 없는 오류가 발생했습니다";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return maskError("shorts", error);
   }
 }

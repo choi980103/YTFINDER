@@ -36,8 +36,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           }
         })
         .catch(() => {
-          // 네트워크 오류 시 일단 통과 (오프라인 대응)
-          setIsAuthorized(true);
+          setError("인증 서버에 연결할 수 없습니다. 네트워크를 확인 후 새로고침 해주세요.");
         })
         .finally(() => setIsChecking(false));
       return;

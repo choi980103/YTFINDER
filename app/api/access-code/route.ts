@@ -1,4 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { isValidAccessCodeFormat } from "@/lib/validate";
+import { getClientIp, verifySameOrigin } from "@/lib/security";
 
 // 환경변수에서 액세스 코드 로드 (쉼표 구분)
 const VALID_CODES = new Set(
@@ -20,10 +22,12 @@ function cleanupExpired() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const originBlocked = verifySameOrigin(req);
+    if (originBlocked) return originBlocked;
+
+    const ip = getClientIp(req);
 
     // 주기적 정리
     if (failureMap.size > 1000) cleanupExpired();
@@ -43,9 +47,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const { code } = await req.json();
+    const body = await req.json().catch(() => null);
+    const code = (body && typeof body === "object" ? (body as { code?: unknown }).code : undefined);
 
-    if (!code || typeof code !== "string") {
+    if (!isValidAccessCodeFormat(code)) {
       return NextResponse.json(
         { valid: false, error: "코드를 입력해주세요." },
         { status: 400 }
@@ -63,9 +68,11 @@ export async function POST(req: Request) {
     // 실패 횟수 증가
     const current = failureMap.get(ip) || { count: 0, lockedUntil: 0 };
     current.count += 1;
+    console.warn("[access-code] invalid attempt", { ip, count: current.count });
     if (current.count >= MAX_FAILURES) {
       current.lockedUntil = Date.now() + LOCK_DURATION;
       failureMap.set(ip, current);
+      console.warn("[access-code] ip locked", { ip });
       return NextResponse.json(
         {
           valid: false,
@@ -83,7 +90,8 @@ export async function POST(req: Request) {
       },
       { status: 401 }
     );
-  } catch {
+  } catch (error) {
+    console.error("[access-code]", error instanceof Error ? error.message : error);
     return NextResponse.json(
       { valid: false, error: "서버 오류가 발생했습니다." },
       { status: 500 }

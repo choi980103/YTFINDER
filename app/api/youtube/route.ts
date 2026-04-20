@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { isValidApiKey } from "@/lib/validate";
+import { isValidApiKey, sanitizeQuery } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
+import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
 
 interface YouTubeChannel {
   id: string;
@@ -37,8 +38,9 @@ async function searchChannels(apiKey: string, query: string) {
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${encodeURIComponent(query)}&maxResults=20&regionCode=KR&relevanceLanguage=ko&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || "YouTube API 요청 실패");
+    const err = await res.json().catch(() => ({}));
+    console.error("[youtube/search]", err?.error?.message || res.statusText);
+    throw new Error("YouTube API 요청 실패");
   }
   return res.json();
 }
@@ -48,8 +50,9 @@ async function getChannelStats(apiKey: string, channelIds: string[]) {
   const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet,contentDetails&id=${channelIds.join(",")}&key=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || "채널 통계 요청 실패");
+    const err = await res.json().catch(() => ({}));
+    console.error("[youtube/channels]", err?.error?.message || res.statusText);
+    throw new Error("YouTube API 요청 실패");
   }
   return res.json();
 }
@@ -77,19 +80,26 @@ async function getVideoDetails(apiKey: string, videoIds: string[]) {
 
 export async function POST(request: NextRequest) {
   try {
+    const originBlocked = verifySameOrigin(request);
+    if (originBlocked) return originBlocked;
+
     const denied = verifyAccess(request);
     if (denied) return denied;
 
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = checkRateLimit(ip);
     if (!allowed) {
+      console.warn("[youtube] rate limit exceeded", { ip });
       return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
     }
 
-    const body = await request.json();
-    const { apiKey, query } = body;
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+    const { apiKey, query } = body as { apiKey?: unknown; query?: unknown };
 
-    if (!apiKey) {
+    if (typeof apiKey !== "string" || !apiKey) {
       return NextResponse.json({ error: "API 키가 필요합니다" }, { status: 400 });
     }
 
@@ -97,7 +107,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "API 키 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
-    const searchQuery = query || "한국 유튜브";
+    const searchQuery = query === undefined ? "한국 유튜브" : sanitizeQuery(query);
+    if (searchQuery === null) {
+      return NextResponse.json({ error: "검색어가 올바르지 않습니다." }, { status: 400 });
+    }
 
     // 1. 채널 검색 (100유닛)
     const searchData = await searchChannels(apiKey, searchQuery);
@@ -189,8 +202,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ channels });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return maskError("youtube", error);
   }
 }

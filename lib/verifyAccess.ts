@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isValidAccessCodeFormat } from "@/lib/validate";
 
 const VALID_CODES = new Set(
   (process.env.ACCESS_CODES || "")
@@ -14,8 +15,17 @@ const VALID_CODES = new Set(
 export function verifyAccess(
   request: NextRequest
 ): NextResponse | null {
-  const code = request.headers.get("x-access-code")?.trim().toUpperCase();
-  if (!code || !VALID_CODES.has(code)) {
+  const raw = request.headers.get("x-access-code");
+  if (!isValidAccessCodeFormat(raw)) {
+    return NextResponse.json(
+      { error: "인증이 필요합니다. 액세스 코드를 확인해주세요." },
+      { status: 401 }
+    );
+  }
+  const code = raw.trim().toUpperCase();
+  if (!VALID_CODES.has(code)) {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    console.warn("[verifyAccess] rejected", { ip });
     return NextResponse.json(
       { error: "인증이 필요합니다. 액세스 코드를 확인해주세요." },
       { status: 401 }

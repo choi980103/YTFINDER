@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey, isValidChannelId } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
+import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
+
+// 핸들: @ 포함 가능, 영숫자 + 언더스코어/하이픈/닷, 최대 50자
+const HANDLE_REGEX = /^@?[A-Za-z0-9._-]{1,50}$/;
 
 function parseDuration(iso: string | undefined): number {
   if (!iso) return 0;
@@ -16,18 +20,30 @@ function parseDuration(iso: string | undefined): number {
 
 export async function POST(request: NextRequest) {
   try {
+    const originBlocked = verifySameOrigin(request);
+    if (originBlocked) return originBlocked;
+
     const denied = verifyAccess(request);
     if (denied) return denied;
 
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = checkRateLimit(ip);
     if (!allowed) {
+      console.warn("[channel] rate limit exceeded", { ip });
       return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
     }
 
-    const { apiKey, channelId: rawChannelId, handle } = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+    const { apiKey, channelId: rawChannelId, handle } = body as {
+      apiKey?: unknown;
+      channelId?: unknown;
+      handle?: unknown;
+    };
 
-    if (!apiKey || (!rawChannelId && !handle)) {
+    if (typeof apiKey !== "string" || !apiKey || (!rawChannelId && !handle)) {
       return NextResponse.json(
         { error: "API 키와 채널 ID 또는 핸들이 필요합니다" },
         { status: 400 }
@@ -38,11 +54,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "API 키 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
+    // 핸들 형식 검증
+    if (handle !== undefined && (typeof handle !== "string" || !HANDLE_REGEX.test(handle))) {
+      return NextResponse.json({ error: "핸들 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+
+    // 채널 ID 형식 사전 검증 (있는 경우)
+    if (rawChannelId !== undefined && typeof rawChannelId !== "string") {
+      return NextResponse.json({ error: "채널 ID 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+
     // @핸들로 채널 ID 조회 (1유닛)
-    let channelId = rawChannelId;
-    if (!channelId && handle) {
+    let channelId = rawChannelId as string | undefined;
+    if (!channelId && typeof handle === "string") {
+      const cleanHandle = handle.replace(/^@/, "");
       const handleRes = await fetch(
-        `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${encodeURIComponent(handle)}&key=${apiKey}`
+        `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${encodeURIComponent(cleanHandle)}&key=${apiKey}`
       );
       if (handleRes.ok) {
         const handleData = await handleRes.json();
@@ -55,7 +82,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!isValidChannelId(channelId)) {
+    if (!channelId || !isValidChannelId(channelId)) {
       return NextResponse.json({ error: "채널 ID 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
@@ -64,8 +91,9 @@ export async function POST(request: NextRequest) {
       `https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet,contentDetails,brandingSettings&id=${channelId}&key=${apiKey}`
     );
     if (!chRes.ok) {
-      const err = await chRes.json();
-      throw new Error(err.error?.message || "채널 정보 요청 실패");
+      const err = await chRes.json().catch(() => ({}));
+      console.error("[channel/detail]", err?.error?.message || chRes.statusText);
+      throw new Error("채널 정보 요청에 실패했습니다");
     }
     const chData = await chRes.json();
     const ch = chData.items?.[0];
@@ -145,8 +173,6 @@ export async function POST(request: NextRequest) {
       recentVideos,
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return maskError("channel", error);
   }
 }

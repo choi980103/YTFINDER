@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
+import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
 
 export interface TopVideo {
   id: string;
@@ -79,21 +80,32 @@ async function getMostPopular(apiKey: string, categoryId: string, region: Region
 
 export async function POST(request: NextRequest) {
   try {
+    const originBlocked = verifySameOrigin(request);
+    if (originBlocked) return originBlocked;
+
     const denied = verifyAccess(request);
     if (denied) return denied;
 
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = checkRateLimit(ip);
     if (!allowed) {
+      console.warn("[top100] rate limit exceeded", { ip });
       return NextResponse.json(
         { error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." },
         { status: 429 }
       );
     }
 
-    const { apiKey, region: rawRegion } = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+    const { apiKey, region: rawRegion } = body as {
+      apiKey?: unknown;
+      region?: unknown;
+    };
 
-    if (!apiKey) {
+    if (typeof apiKey !== "string" || !apiKey) {
       return NextResponse.json({ error: "API 키가 필요합니다" }, { status: 400 });
     }
 
@@ -182,8 +194,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ videos });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return maskError("top100", error);
   }
 }
