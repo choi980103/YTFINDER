@@ -4,8 +4,8 @@ import { isValidApiKey, isValidChannelId } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
 import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
 
-// 핸들: @ 포함 가능, 영숫자 + 언더스코어/하이픈/닷, 최대 50자
-const HANDLE_REGEX = /^@?[A-Za-z0-9._-]{1,50}$/;
+// 핸들: @ 포함 가능, 유니코드 문자(한글 등) + 숫자 + 언더스코어/하이픈/닷, 최대 50자
+const HANDLE_REGEX = /^@?[\p{L}\p{N}._-]{1,50}$/u;
 
 function parseDuration(iso: string | undefined): number {
   if (!iso) return 0;
