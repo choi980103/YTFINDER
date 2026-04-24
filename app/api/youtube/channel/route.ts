@@ -71,14 +71,48 @@ export async function POST(request: NextRequest) {
       const handleRes = await fetch(
         `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${encodeURIComponent(cleanHandle)}&key=${apiKey}`
       );
-      if (handleRes.ok) {
-        const handleData = await handleRes.json();
-        if (handleData.items && handleData.items.length > 0) {
-          channelId = handleData.items[0].id;
+      const handleData = await handleRes.json().catch(() => ({}));
+      const apiReason = handleData?.error?.errors?.[0]?.reason as string | undefined;
+
+      console.log("[channel/handle]", {
+        cleanHandle,
+        status: handleRes.status,
+        itemsCount: handleData?.items?.length ?? 0,
+        errorCode: handleData?.error?.code,
+        errorMessage: handleData?.error?.message,
+        reason: apiReason,
+      });
+
+      if (handleRes.ok && handleData.items?.length > 0) {
+        channelId = handleData.items[0].id;
+      } else if (!handleRes.ok) {
+        // API 호출 실패 → 원인별로 구체적 메시지
+        if (apiReason === "quotaExceeded" || apiReason === "rateLimitExceeded") {
+          return NextResponse.json(
+            { error: "오늘 YouTube API 사용량을 모두 소진했습니다. 내일 다시 시도하거나 Google Cloud에서 쿼터를 확인해주세요." },
+            { status: 429 }
+          );
         }
+        if (apiReason === "keyInvalid" || apiReason === "badRequest") {
+          return NextResponse.json(
+            { error: "API 키가 유효하지 않습니다. Google Cloud Console에서 키를 확인해주세요." },
+            { status: 400 }
+          );
+        }
+        if (apiReason === "accessNotConfigured" || apiReason === "forbidden" || apiReason === "ipRefererBlocked") {
+          return NextResponse.json(
+            { error: "API 키에 접근 제한이 걸려있습니다. Google Cloud Console > API 및 서비스 > 사용자 인증 정보에서 해당 키의 'Application restrictions'를 '없음'으로, 'API restrictions'에 YouTube Data API v3를 포함해주세요." },
+            { status: 403 }
+          );
+        }
+        return NextResponse.json(
+          { error: `YouTube API 호출에 실패했습니다. (${apiReason || handleData?.error?.message || handleRes.status})` },
+          { status: 502 }
+        );
       }
+
       if (!channelId) {
-        return NextResponse.json({ error: "해당 핸들의 채널을 찾을 수 없습니다." }, { status: 404 });
+        return NextResponse.json({ error: "해당 핸들의 채널을 찾을 수 없습니다. 핸들이 정확한지 확인해주세요." }, { status: 404 });
       }
     }
 
