@@ -7,12 +7,9 @@ export const ADMIN_COOKIE_NAME = "ytf_admin";
 export const ADMIN_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30일
 
 function getAdminPasswords(): string[] {
-  const multi = process.env.ADMIN_PASSWORDS;
-  if (multi) {
-    return multi.split(",").map((s) => s.trim()).filter(Boolean);
-  }
-  const single = process.env.ADMIN_PASSWORD;
-  return single ? [single] : [];
+  // ADMIN_PASSWORDS 우선, 없으면 ADMIN_PASSWORD. 둘 다 콤마 구분 지원.
+  const raw = process.env.ADMIN_PASSWORDS || process.env.ADMIN_PASSWORD || "";
+  return raw.split(",").map((s) => s.trim()).filter(Boolean);
 }
 
 export async function adminTokenFromPassword(password: string): Promise<string> {
