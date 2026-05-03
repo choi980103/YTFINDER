@@ -79,7 +79,7 @@ export async function getShortsChannelsFromDb(
 
   const result: Channel[] = [];
   for (const ch of chRows as ChannelRow[]) {
-    const videos = (videosByChannel.get(ch.id) || []).slice(0, 50);
+    const videos = (videosByChannel.get(ch.id) || []).slice(0, 300);
     if (videos.length === 0) continue;
 
     // 최근 90일 이내 업로드 없는 채널 제외 (휴면)

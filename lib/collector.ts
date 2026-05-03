@@ -159,23 +159,32 @@ export async function getChannelStatsBatch(
   return result;
 }
 
-// [1유닛] 채널의 최근 영상 ID
+// [1유닛/페이지] 채널의 최근 영상 ID — 페이지네이션 지원 (50개씩 N페이지)
 export async function getRecentVideoIds(
   uploadsPlaylistId: string,
   maxResults: number,
   quota: QuotaCounter
 ): Promise<string[]> {
   if (!YOUTUBE_API_KEY) throw new Error("YOUTUBE_API_KEY 미설정");
-  const url =
-    `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails` +
-    `&playlistId=${uploadsPlaylistId}&maxResults=${Math.min(maxResults, 50)}&key=${YOUTUBE_API_KEY}`;
-  const res = await fetch(url);
-  quota.add(1);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return (data.items || []).map(
-    (item: { contentDetails: { videoId: string } }) => item.contentDetails.videoId
-  );
+  const ids: string[] = [];
+  let pageToken: string | undefined;
+  while (ids.length < maxResults) {
+    const tokenParam = pageToken ? `&pageToken=${pageToken}` : "";
+    const url =
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails` +
+      `&playlistId=${uploadsPlaylistId}&maxResults=50${tokenParam}&key=${YOUTUBE_API_KEY}`;
+    const res = await fetch(url);
+    quota.add(1);
+    if (!res.ok) break;
+    const data = await res.json();
+    for (const item of (data.items || []) as { contentDetails: { videoId: string } }[]) {
+      if (ids.length >= maxResults) break;
+      ids.push(item.contentDetails.videoId);
+    }
+    if (!data.nextPageToken) break;
+    pageToken = data.nextPageToken;
+  }
+  return ids;
 }
 
 type VideoApiItem = {
