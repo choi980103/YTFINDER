@@ -136,6 +136,19 @@ export async function getShortsChannelsFromDb(
 }
 
 /**
+ * 영상 제목/채널명 기반 언어 매칭.
+ * KR=한글 포함, JP=히라가나/카타카나 포함, US=한글·일본어 없음.
+ */
+export function matchesRegionLanguage(text: string, region: string): boolean {
+  const hasKorean = /[가-힣]/.test(text);
+  const hasJapanese = /[぀-ゟ゠-ヿ]/.test(text);
+  if (region === "KR") return hasKorean;
+  if (region === "JP") return hasJapanese;
+  if (region === "US") return !hasKorean && !hasJapanese;
+  return true;
+}
+
+/**
  * Top100 영상용: DB의 최근 N일 인기 쇼츠 영상.
  */
 export type DbTopVideo = {
@@ -154,13 +167,14 @@ export type DbTopVideo = {
 };
 
 export async function getTopVideosFromDb(
-  options: { recentDays?: number; limit?: number } = {}
+  options: { recentDays?: number; limit?: number; region?: string } = {}
 ): Promise<DbTopVideo[]> {
   const admin = getSupabaseAdmin();
   if (!admin) return [];
 
   const recentDays = options.recentDays ?? 3;
   const limit = options.limit ?? 300;
+  const region = options.region;
   const since = new Date(Date.now() - recentDays * 24 * 3600 * 1000).toISOString();
 
   // 영상 + 채널 thumbnail/title을 join 형태로
@@ -188,7 +202,7 @@ export async function getTopVideosFromDb(
     channels: { name: string; thumbnail: string | null } | { name: string; thumbnail: string | null }[] | null;
   };
 
-  return (data as Row[]).map((v) => {
+  const all = (data as Row[]).map((v) => {
     const ch = Array.isArray(v.channels) ? v.channels[0] : v.channels;
     return {
       id: v.id,
@@ -205,4 +219,8 @@ export async function getTopVideosFromDb(
       categoryId: v.category_id || "",
     };
   });
+
+  if (!region) return all;
+  // 영상 제목 + 채널명 기반 언어 필터
+  return all.filter((v) => matchesRegionLanguage(`${v.title} ${v.channelTitle}`, region));
 }

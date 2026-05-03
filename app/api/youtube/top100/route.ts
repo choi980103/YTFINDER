@@ -3,7 +3,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
 import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
-import { getTopVideosFromDb } from "@/lib/dbChannels";
+import { getTopVideosFromDb, matchesRegionLanguage } from "@/lib/dbChannels";
 
 const DB_MIN_VIDEOS = 30;
 
@@ -124,10 +124,10 @@ export async function POST(request: NextRequest) {
       ? (rawRegion as Region)
       : "KR";
 
-    // KR은 DB 조회 우선 (회사 quota 절감)
+    // KR은 DB 조회 우선 (회사 quota 절감), 언어 필터 적용
     if (region === "KR") {
       try {
-        const dbVideos = await getTopVideosFromDb({ recentDays: 7, limit: 300 });
+        const dbVideos = await getTopVideosFromDb({ recentDays: 3, limit: 300, region: "KR" });
         if (dbVideos.length >= DB_MIN_VIDEOS) {
           return NextResponse.json({ videos: dbVideos, source: "db" });
         }
@@ -198,10 +198,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 최근 N일 이내 영상만 필터 → 조회수 순 정렬 → 상위 300개
+    // 최근 N일 이내 + 언어 필터 (region별) → 조회수 순 정렬 → 상위 300개
     const cutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000;
     const videos = [...videoMap.values()]
       .filter((v) => new Date(v.publishedAt).getTime() >= cutoff)
+      .filter((v) => matchesRegionLanguage(`${v.title} ${v.channelTitle}`, region))
       .sort((a, b) => b.views - a.views)
       .slice(0, 300);
 

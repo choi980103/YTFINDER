@@ -32,7 +32,7 @@ interface Props {
   apiKey: string;
 }
 
-const CLIENT_CACHE_PREFIX = "yt_top100_cache_v3";
+const CLIENT_CACHE_PREFIX = "yt_top100_cache_v4";
 const CLIENT_CACHE_TTL = 1000 * 60 * 60 * 6; // 6시간
 
 function formatNumber(n: number): string {
@@ -203,7 +203,8 @@ export default function Top100Videos({ apiKey }: Props) {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            <span className="gradient-text">🔥 오늘의 Top 300</span>
+            <span className="mr-2">🔥</span>
+            <span className="gradient-text">오늘의 Top 300</span>
           </h2>
           <p className="mt-1 text-sm text-zinc-400">
             최근 3일 이내 {REGION_CONFIG.find((r) => r.id === region)?.desc}을 조회수 순으로
