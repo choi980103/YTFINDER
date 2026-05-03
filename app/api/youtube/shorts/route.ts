@@ -3,6 +3,11 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
 import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
+import { getShortsChannelsFromDb } from "@/lib/dbChannels";
+
+// DB에 충분한 채널이 있으면 DB 결과만 사용 (회사 quota 절감)
+// 미만이면 기존 사용자 키 + API 호출 fallback
+const DB_MIN_CHANNELS = 30;
 
 interface ShortsChannel {
   id: string;
@@ -170,6 +175,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." }, { status: 429 });
     }
 
+    // DB 조회 우선
+    try {
+      const dbChannels = await getShortsChannelsFromDb({ region: "kr", limit: 300 });
+      if (dbChannels.length >= DB_MIN_CHANNELS) {
+        return NextResponse.json({ channels: dbChannels, source: "db" });
+      }
+    } catch (err) {
+      console.error("[shorts] DB fallback to API", err instanceof Error ? err.message : err);
+    }
+
+    // DB 부족 → 기존 API 호출 fallback
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json({ error: "요청 형식이 올바르지 않습니다." }, { status: 400 });

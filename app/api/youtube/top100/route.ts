@@ -3,6 +3,9 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
 import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
+import { getTopVideosFromDb } from "@/lib/dbChannels";
+
+const DB_MIN_VIDEOS = 30;
 
 export interface TopVideo {
   id: string;
@@ -120,6 +123,18 @@ export async function POST(request: NextRequest) {
     const region: Region = SUPPORTED_REGIONS.includes(rawRegion as Region)
       ? (rawRegion as Region)
       : "KR";
+
+    // KR은 DB 조회 우선 (회사 quota 절감)
+    if (region === "KR") {
+      try {
+        const dbVideos = await getTopVideosFromDb({ recentDays: 7, limit: 300 });
+        if (dbVideos.length >= DB_MIN_VIDEOS) {
+          return NextResponse.json({ videos: dbVideos, source: "db" });
+        }
+      } catch (err) {
+        console.error("[top100] DB fallback to API", err instanceof Error ? err.message : err);
+      }
+    }
 
     // 캐시 확인 (국가별)
     const cached = cacheMap.get(region);
