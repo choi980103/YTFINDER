@@ -22,6 +22,7 @@ import RadarChart from "@/components/RadarChart";
 import { getBenchmarks, addBenchmark, removeBenchmark, type BenchmarkVideo } from "@/lib/benchmark";
 import ChannelDetailSkeleton from "@/components/ChannelDetailSkeleton";
 import AccessCodeGate from "@/components/AccessCodeGate";
+import Logo from "@/components/Logo";
 
 interface ChannelDetail {
   id: string;
@@ -530,7 +531,8 @@ export default function ChannelPage({
     <div className="min-h-screen bg-[#0a0a0f] bg-grid text-zinc-100">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-4 px-4">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 sm:h-16">
+          <Logo />
           <button
             onClick={() => router.back()}
             className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
@@ -540,16 +542,6 @@ export default function ChannelPage({
             </svg>
             뒤로가기
           </button>
-          <div className="h-4 w-px bg-white/10" />
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-            </svg>
-            목록으로
-          </Link>
         </div>
       </header>
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export const metadata: Metadata = {
   title: "이용약관 | YTFINDER",
@@ -9,18 +9,13 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-5 py-12 sm:py-16">
-      <div className="mb-8">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
-        >
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          홈으로
-        </Link>
-      </div>
+    <>
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:h-16 sm:px-6">
+          <Logo />
+        </div>
+      </header>
+      <main className="mx-auto min-h-screen max-w-3xl px-5 py-12 sm:py-16">
 
       <header className="mb-10 border-b border-white/[0.06] pb-6">
         <h1 className="text-2xl font-bold text-white sm:text-3xl">이용약관</h1>
@@ -146,5 +141,6 @@ export default function TermsPage() {
         </section>
       </article>
     </main>
+    </>
   );
 }
