@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
+
+// Vercel function 최대 실행 시간 (Pro: 60s, vercel.json보다 우선)
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 import {
   QuotaCounter,
   finishLog,

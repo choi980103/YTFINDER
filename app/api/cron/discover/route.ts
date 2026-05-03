@@ -10,6 +10,10 @@ import {
   verifyCronRequest,
 } from "@/lib/collector";
 
+// Vercel function 최대 실행 시간 (Pro: 60s)
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 // 신규 채널 발굴 cron — 매일 KST 18:00
 // 한국 쇼츠 키워드 N개 검색 → 새 채널 ID 추출 → 통계 받아서 DB 저장
 // quota 비용: search.list 100 × N + channels.list 1 × ceil(M/50)
