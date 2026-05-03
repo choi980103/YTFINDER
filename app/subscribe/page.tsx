@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
-import Logo from "@/components/Logo";
+import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { PLANS, formatKRW, type Plan } from "@/lib/pricing";
 import { generateCustomerKey, generateOrderId, nowMs } from "@/lib/ids";
@@ -68,11 +68,7 @@ function SubscribeContent() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-7xl items-center px-4 sm:h-16 sm:px-6">
-          <Logo />
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto min-h-screen max-w-3xl px-5 py-12 sm:py-16">
         <div className="mb-10">

@@ -26,9 +26,6 @@ export default function SiteFooter() {
             <a href="/refund" className="transition-colors hover:text-zinc-200">
               환불정책
             </a>
-            <a href="/subscribe" className="transition-colors hover:text-zinc-200">
-              요금제
-            </a>
           </nav>
         </div>
         <p className="mt-6 border-t border-white/[0.04] pt-4 text-center text-[11px] text-zinc-400">

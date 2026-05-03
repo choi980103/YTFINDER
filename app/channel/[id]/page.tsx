@@ -533,15 +533,23 @@ export default function ChannelPage({
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 sm:h-16">
           <Logo />
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-            뒤로가기
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/subscribe"
+              className="hidden items-center gap-1.5 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-sm font-semibold text-amber-300 transition-colors hover:bg-amber-400/20 sm:inline-flex"
+            >
+              요금제
+            </Link>
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              뒤로가기
+            </button>
+          </div>
         </div>
       </header>
 
