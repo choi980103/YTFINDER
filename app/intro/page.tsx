@@ -36,22 +36,21 @@ export default function IntroPage() {
             </p>
 
             <div className="mx-auto mt-10 inline-flex flex-col items-center rounded-2xl border border-white/[0.08] bg-white/[0.02] px-8 py-7 sm:px-12">
-              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-3.5 py-1 text-[12px] font-extrabold tracking-wider text-white shadow-lg shadow-red-500/30">
-                🔥 12개월 구독 31% OFF
+              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#00e5a0]/20 bg-[#00e5a0]/5 px-3.5 py-1 text-[12px] font-extrabold tracking-wider text-[#00e5a0]">
+                ✨ 부담 없이 시작
               </span>
-              <span className="text-xs text-zinc-500">12개월 구독 · 최대 할인</span>
-              <span className="mt-1 text-sm text-zinc-600 line-through">월 ₩29,900</span>
-              <div className="mt-1 flex items-baseline gap-3">
+              <span className="text-xs text-zinc-500">1개월 구독</span>
+              <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="text-4xl font-black sm:text-5xl">
-                  <span className="gradient-text">₩249,000</span>
+                  <span className="gradient-text">월 ₩29,900</span>
                 </span>
-                <span className="rounded-md bg-red-500 px-2 py-0.5 text-base font-black text-white">
-                  -31%
-                </span>
+                <span className="text-base font-bold text-zinc-400">부터</span>
               </div>
-              <span className="mt-2 text-xs text-zinc-500">월 환산 ₩20,750 · 부가세 포함</span>
+              <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-400/10 px-3 py-1 text-[11px] font-semibold text-amber-300">
+                💡 장기 결제 시 최대 31% 할인 · 월 ₩20,750까지
+              </span>
               <Link
-                href="/subscribe?plan=12m"
+                href="/subscribe"
                 className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-7 py-3 text-sm font-extrabold text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/25 transition-transform hover:scale-[1.02]"
               >
                 지금 시작하기 →
@@ -308,13 +307,13 @@ export default function IntroPage() {
               Get started
             </div>
             <h2 className="text-3xl font-black sm:text-4xl">
-              지금 시작하면 <span className="gradient-text">월 2만원대</span>로 가능합니다
+              <span className="gradient-text">월 ₩29,900</span>부터 시작하세요
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">
-              12개월 구독 ₩249,000 (월 환산 ₩20,750 · 31% 할인). 1·3·6개월 플랜도 준비돼 있습니다.
+              1·3·6·12개월 플랜 중 선택 가능. 장기 결제 시 최대 31% 할인 (월 ₩20,750)으로 더 합리적입니다.
             </p>
             <Link
-              href="/subscribe?plan=12m"
+              href="/subscribe"
               className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] px-10 py-4 text-base font-extrabold text-[#0a0a0f] shadow-xl shadow-[#00e5a0]/25 transition-transform hover:scale-[1.02]"
             >
               🚀 구독 플랜 보기
