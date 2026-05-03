@@ -50,8 +50,9 @@ export async function POST(req: NextRequest) {
   try {
     code = await generateUniqueCode(plan);
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error("[admin/orders] code gen failed", err);
-    return NextResponse.json({ error: "코드 생성 실패" }, { status: 500 });
+    return NextResponse.json({ error: `코드 생성 실패: ${msg}` }, { status: 500 });
   }
 
   const expiresAt = planToExpiry(plan, paidAtDate);

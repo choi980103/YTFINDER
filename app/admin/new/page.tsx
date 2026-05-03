@@ -1,18 +1,18 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
-import { CHANNEL_OPTIONS, PLAN_OPTIONS, Channel, Plan } from "@/lib/adminCodes";
+import {
+  CHANNEL_OPTIONS,
+  CHANNEL_PLANS,
+  PLAN_DEFAULT_AMOUNT,
+  PLAN_OPTIONS,
+  Channel,
+  Plan,
+} from "@/lib/adminCodes";
 
-const PLAN_DEFAULT_AMOUNT: Record<Plan, number> = {
-  free_trial: 0,
-  "1m": 29900,
-  "3m": 79000,
-  "6m": 149000,
-  "12m": 249000,
-  lifetime: 139000,
-};
+const CUSTOM_AMOUNT = -1;
 
 type SuccessResult = {
   code: string;
@@ -20,9 +20,20 @@ type SuccessResult = {
 };
 
 export default function NewOrderPage() {
-  const [channel, setChannel] = useState<Channel>("paymentteacher");
-  const [plan, setPlan] = useState<Plan>("3m");
-  const [amount, setAmount] = useState<string>(String(PLAN_DEFAULT_AMOUNT["3m"]));
+  const [channel, setChannel] = useState<Channel>("kmong");
+
+  const allowedPlans = useMemo(() => CHANNEL_PLANS[channel], [channel]);
+  const planLabelMap = useMemo(
+    () => Object.fromEntries(PLAN_OPTIONS.map((o) => [o.value, o.label])),
+    []
+  );
+
+  const [plan, setPlan] = useState<Plan>(allowedPlans[0]);
+
+  const defaultAmount = PLAN_DEFAULT_AMOUNT[plan];
+  const [amountChoice, setAmountChoice] = useState<number>(defaultAmount);
+  const [customAmount, setCustomAmount] = useState<string>("");
+
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
   const [note, setNote] = useState("");
@@ -32,10 +43,22 @@ export default function NewOrderPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SuccessResult | null>(null);
 
+  function handleChannelChange(next: Channel) {
+    setChannel(next);
+    const firstPlan = CHANNEL_PLANS[next][0];
+    setPlan(firstPlan);
+    setAmountChoice(PLAN_DEFAULT_AMOUNT[firstPlan]);
+    setCustomAmount("");
+  }
+
   function handlePlanChange(next: Plan) {
     setPlan(next);
-    setAmount(String(PLAN_DEFAULT_AMOUNT[next]));
+    setAmountChoice(PLAN_DEFAULT_AMOUNT[next]);
+    setCustomAmount("");
   }
+
+  const finalAmount =
+    amountChoice === CUSTOM_AMOUNT ? Number(customAmount) || 0 : amountChoice;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -49,7 +72,7 @@ export default function NewOrderPage() {
         body: JSON.stringify({
           channel,
           plan,
-          amount: Number(amount),
+          amount: finalAmount,
           email: email.trim(),
           nickname: nickname.trim(),
           note: note.trim(),
@@ -76,6 +99,11 @@ export default function NewOrderPage() {
     if (!result) return;
     navigator.clipboard.writeText(result.code).catch(() => {});
   }
+
+  // 금액 드롭다운 옵션: 디폴트 + 0(무료증정) + 직접입력
+  const amountOptions = Array.from(
+    new Set<number>([defaultAmount, 0])
+  ).sort((a, b) => b - a);
 
   return (
     <main className="min-h-screen bg-neutral-100">
@@ -122,7 +150,7 @@ export default function NewOrderPage() {
           <Field label="채널">
             <select
               value={channel}
-              onChange={(e) => setChannel(e.target.value as Channel)}
+              onChange={(e) => handleChannelChange(e.target.value as Channel)}
               className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
             >
               {CHANNEL_OPTIONS.map((o) => (
@@ -139,22 +167,37 @@ export default function NewOrderPage() {
               onChange={(e) => handlePlanChange(e.target.value as Plan)}
               className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
             >
-              {PLAN_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
+              {allowedPlans.map((p) => (
+                <option key={p} value={p}>
+                  {planLabelMap[p]}
                 </option>
               ))}
             </select>
           </Field>
 
-          <Field label="금액 (₩)">
-            <input
-              type="number"
-              min={0}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+          <Field label="금액">
+            <select
+              value={amountChoice}
+              onChange={(e) => setAmountChoice(Number(e.target.value))}
               className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
-            />
+            >
+              {amountOptions.map((amt) => (
+                <option key={amt} value={amt}>
+                  {amt === 0 ? "무료 증정 (₩0)" : `₩${amt.toLocaleString("ko-KR")}`}
+                </option>
+              ))}
+              <option value={CUSTOM_AMOUNT}>직접 입력...</option>
+            </select>
+            {amountChoice === CUSTOM_AMOUNT && (
+              <input
+                type="number"
+                min={0}
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+                placeholder="원 단위 입력"
+                className="mt-2 w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              />
+            )}
           </Field>
 
           <Field label="이메일">

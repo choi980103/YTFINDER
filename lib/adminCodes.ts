@@ -83,7 +83,23 @@ export const PLAN_OPTIONS: { value: Plan; label: string }[] = [
 
 export const CHANNEL_OPTIONS: { value: Channel; label: string }[] = [
   { value: "kmong", label: "크몽" },
-  { value: "paymentteacher", label: "결제선생" },
   { value: "toss", label: "토스 구독" },
-  { value: "manual", label: "수동/기타" },
 ];
+
+// 채널별 허용 플랜
+export const CHANNEL_PLANS: Record<Channel, Plan[]> = {
+  kmong: ["lifetime"],
+  toss: ["1m", "3m", "6m", "12m"],
+  paymentteacher: ["1m", "3m", "6m", "12m"], // 미사용, DB enum 호환용
+  manual: ["free_trial", "1m", "3m", "6m", "12m", "lifetime"], // 미사용, DB enum 호환용
+};
+
+// 플랜별 디폴트 금액 (KRW)
+export const PLAN_DEFAULT_AMOUNT: Record<Plan, number> = {
+  free_trial: 0,
+  "1m": 29900,
+  "3m": 79000,
+  "6m": 149000,
+  "12m": 249000,
+  lifetime: 139000,
+};
