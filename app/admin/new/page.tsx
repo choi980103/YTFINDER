@@ -109,7 +109,7 @@ export default function NewOrderPage() {
     <main className="min-h-screen bg-neutral-100">
       <AdminHeader />
       <div className="mx-auto max-w-2xl space-y-4 p-6">
-        <h1 className="text-base font-semibold text-neutral-900">새 주문 등록</h1>
+        <h1 className="text-lg font-bold text-neutral-900">새 주문 등록</h1>
 
         {result && (
           <div className="rounded border border-emerald-300 bg-emerald-50 p-4 text-sm">
@@ -151,7 +151,7 @@ export default function NewOrderPage() {
             <select
               value={channel}
               onChange={(e) => handleChannelChange(e.target.value as Channel)}
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             >
               {CHANNEL_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -165,7 +165,7 @@ export default function NewOrderPage() {
             <select
               value={plan}
               onChange={(e) => handlePlanChange(e.target.value as Plan)}
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             >
               {allowedPlans.map((p) => (
                 <option key={p} value={p}>
@@ -179,7 +179,7 @@ export default function NewOrderPage() {
             <select
               value={amountChoice}
               onChange={(e) => setAmountChoice(Number(e.target.value))}
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             >
               {amountOptions.map((amt) => (
                 <option key={amt} value={amt}>
@@ -206,7 +206,7 @@ export default function NewOrderPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="customer@example.com"
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             />
           </Field>
 
@@ -216,7 +216,7 @@ export default function NewOrderPage() {
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="크몽 닉네임 등"
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             />
           </Field>
 
@@ -225,7 +225,7 @@ export default function NewOrderPage() {
               type="datetime-local"
               value={paidAt}
               onChange={(e) => setPaidAt(e.target.value)}
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             />
           </Field>
 
@@ -234,7 +234,7 @@ export default function NewOrderPage() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
-              className="w-full rounded border border-neutral-300 px-2 py-1.5 text-sm"
+              className="w-full rounded border border-neutral-400 px-2.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400"
             />
           </Field>
 
@@ -247,7 +247,7 @@ export default function NewOrderPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="w-full rounded bg-neutral-900 px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           >
             {loading ? "등록 중..." : "주문 등록 + 코드 발급"}
           </button>
@@ -260,7 +260,7 @@ export default function NewOrderPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-xs font-medium text-neutral-700">{label}</span>
+      <span className="mb-1.5 block text-sm font-semibold text-neutral-900">{label}</span>
       {children}
     </label>
   );
