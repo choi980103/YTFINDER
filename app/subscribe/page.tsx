@@ -74,7 +74,7 @@ function SubscribeContent() {
         <div className="mb-10">
           <p className="mb-2 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Subscribe</p>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">구독 시작하기</h1>
-          <p className="mt-2 text-sm text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-300">
             기간을 선택하고 결제를 진행해주세요. 결제 완료 후 이메일로 액세스 코드를 발송해드립니다.
           </p>
         </div>
@@ -114,7 +114,7 @@ function SubscribeContent() {
                     )}
                   </div>
                   <div className="mt-2 text-xl font-black text-white">{formatKRW(plan.price)}</div>
-                  <p className="mt-1 text-xs text-zinc-400">월 {formatKRW(plan.monthly)} 환산</p>
+                  <p className="mt-1 text-xs text-zinc-300">월 {formatKRW(plan.monthly)} 환산</p>
                 </button>
               );
             })}
@@ -126,15 +126,15 @@ function SubscribeContent() {
           <h2 className="mb-4 text-sm font-semibold text-zinc-200">2. 결제 요약</h2>
           <dl className="space-y-2.5 text-sm">
             <div className="flex justify-between">
-              <dt className="text-zinc-400">상품</dt>
+              <dt className="text-zinc-300">상품</dt>
               <dd className="text-white">YTFINDER {selected.label} 구독</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-400">기간</dt>
+              <dt className="text-zinc-300">기간</dt>
               <dd className="text-white">{selected.months}개월</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-400">월 환산</dt>
+              <dt className="text-zinc-300">월 환산</dt>
               <dd className="text-zinc-300">{formatKRW(selected.monthly)}</dd>
             </div>
             <div className="border-t border-white/[0.08] pt-2.5" />
@@ -205,7 +205,7 @@ export default function SubscribePage() {
   return (
     <Suspense
       fallback={
-        <main className="mx-auto max-w-3xl px-5 py-20 text-center text-sm text-zinc-400">
+        <main className="mx-auto max-w-3xl px-5 py-20 text-center text-sm text-zinc-300">
           로딩 중...
         </main>
       }

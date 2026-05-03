@@ -23,7 +23,10 @@ import ChannelLookup from "@/components/ChannelLookup";
 import Top100Videos from "@/components/Top100Videos";
 import AccessCodeGate from "@/components/AccessCodeGate";
 import SiteFooter from "@/components/SiteFooter";
+import TagFilterChips from "@/components/TagFilterChips";
+import TaggedChannels from "@/components/TaggedChannels";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { TAGS_CHANGED_EVENT, getAllTagsMap } from "@/lib/channelTags";
 
 type TabId = "dashboard" | "explore" | "top100" | "activity";
 
@@ -99,6 +102,17 @@ export default function Home() {
   const [showActiveOnly, setShowActiveOnly] = useState(false);
   const [showHiddenList, setShowHiddenList] = useState(false);
 
+  // 사용자 정의 태그 (localStorage 기반)
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagMap, setTagMap] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    const sync = () => setTagMap(getAllTagsMap());
+    sync();
+    window.addEventListener(TAGS_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(TAGS_CHANGED_EVENT, sync);
+  }, []);
+
   const hasActiveFilters =
     searchQuery !== "" ||
     selectedCategory !== "전체" ||
@@ -108,7 +122,8 @@ export default function Home() {
     showFavoritesOnly ||
     showHiddenGems ||
     showTrendingOnly ||
-    showActiveOnly;
+    showActiveOnly ||
+    selectedTags.length > 0;
 
   const resetFilters = useCallback(() => {
     setSearchQuery("");
@@ -121,6 +136,7 @@ export default function Home() {
     setShowHiddenGems(false);
     setShowTrendingOnly(false);
     setShowActiveOnly(false);
+    setSelectedTags([]);
   }, []);
 
   // API 상태
@@ -448,6 +464,16 @@ export default function Home() {
       );
     }
 
+    // 사용자 태그 필터 (OR — 선택된 태그 중 하나라도 일치하면 표시)
+    if (selectedTags.length > 0) {
+      const sel = new Set(selectedTags);
+      channels = channels.filter((ch) => {
+        const t = tagMap[ch.id];
+        if (!t) return false;
+        return t.some((tag) => sel.has(tag));
+      });
+    }
+
     // 급상승: 성장률 상위 채널 (평균의 1.5배 이상 + 200% 이상)
     if (showTrendingOnly) {
       const avgGrowth = channels.length > 0
@@ -488,7 +514,7 @@ export default function Home() {
     }
 
     return channels;
-  }, [sourceChannels, hiddenChannels, searchQuery, selectedCategory, subRange, channelAge, revenueRange, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy]);
+  }, [sourceChannels, hiddenChannels, searchQuery, selectedCategory, subRange, channelAge, revenueRange, showHiddenGems, showTrendingOnly, showActiveOnly, sortBy, selectedTags, tagMap]);
 
   if (showLanding) {
     return (
@@ -525,7 +551,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             숨겨진 <span className="gradient-text">꿀통 채널</span>을 발견하세요
           </h2>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-2 text-sm text-zinc-400">
             쇼츠로 실제 수익을 내고 있는 숨겨진 채널, 알고리즘이 밀어주는 진짜 꿀통을 찾아드립니다
           </p>
         </div>
@@ -539,7 +565,7 @@ export default function Home() {
               className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? "bg-white/10 text-white shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                  : "text-zinc-400 hover:text-zinc-300 hover:bg-white/5"
               }`}
             >
               <span className="text-base">{tab.icon}</span>
@@ -568,7 +594,7 @@ export default function Home() {
 
             {/* TOP 3 Spotlight */}
             <div className="mb-6">
-              <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-600">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">
                 꿀통 지수 TOP 3
               </div>
               <TopSpotlight channels={filteredChannels} />
@@ -587,7 +613,7 @@ export default function Home() {
                   className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
                     showFavoritesOnly
                       ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
-                      : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                      : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
                   }`}
                 >
                   <svg
@@ -616,13 +642,13 @@ export default function Home() {
                     className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
                       showHiddenGems
                         ? "border-purple-400/30 bg-purple-400/10 text-purple-400"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                        : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
                     }`}
                   >
                     <span className="text-base">💎</span>
                     히든 젬
                   </button>
-                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/gem:visible group-hover/gem:opacity-100">
+                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-300 opacity-0 shadow-xl break-keep transition-all group-hover/gem:visible group-hover/gem:opacity-100">
                     구독자 5만 이하이지만 조회/구독 비율이 200% 이상인 채널. 아직 덜 알려졌지만 알고리즘을 타고 있는 숨겨진 보석!
                   </div>
                 </div>
@@ -633,13 +659,13 @@ export default function Home() {
                     className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
                       showTrendingOnly
                         ? "border-orange-400/30 bg-orange-400/10 text-orange-400"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                        : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
                     }`}
                   >
                     <span className="text-base">🔥</span>
                     <span className={showTrendingOnly ? "text-orange-400" : "text-orange-400/70"}>급상승</span>
                   </button>
-                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/trend:visible group-hover/trend:opacity-100">
+                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-300 opacity-0 shadow-xl break-keep transition-all group-hover/trend:visible group-hover/trend:opacity-100">
                     성장률이 평균의 1.5배 이상이고 200% 이상인 채널. 지금 가장 빠르게 성장 중인 채널만 모아보기!
                   </div>
                 </div>
@@ -650,13 +676,13 @@ export default function Home() {
                     className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all sm:py-2 ${
                       showActiveOnly
                         ? "border-green-400/30 bg-green-400/10 text-green-400"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                        : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
                     }`}
                   >
                     <span className="text-base">📡</span>
                     활동 중
                   </button>
-                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl break-keep transition-all group-hover/active:visible group-hover/active:opacity-100">
+                  <div className="invisible absolute left-0 top-full z-50 mt-1.5 w-56 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] leading-relaxed text-zinc-300 opacity-0 shadow-xl break-keep transition-all group-hover/active:visible group-hover/active:opacity-100">
                     최근 30일 내 영상을 올린 채널만 보기. 꾸준히 활동 중인 채널을 찾을 수 있어요!
                   </div>
                 </div>
@@ -678,7 +704,7 @@ export default function Home() {
                 <div className="relative">
                   <button
                     onClick={() => setShowHiddenList((v) => !v)}
-                    className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-400 transition-all hover:bg-white/10"
+                    className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-300 transition-all hover:bg-white/10"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -692,14 +718,14 @@ export default function Home() {
                   {showHiddenList && (
                     <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-white/10 bg-zinc-900 p-3 shadow-2xl">
                       <div className="mb-2 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-zinc-400">숨긴 채널 목록</span>
+                        <span className="text-xs font-semibold text-zinc-300">숨긴 채널 목록</span>
                         <button
                           onClick={() => {
                             setHiddenChannels(new Set());
                             localStorage.removeItem("yt_hidden_channels");
                             setShowHiddenList(false);
                           }}
-                          className="text-[11px] text-zinc-500 hover:text-zinc-300"
+                          className="text-[11px] text-zinc-400 hover:text-zinc-300"
                         >
                           전체 복원
                         </button>
@@ -735,6 +761,11 @@ export default function Home() {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* User Tag Filter */}
+            <div className="mb-4">
+              <TagFilterChips selected={selectedTags} onChange={setSelectedTags} />
             </div>
 
             {/* Search & Filters */}
@@ -846,7 +877,7 @@ export default function Home() {
               </div>
             )}
             {dataSource === "mock" && !isLoading && (
-              <div className="mb-4 flex items-center gap-2 text-xs text-zinc-600">
+              <div className="mb-4 flex items-center gap-2 text-xs text-zinc-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
                 샘플 데이터 표시 중 &mdash; API 키를 연동하면 실제 쇼츠 떡상 채널로
                 자동 전환됩니다
@@ -893,7 +924,7 @@ export default function Home() {
                   )}
                 </div>
                 {favorites.size === 0 ? (
-                  <p className="text-xs text-zinc-600">아직 즐겨찾기한 채널이 없어요. 채널 카드의 ⭐ 버튼을 눌러 추가해보세요!</p>
+                  <p className="text-xs text-zinc-500">아직 즐겨찾기한 채널이 없어요. 채널 카드의 ⭐ 버튼을 눌러 추가해보세요!</p>
                 ) : (
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {favoriteOrder
@@ -981,6 +1012,11 @@ export default function Home() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* 태그별 채널 */}
+            <div className="mb-6">
+              <TaggedChannels />
             </div>
 
             {/* 최근 본 채널 */}

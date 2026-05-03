@@ -112,7 +112,7 @@ export default function SuccessClient() {
           <div className="text-center">
             <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-2 border-[#00e5a0] border-t-transparent" />
             <h1 className="mb-2 text-xl font-bold text-white">{message}</h1>
-            <p className="text-sm text-zinc-400">잠시만 기다려주세요. 페이지를 닫지 마세요.</p>
+            <p className="text-sm text-zinc-300">잠시만 기다려주세요. 페이지를 닫지 마세요.</p>
           </div>
         )}
 
@@ -130,21 +130,21 @@ export default function SuccessClient() {
             {plan && pending && (
               <dl className="space-y-2 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-zinc-400">상품</dt>
+                  <dt className="text-zinc-300">상품</dt>
                   <dd className="text-white">{pending.orderName}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-zinc-400">결제 금액</dt>
+                  <dt className="text-zinc-300">결제 금액</dt>
                   <dd className="font-bold text-[#00e5a0]">{formatKRW(pending.amount)}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-zinc-400">주문번호</dt>
+                  <dt className="text-zinc-300">주문번호</dt>
                   <dd className="font-mono text-xs text-zinc-300">{pending.orderId}</dd>
                 </div>
               </dl>
             )}
 
-            <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/20 p-4 text-xs leading-relaxed text-zinc-400">
+            <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/20 p-4 text-xs leading-relaxed text-zinc-300">
               <p className="font-semibold text-zinc-200">📮 다음 단계</p>
               <ol className="mt-2 list-decimal space-y-1 pl-4">
                 <li>가입하신 이메일을 확인해주세요 (영업일 1일 이내).</li>
@@ -162,10 +162,10 @@ export default function SuccessClient() {
 
             {chargeResult ? (
               <details className="mt-4">
-                <summary className="cursor-pointer text-[11px] text-zinc-500 hover:text-zinc-300">
+                <summary className="cursor-pointer text-[11px] text-zinc-400 hover:text-zinc-300">
                   결제 응답 상세 (개발용)
                 </summary>
-                <pre className="mt-2 overflow-auto rounded-lg bg-black/40 p-3 text-[10px] leading-relaxed text-zinc-400">
+                <pre className="mt-2 overflow-auto rounded-lg bg-black/40 p-3 text-[10px] leading-relaxed text-zinc-300">
 {JSON.stringify(chargeResult, null, 2)}
                 </pre>
               </details>
@@ -180,7 +180,7 @@ export default function SuccessClient() {
             </div>
             <h1 className="mb-2 text-xl font-bold text-white">결제 처리 실패</h1>
             <p className="mb-6 text-sm text-zinc-300">{message}</p>
-            <p className="mb-6 text-xs text-zinc-500">
+            <p className="mb-6 text-xs text-zinc-400">
               카드에서 금액이 출금되었는데 이 화면이 떴다면, 자동으로 취소 처리됩니다.
               30분 내 카드 결제 내역에 환불이 보이지 않으면{" "}
               <a href="mailto:seenabr00@gmail.com" className="text-[#06b6d4] underline">

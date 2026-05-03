@@ -45,7 +45,7 @@ export default function Logo({ showSubtitle = true }: LogoProps) {
           <span className="text-white">FINDER</span>
         </span>
         {showSubtitle && (
-          <span className="hidden text-[10px] uppercase tracking-widest text-zinc-500 sm:block">
+          <span className="hidden text-[10px] uppercase tracking-widest text-zinc-400 sm:block">
             Rising Channel Detector
           </span>
         )}

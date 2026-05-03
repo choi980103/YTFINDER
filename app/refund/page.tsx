@@ -15,7 +15,7 @@ export default function RefundPage() {
       <main className="mx-auto min-h-screen max-w-3xl px-5 py-12 sm:py-16">
         <header className="mb-10 border-b border-white/[0.06] pb-6">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">환불정책</h1>
-          <p className="mt-2 text-sm text-zinc-400">시행일: 2026년 5월 3일</p>
+          <p className="mt-2 text-sm text-zinc-300">시행일: 2026년 5월 3일</p>
         </header>
 
         <article className="max-w-none text-sm leading-relaxed text-zinc-300">
@@ -34,7 +34,7 @@ export default function RefundPage() {
               <li>
                 다음의 경우에는 「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 제2항에 따라
                 청약철회가 제한됩니다.
-                <ol className="mt-2 list-decimal space-y-1 pl-5 text-zinc-400">
+                <ol className="mt-2 list-decimal space-y-1 pl-5 text-zinc-300">
                   <li>결제 후 서비스를 이용한 경우 (단, 사용 일수에 비례한 일할 환불은 제3조에 따름)</li>
                   <li>결제일로부터 7일을 초과한 경우</li>
                   <li>부정사용·약관 위반으로 이용이 정지된 경우</li>
@@ -51,14 +51,14 @@ export default function RefundPage() {
               </li>
               <li>
                 <span className="font-semibold text-zinc-100">결제 후 7일 이내 + 사용 시작</span>: 일할 차감 환불
-                <div className="mt-2 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-xs text-zinc-400">
+                <div className="mt-2 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 text-xs text-zinc-300">
                   <p>환불 금액 = 결제 금액 − (1일 이용료 × 사용 일수) − 결제 수수료</p>
                   <p className="mt-1">1일 이용료 = 결제 금액 ÷ 약정 기간(일수)</p>
                 </div>
               </li>
               <li>
                 <span className="font-semibold text-zinc-100">결제 후 7일 초과</span>: 환불 불가
-                <p className="mt-1 text-xs text-zinc-400">
+                <p className="mt-1 text-xs text-zinc-300">
                   단, 회사의 귀책사유로 서비스 이용이 불가능한 경우는 별도 협의합니다.
                 </p>
               </li>
@@ -131,18 +131,18 @@ export default function RefundPage() {
           <section className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
             <h2 className="mb-3 text-lg font-bold text-white">사업자 정보</h2>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-              <dt className="text-zinc-400">상호</dt>
+              <dt className="text-zinc-300">상호</dt>
               <dd className="text-zinc-200">시나브로</dd>
-              <dt className="text-zinc-400">대표자</dt>
+              <dt className="text-zinc-300">대표자</dt>
               <dd className="text-zinc-200">최준혁</dd>
-              <dt className="text-zinc-400">사업자등록번호</dt>
+              <dt className="text-zinc-300">사업자등록번호</dt>
               <dd className="text-zinc-200">187-21-02241</dd>
-              <dt className="text-zinc-400">문의 이메일</dt>
+              <dt className="text-zinc-300">문의 이메일</dt>
               <dd className="text-zinc-200">seenabr00@gmail.com</dd>
             </dl>
           </section>
 
-          <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-400">
+          <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-300">
             <p>부칙</p>
             <p className="mt-1">본 정책은 2026년 5월 3일부터 시행합니다.</p>
           </section>

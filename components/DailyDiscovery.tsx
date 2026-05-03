@@ -78,27 +78,27 @@ export default function DailyDiscovery({ channels }: DailyDiscoveryProps) {
           <h3 className="truncate text-sm font-bold text-white group-hover:text-amber-400 transition-colors">
             {pick.name}
           </h3>
-          <p className="truncate text-xs text-zinc-500">{pick.description}</p>
+          <p className="truncate text-xs text-zinc-400">{pick.description}</p>
         </div>
 
         {/* Stats */}
         <div className="flex shrink-0 items-center gap-3 text-xs">
           <div className="text-center">
-            <div className="text-[9px] text-zinc-600">구독자</div>
+            <div className="text-[9px] text-zinc-500">구독자</div>
             <div className="font-bold text-zinc-300">{formatNumber(pick.subscribers)}</div>
           </div>
           <div className="hidden text-center sm:block">
-            <div className="text-[9px] text-zinc-600">비율</div>
+            <div className="text-[9px] text-zinc-500">비율</div>
             <div className="font-bold text-amber-400">{pick.viewToSubRatio.toFixed(0)}%</div>
           </div>
           <div className="hidden text-center sm:block">
-            <div className="text-[9px] text-zinc-600">떡상</div>
+            <div className="text-[9px] text-zinc-500">떡상</div>
             <div className={`font-bold ${getScoreColor(tier)}`}>{score}점</div>
           </div>
         </div>
 
         {/* Arrow */}
-        <svg className="h-4 w-4 shrink-0 text-zinc-600 transition-colors group-hover:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-4 w-4 shrink-0 text-zinc-500 transition-colors group-hover:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </div>

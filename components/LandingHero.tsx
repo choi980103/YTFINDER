@@ -29,7 +29,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
       <p className="mb-2 text-lg font-semibold text-zinc-200 sm:text-xl">
         쇼츠 떡상 채널을 가장 먼저 발견하세요
       </p>
-      <p className="mb-10 max-w-lg text-sm leading-relaxed text-zinc-500">
+      <p className="mb-10 max-w-lg text-sm leading-relaxed text-zinc-400">
         구독자 대비 조회수가 비정상적으로 높은 채널 = 알고리즘이 밀어주는 떡상 직전 채널.
         YTFINDER가 실시간 YouTube 데이터를 분석해서 숨겨진 보석 같은 채널을 찾아드립니다.
       </p>
@@ -43,7 +43,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
             </svg>
           </div>
           <h3 className="text-sm font-bold text-white">떡상 지수</h3>
-          <p className="mt-1 text-xs text-zinc-500">조회/구독 비율 + 성장률 + 활동량을 종합 분석한 독자적 스코어링</p>
+          <p className="mt-1 text-xs text-zinc-400">조회/구독 비율 + 성장률 + 활동량을 종합 분석한 독자적 스코어링</p>
         </div>
 
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-left backdrop-blur-sm">
@@ -53,7 +53,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
             </svg>
           </div>
           <h3 className="text-sm font-bold text-white">한국 + 해외</h3>
-          <p className="mt-1 text-xs text-zinc-500">한국뿐 아니라 미국, 일본 등 글로벌 쇼츠 트렌드도 한눈에</p>
+          <p className="mt-1 text-xs text-zinc-400">한국뿐 아니라 미국, 일본 등 글로벌 쇼츠 트렌드도 한눈에</p>
         </div>
 
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-left backdrop-blur-sm">
@@ -63,13 +63,13 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
             </svg>
           </div>
           <h3 className="text-sm font-bold text-white">히든 젬 발견</h3>
-          <p className="mt-1 text-xs text-zinc-500">아직 덜 알려졌지만 폭발적 성장 중인 채널을 자동으로 발굴</p>
+          <p className="mt-1 text-xs text-zinc-400">아직 덜 알려졌지만 폭발적 성장 중인 채널을 자동으로 발굴</p>
         </div>
       </div>
 
       {/* How it works */}
       <div className="mb-10 max-w-lg">
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-600">이용 방법</h3>
+        <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">이용 방법</h3>
         <div className="flex items-start gap-4 text-left">
           <div className="flex flex-col items-center gap-1">
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#00e5a0]/20 text-xs font-bold text-[#00e5a0]">1</div>
@@ -81,15 +81,15 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
           <div className="flex flex-col gap-[22px]">
             <div>
               <p className="text-sm font-semibold text-zinc-200">YouTube API 키 발급</p>
-              <p className="text-xs text-zinc-500">Google Cloud Console에서 무료로 발급 (5분)</p>
+              <p className="text-xs text-zinc-400">Google Cloud Console에서 무료로 발급 (5분)</p>
             </div>
             <div>
               <p className="text-sm font-semibold text-zinc-200">API 키 입력</p>
-              <p className="text-xs text-zinc-500">상단 설정에서 키를 입력하면 실시간 데이터 연동</p>
+              <p className="text-xs text-zinc-400">상단 설정에서 키를 입력하면 실시간 데이터 연동</p>
             </div>
             <div>
               <p className="text-sm font-semibold text-zinc-200">떡상 채널 분석</p>
-              <p className="text-xs text-zinc-500">300+ 채널을 AI가 분석해서 떡상 가능성 순으로 정렬</p>
+              <p className="text-xs text-zinc-400">300+ 채널을 AI가 분석해서 떡상 가능성 순으로 정렬</p>
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
             <span className="text-sm font-semibold text-zinc-200">YouTube API 키 발급 방법</span>
           </div>
           <svg
-            className={`h-5 w-5 text-zinc-500 transition-transform ${guideOpen ? "rotate-180" : ""}`}
+            className={`h-5 w-5 text-zinc-400 transition-transform ${guideOpen ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -128,7 +128,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00e5a0]/20 text-[11px] font-bold text-[#00e5a0]">1</div>
                 <div>
                   <p className="text-sm font-semibold text-zinc-200">Google Cloud Console 접속</p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-400">
                     <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-[#06b6d4] underline underline-offset-2 hover:text-[#00e5a0]">
                       console.cloud.google.com
                     </a>
@@ -142,7 +142,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00e5a0]/20 text-[11px] font-bold text-[#00e5a0]">2</div>
                 <div>
                   <p className="text-sm font-semibold text-zinc-200">프로젝트 만들기</p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-400">
                     상단 &quot;프로젝트 선택&quot; 클릭 → &quot;새 프로젝트&quot; → 이름 아무거나 입력 (예: ytfinder) → &quot;만들기&quot;
                   </p>
                 </div>
@@ -153,7 +153,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#06b6d4]/20 text-[11px] font-bold text-[#06b6d4]">3</div>
                 <div>
                   <p className="text-sm font-semibold text-zinc-200">YouTube API 활성화</p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-400">
                     왼쪽 메뉴 &quot;API 및 서비스&quot; → &quot;라이브러리&quot; → &quot;YouTube Data API v3&quot; 검색 → &quot;사용&quot; 클릭
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#06b6d4]/20 text-[11px] font-bold text-[#06b6d4]">4</div>
                 <div>
                   <p className="text-sm font-semibold text-zinc-200">API 키 발급</p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-400">
                     &quot;API 및 서비스&quot; → &quot;사용자 인증 정보&quot; → &quot;+ 사용자 인증 정보 만들기&quot; → &quot;API 키&quot; → 키 복사!
                   </p>
                 </div>
@@ -175,7 +175,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-400/20 text-[11px] font-bold text-purple-400">5</div>
                 <div>
                   <p className="text-sm font-semibold text-zinc-200">사이트에서 사용</p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-400">
                     아래 &quot;API 키 연동하고 시작하기&quot; 클릭 → 복사한 키 붙여넣기 → 완료!
                   </p>
                 </div>
@@ -229,7 +229,7 @@ export default function LandingHero({ onGetStarted, onSkip }: LandingHeroProps) 
         </button>
         <button
           onClick={onSkip}
-          className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-zinc-400 transition-all hover:bg-white/[0.06] hover:text-zinc-200"
+          className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-zinc-200"
         >
           샘플 데이터로 둘러보기
         </button>

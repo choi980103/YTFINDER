@@ -6,7 +6,7 @@ export default function Page() {
     <Suspense
       fallback={
         <main className="mx-auto max-w-md px-5 py-20 text-center">
-          <p className="text-sm text-zinc-400">로딩...</p>
+          <p className="text-sm text-zinc-300">로딩...</p>
         </main>
       }
     >

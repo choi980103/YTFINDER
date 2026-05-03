@@ -150,16 +150,16 @@ function HistoryCharts({ channelId }: { channelId: string }) {
     return (
       <div className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex items-center gap-2">
-          <svg className="h-4 w-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
           </svg>
           <h3 className="text-sm font-semibold text-zinc-300">비율 변화 추이</h3>
         </div>
-        <p className="mt-2 text-xs text-zinc-600">
+        <p className="mt-2 text-xs text-zinc-500">
           아직 히스토리 데이터가 부족합니다. 메인 페이지에서 데이터를 여러 번 불러오면 시간에 따른 변화를 추적할 수 있어요!
         </p>
         {history.length === 1 && (
-          <div className="mt-3 flex items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-xs text-zinc-500">
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-xs text-zinc-400">
             <span className="h-1.5 w-1.5 rounded-full bg-[#00e5a0]" />
             첫 번째 스냅샷 기록됨: {new Date(history[0].timestamp).toLocaleString("ko-KR")}
           </div>
@@ -542,7 +542,7 @@ export default function ChannelPage({
             </Link>
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
+              className="flex items-center gap-2 text-sm text-zinc-300 transition-colors hover:text-white"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -570,10 +570,10 @@ export default function ChannelPage({
             )}
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-bold text-white sm:text-2xl">{channel.name}</h1>
-              <p className="mt-1 line-clamp-2 text-xs text-zinc-500 sm:text-sm">
+              <p className="mt-1 line-clamp-2 text-xs text-zinc-400 sm:text-sm">
                 {channel.description || "설명 없음"}
               </p>
-              <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-zinc-500 sm:gap-3 sm:text-xs">
+              <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-zinc-400 sm:gap-3 sm:text-xs">
                 {channel.country && <span>국가: {channel.country}</span>}
                 <span>개설: {formatDate(channel.createdAt)}</span>
                 <span>({daysSince(channel.createdAt)})</span>
@@ -595,7 +595,7 @@ export default function ChannelPage({
               className={`flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all ${
                 isFavorite
                   ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
-                  : "border-white/10 bg-white/5 text-zinc-400 hover:border-amber-400/20 hover:text-amber-400"
+                  : "border-white/10 bg-white/5 text-zinc-300 hover:border-amber-400/20 hover:text-amber-400"
               }`}
               title={isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
             >
@@ -640,21 +640,21 @@ export default function ChannelPage({
                 </div>
               </div>
               {/* Score breakdown */}
-              <div className="flex flex-1 items-center gap-6 text-xs text-zinc-400">
+              <div className="flex flex-1 items-center gap-6 text-xs text-zinc-300">
                 <div>
-                  <div className="text-zinc-600">조회/구독</div>
+                  <div className="text-zinc-500">조회/구독</div>
                   <div className="font-bold text-zinc-300">
                     {channelForScore?.viewToSubRatio.toFixed(1)}%
                   </div>
                 </div>
                 <div>
-                  <div className="text-zinc-600">성장률</div>
+                  <div className="text-zinc-500">성장률</div>
                   <div className="font-bold text-emerald-400">
                     +{channelForScore?.growthRate || 0}%
                   </div>
                 </div>
                 <div>
-                  <div className="text-zinc-600">쇼츠 수</div>
+                  <div className="text-zinc-500">쇼츠 수</div>
                   <div className="font-bold text-zinc-300">
                     {shortsVideos.length}개
                   </div>
@@ -686,7 +686,7 @@ export default function ChannelPage({
                 ];
               })()}
             />
-            <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-zinc-500">
+            <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-zinc-400">
               <span>조회/구독: {channelForScore.viewToSubRatio.toFixed(1)}%</span>
               <span>성장률: +{channelForScore.growthRate}%</span>
               <span>쇼츠: {shortsVideos.length}개</span>
@@ -698,19 +698,19 @@ export default function ChannelPage({
         {/* Stats Cards */}
         <div className="mb-8 grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4">
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">구독자</div>
+            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">구독자</div>
             <div className="mt-1 text-2xl font-black text-white">{formatNumber(channel.subscribers)}</div>
           </div>
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">총 조회수</div>
+            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">총 조회수</div>
             <div className="mt-1 text-2xl font-black text-[#06b6d4]">{formatNumber(channel.totalViews)}</div>
           </div>
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">영상 수</div>
+            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">영상 수</div>
             <div className="mt-1 text-2xl font-black text-white">{channel.videoCount}</div>
           </div>
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-500">쇼츠 평균 조회</div>
+            <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">쇼츠 평균 조회</div>
             <div className="mt-1 text-2xl font-black text-[#00e5a0]">{formatNumber(shortsAvgViews)}</div>
             {viewTrend.length >= 2 && (
               <div className="mt-2">
@@ -730,7 +730,7 @@ export default function ChannelPage({
 
             {/* 월 평균 */}
             <div className="mb-4 rounded-xl bg-gradient-to-r from-[#00e5a0]/10 to-[#06b6d4]/10 border border-[#00e5a0]/20 p-4">
-              <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-400">월 평균 예상 수익</div>
+              <div className="text-[10px] font-medium uppercase tracking-widest text-zinc-300">월 평균 예상 수익</div>
               <div className="mt-1 text-3xl font-black text-[#00e5a0]">
                 {revenueData.avgMonthlyRevenue.toLocaleString()}원
               </div>
@@ -741,15 +741,15 @@ export default function ChannelPage({
               {revenueData.months.map((m) => (
                 <div key={m.month} className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2.5">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-semibold text-zinc-400">{m.month}</span>
-                    <span className="text-[11px] text-zinc-600">{m.videoCount}개 영상 · 조회수 {formatNumber(m.views)}</span>
+                    <span className="text-xs font-semibold text-zinc-300">{m.month}</span>
+                    <span className="text-[11px] text-zinc-500">{m.videoCount}개 영상 · 조회수 {formatNumber(m.views)}</span>
                   </div>
                   <span className="text-sm font-bold text-[#00e5a0]">{m.revenue.toLocaleString()}원</span>
                 </div>
               ))}
             </div>
 
-            <p className="mt-3 text-[10px] text-zinc-600">
+            <p className="mt-3 text-[10px] text-zinc-500">
               * 쇼츠 조회수 기준 추정치이며, 실제 수익은 시청 지역·광고 단가·유효 조회 비율 등에 따라 달라질 수 있습니다.
             </p>
           </div>
@@ -781,7 +781,7 @@ export default function ChannelPage({
         )}
 
         {/* 히스토리 차트 (구독자 추이 + 비율 변화 + 떡상 지수) */}
-        <div className="mb-2 flex items-center gap-1.5 text-[11px] text-zinc-600">
+        <div className="mb-2 flex items-center gap-1.5 text-[11px] text-zinc-500">
           <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
           </svg>
@@ -798,11 +798,11 @@ export default function ChannelPage({
             <div className="mb-3 space-y-2">
               {memoList.map((entry, i) => (
                 <div key={i} className="group flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2.5">
-                  <span className="shrink-0 text-[11px] text-zinc-600">{entry.date}</span>
+                  <span className="shrink-0 text-[11px] text-zinc-500">{entry.date}</span>
                   <p className="flex-1 text-sm text-zinc-300">{entry.text}</p>
                   <button
                     onClick={() => deleteMemo(i)}
-                    className="shrink-0 text-zinc-600 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
+                    className="shrink-0 text-zinc-500 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -829,7 +829,7 @@ export default function ChannelPage({
               className={`shrink-0 self-end rounded-lg px-4 py-2.5 text-xs font-medium transition-all ${
                 memoSaved
                   ? "bg-[#00e5a0]/20 text-[#00e5a0]"
-                  : "bg-white/5 text-zinc-400 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5"
+                  : "bg-white/5 text-zinc-300 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5"
               }`}
             >
               {memoSaved ? "저장됨!" : "저장"}
@@ -849,7 +849,7 @@ export default function ChannelPage({
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                     showShorts === type
                       ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f]"
-                      : "text-zinc-400 hover:text-zinc-200"
+                      : "text-zinc-300 hover:text-zinc-200"
                   }`}
                 >
                   {type === "all" ? "전체" : type === "shorts" ? "쇼츠" : "일반 영상"}
@@ -859,7 +859,7 @@ export default function ChannelPage({
           </div>
 
           {filteredVideos.length === 0 ? (
-            <p className="py-10 text-center text-sm text-zinc-600">해당하는 영상이 없습니다</p>
+            <p className="py-10 text-center text-sm text-zinc-500">해당하는 영상이 없습니다</p>
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {displayedVideos.map((v) => (
@@ -879,7 +879,7 @@ export default function ChannelPage({
                       />
                     ) : (
                       <div className="flex h-20 w-32 items-center justify-center rounded-lg bg-white/5 sm:h-24 sm:w-36">
-                        <svg className="h-6 w-6 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-6 w-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z" />
                         </svg>
                       </div>
@@ -897,7 +897,7 @@ export default function ChannelPage({
                     <h3 className="line-clamp-2 text-sm font-medium text-zinc-200 group-hover:text-white">
                       {v.title}
                     </h3>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500">
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
                       <span>조회수 {formatNumber(v.views)}</span>
                       <span>좋아요 {formatNumber(v.likes)}</span>
                       <span>{daysSince(v.publishedAt)}</span>
@@ -928,7 +928,7 @@ export default function ChannelPage({
                       className={`mt-2 flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-all ${
                         benchmarkedIds.has(v.id)
                           ? "bg-violet-500/20 text-violet-400"
-                          : "bg-white/5 text-zinc-500 hover:bg-white/10 hover:text-zinc-300"
+                          : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-300"
                       }`}
                     >
                       <svg className="h-3 w-3" fill={benchmarkedIds.has(v.id) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -945,7 +945,7 @@ export default function ChannelPage({
           {!showAllVideos && filteredVideos.length > 10 && (
             <button
               onClick={() => setShowAllVideos(true)}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 text-sm font-medium text-zinc-400 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-zinc-200"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-zinc-200"
             >
               나머지 {filteredVideos.length - 10}개 더보기
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -957,7 +957,7 @@ export default function ChannelPage({
           {showAllVideos && filteredVideos.length > 10 && (
             <button
               onClick={() => setShowAllVideos(false)}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 text-sm font-medium text-zinc-400 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-zinc-200"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/10 hover:bg-white/[0.04] hover:text-zinc-200"
             >
               접기
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -972,7 +972,7 @@ export default function ChannelPage({
           <div>
             <div className="mb-4 flex items-center gap-2">
               <h2 className="text-lg font-bold text-white">비슷한 채널</h2>
-              <span className="text-xs text-zinc-600">구독자 규모가 비슷한 채널</span>
+              <span className="text-xs text-zinc-500">구독자 규모가 비슷한 채널</span>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {similarChannels.map((ch) => {
@@ -999,14 +999,14 @@ export default function ChannelPage({
                       <h3 className="truncate text-sm font-semibold text-zinc-200 group-hover:text-[#00e5a0] transition-colors">
                         {ch.name}
                       </h3>
-                      <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-500">
+                      <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-400">
                         <span>{formatNumber(ch.subscribers)} 구독</span>
                         <span className={`font-bold ${getScoreColor(t)}`}>
                           {t}·{s}점
                         </span>
                       </div>
                     </div>
-                    <div className="text-xs text-zinc-600 group-hover:text-zinc-400">→</div>
+                    <div className="text-xs text-zinc-500 group-hover:text-zinc-300">→</div>
                   </Link>
                 );
               })}
@@ -1015,7 +1015,7 @@ export default function ChannelPage({
         )}
       </main>
 
-      <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-600">
+      <footer className="border-t border-white/5 py-6 text-center text-xs text-zinc-500">
         &copy; 2026 시나브로. All rights reserved.
       </footer>
     </div>

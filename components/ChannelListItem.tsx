@@ -16,7 +16,7 @@ function getRatioColor(ratio: number): string {
   if (ratio >= 1000) return "text-[#00e5a0]";
   if (ratio >= 500) return "text-[#06b6d4]";
   if (ratio >= 200) return "text-amber-400";
-  return "text-zinc-400";
+  return "text-zinc-300";
 }
 
 function getRatioLabel(ratio: number): string {
@@ -83,7 +83,7 @@ export default function ChannelListItem({
           className={`h-4 w-4 ${
             isFavorite
               ? "fill-amber-400 text-amber-400"
-              : "fill-none text-zinc-600 hover:text-amber-400"
+              : "fill-none text-zinc-500 hover:text-amber-400"
           }`}
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -124,7 +124,7 @@ export default function ChannelListItem({
             </span>
           )}
         </div>
-        <p className="hidden truncate text-xs text-zinc-500 sm:block">
+        <p className="hidden truncate text-xs text-zinc-400 sm:block">
           {channel.description}
         </p>
       </div>
@@ -132,7 +132,7 @@ export default function ChannelListItem({
       {/* Stats — responsive columns */}
       <div className="hidden items-center gap-6 text-right sm:flex">
         <div className="w-14">
-          <div className="text-[9px] uppercase text-zinc-600">떡상지수</div>
+          <div className="text-[9px] uppercase text-zinc-500">떡상지수</div>
           {(() => {
             const s = calculateScore(channel);
             const t = getScoreTier(s);
@@ -145,21 +145,21 @@ export default function ChannelListItem({
           })()}
         </div>
         <div className="w-16">
-          <div className="text-[9px] uppercase text-zinc-600">구독자</div>
+          <div className="text-[9px] uppercase text-zinc-500">구독자</div>
           <div className="text-sm font-bold text-zinc-300">{formatNumber(channel.subscribers)}</div>
         </div>
         <div className="w-16">
-          <div className="text-[9px] uppercase text-zinc-600">평균조회</div>
+          <div className="text-[9px] uppercase text-zinc-500">평균조회</div>
           <div className="text-sm font-bold text-zinc-300">{formatNumber(channel.avgViews)}</div>
         </div>
         <div className="w-20">
-          <div className="text-[9px] uppercase text-zinc-600">비율</div>
+          <div className="text-[9px] uppercase text-zinc-500">비율</div>
           <div className={`text-sm font-black ${getRatioColor(channel.viewToSubRatio)}`}>
             {channel.viewToSubRatio.toFixed(1)}%
           </div>
         </div>
         <div className="w-14">
-          <div className="text-[9px] uppercase text-zinc-600">성장률</div>
+          <div className="text-[9px] uppercase text-zinc-500">성장률</div>
           <div className="text-sm font-bold text-emerald-400">+{channel.growthRate}%</div>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function ChannelListItem({
       {/* Detail link */}
       <Link
         href={`/channel/${channel.id}`}
-        className="shrink-0 text-xs text-zinc-600 transition-colors hover:text-[#00e5a0]"
+        className="shrink-0 text-xs text-zinc-500 transition-colors hover:text-[#00e5a0]"
       >
         →
       </Link>

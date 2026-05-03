@@ -1,6 +1,6 @@
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-white/5 bg-black/20 px-5 py-8 text-xs text-zinc-400">
+    <footer className="border-t border-white/5 bg-black/20 px-5 py-8 text-xs text-zinc-300">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1.5">
@@ -10,7 +10,7 @@ export default function SiteFooter() {
               문의:{" "}
               <a
                 href="mailto:seenabr00@gmail.com"
-                className="text-zinc-400 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
+                className="text-zinc-300 underline decoration-dotted underline-offset-2 hover:text-zinc-200"
               >
                 seenabr00@gmail.com
               </a>
@@ -31,7 +31,7 @@ export default function SiteFooter() {
             </a>
           </nav>
         </div>
-        <p className="mt-6 border-t border-white/[0.04] pt-4 text-center text-[11px] text-zinc-400">
+        <p className="mt-6 border-t border-white/[0.04] pt-4 text-center text-[11px] text-zinc-300">
           &copy; 2026 시나브로. All rights reserved.
         </p>
       </div>

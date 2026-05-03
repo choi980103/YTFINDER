@@ -16,7 +16,7 @@ export default function TermsPage() {
 
       <header className="mb-10 border-b border-white/[0.06] pb-6">
         <h1 className="text-2xl font-bold text-white sm:text-3xl">이용약관</h1>
-        <p className="mt-2 text-sm text-zinc-400">시행일: 2026년 4월 22일</p>
+        <p className="mt-2 text-sm text-zinc-300">시행일: 2026년 4월 22일</p>
       </header>
 
       <article className="prose prose-invert max-w-none text-sm leading-relaxed text-zinc-300">
@@ -120,20 +120,20 @@ export default function TermsPage() {
         <section className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
           <h2 className="mb-3 text-lg font-bold text-white">사업자 정보</h2>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-            <dt className="text-zinc-400">상호</dt>
+            <dt className="text-zinc-300">상호</dt>
             <dd className="text-zinc-200">시나브로</dd>
-            <dt className="text-zinc-400">대표자</dt>
+            <dt className="text-zinc-300">대표자</dt>
             <dd className="text-zinc-200">최준혁</dd>
-            <dt className="text-zinc-400">사업자등록번호</dt>
+            <dt className="text-zinc-300">사업자등록번호</dt>
             <dd className="text-zinc-200">187-21-02241</dd>
-            <dt className="text-zinc-400">문의 이메일</dt>
+            <dt className="text-zinc-300">문의 이메일</dt>
             <dd className="text-zinc-200">seenabr00@gmail.com</dd>
-            <dt className="text-zinc-400">사업장 주소</dt>
-            <dd className="text-zinc-400">문의 시 별도 제공</dd>
+            <dt className="text-zinc-300">사업장 주소</dt>
+            <dd className="text-zinc-300">문의 시 별도 제공</dd>
           </dl>
         </section>
 
-        <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-400">
+        <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-300">
           <p>부칙</p>
           <p className="mt-1">본 약관은 2026년 4월 22일부터 시행합니다.</p>
         </section>

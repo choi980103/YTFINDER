@@ -102,7 +102,7 @@ export default function ChannelGrid({
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5">
           <svg
-            className="h-8 w-8 text-zinc-600"
+            className="h-8 w-8 text-zinc-500"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -118,7 +118,7 @@ export default function ChannelGrid({
         <h3 className="text-sm font-medium text-zinc-300">
           {showFavoritesOnly ? "즐겨찾기한 채널이 없습니다" : "검색 결과가 없습니다"}
         </h3>
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="mt-1 text-xs text-zinc-400">
           {showFavoritesOnly
             ? "관심 채널에 별표를 눌러 추가해보세요"
             : "다른 키워드나 카테고리로 검색해보세요"}
@@ -132,13 +132,13 @@ export default function ChannelGrid({
       {/* Results count + View toggle */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             <span className="font-semibold text-white">
               {displayChannels.length}
             </span>
             개 채널
             {totalPages > 1 && (
-              <span className="ml-1.5 text-zinc-600">
+              <span className="ml-1.5 text-zinc-500">
                 ({safePage + 1}/{totalPages})
               </span>
             )}
@@ -152,7 +152,7 @@ export default function ChannelGrid({
 
         <div className="flex items-center gap-2">
           {/* Color legend — hidden on mobile */}
-          <div className="hidden items-center gap-1.5 text-[10px] text-zinc-600 sm:flex">
+          <div className="hidden items-center gap-1.5 text-[10px] text-zinc-500 sm:flex">
             <span className="h-2 w-2 rounded-full bg-[#00e5a0]" />
             1000%+
             <span className="ml-1.5 h-2 w-2 rounded-full bg-[#06b6d4]" />
@@ -166,7 +166,7 @@ export default function ChannelGrid({
             <button
               onClick={() => { setViewMode("grid"); setPage(0); }}
               className={`rounded-md p-1.5 transition-colors ${
-                viewMode === "grid" ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"
+                viewMode === "grid" ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-300"
               }`}
               title="그리드 뷰"
             >
@@ -177,7 +177,7 @@ export default function ChannelGrid({
             <button
               onClick={() => { setViewMode("list"); setPage(0); }}
               className={`rounded-md p-1.5 transition-colors ${
-                viewMode === "list" ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"
+                viewMode === "list" ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-300"
               }`}
               title="리스트 뷰"
             >
@@ -191,7 +191,7 @@ export default function ChannelGrid({
 
       {/* Drag hint */}
       {isDraggable && displayChannels.length > 1 && (
-        <div className="mb-3 flex items-center gap-2 text-[10px] text-zinc-600">
+        <div className="mb-3 flex items-center gap-2 text-[10px] text-zinc-500">
           <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
@@ -232,7 +232,7 @@ export default function ChannelGrid({
       {viewMode === "list" && (
         <div className="flex flex-col gap-2">
           {/* List header */}
-          <div className="hidden items-center gap-3 px-4 py-2 text-[9px] font-semibold uppercase tracking-wider text-zinc-600 sm:flex sm:gap-4">
+          <div className="hidden items-center gap-3 px-4 py-2 text-[9px] font-semibold uppercase tracking-wider text-zinc-500 sm:flex sm:gap-4">
             <span className="w-6 text-center">#</span>
             <span className="w-4" />
             <span className="w-9" />
@@ -276,7 +276,7 @@ export default function ChannelGrid({
           <button
             onClick={() => setPage(Math.max(0, safePage - 1))}
             disabled={safePage === 0}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             ← 이전
           </button>
@@ -288,7 +288,7 @@ export default function ChannelGrid({
               className={`h-9 w-9 rounded-lg text-sm font-medium transition-all ${
                 i === safePage
                   ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/10"
-                  : "border border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10"
+                  : "border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
               }`}
             >
               {i + 1}
@@ -298,7 +298,7 @@ export default function ChannelGrid({
           <button
             onClick={() => setPage(Math.min(totalPages - 1, safePage + 1))}
             disabled={safePage === totalPages - 1}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             다음 →
           </button>

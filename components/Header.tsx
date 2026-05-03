@@ -21,7 +21,7 @@ export default function Header({ onApiKeyClick, isConnected }: HeaderProps) {
           <ChangelogBell />
           <Link
             href="/intro"
-            className="hidden text-sm font-medium text-zinc-400 transition-colors hover:text-white sm:inline-block"
+            className="hidden text-sm font-medium text-zinc-300 transition-colors hover:text-white sm:inline-block"
           >
             소개
           </Link>
@@ -31,7 +31,7 @@ export default function Header({ onApiKeyClick, isConnected }: HeaderProps) {
           >
             요금제
           </Link>
-          <div className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-400 sm:flex">
+          <div className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 sm:flex">
             <span
               className={`h-2 w-2 rounded-full ${isConnected ? "bg-[#00e5a0] pulse-green" : "bg-zinc-600"}`}
             />

@@ -11,7 +11,7 @@ export default function SiteHeader() {
         <nav className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/intro"
-            className="hidden text-sm font-medium text-zinc-400 transition-colors hover:text-white sm:inline-block"
+            className="hidden text-sm font-medium text-zinc-300 transition-colors hover:text-white sm:inline-block"
           >
             소개
           </Link>

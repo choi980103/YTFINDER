@@ -11,7 +11,7 @@ export default function FailClient() {
   return (
     <main className="mx-auto max-w-md px-5 py-20 text-center">
       <h1 className="mb-4 text-xl font-bold text-white">✗ 카드 등록 실패</h1>
-      <p className="text-sm text-zinc-400">
+      <p className="text-sm text-zinc-300">
         [{code || "UNKNOWN"}] {message || "원인 불명"}
       </p>
       <Link

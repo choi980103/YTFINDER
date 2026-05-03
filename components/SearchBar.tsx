@@ -63,7 +63,7 @@ export default function SearchBar({
         {/* Search Input */}
         <div className="relative flex-1">
           <svg
-            className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500"
+            className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -121,7 +121,7 @@ export default function SearchBar({
         {/* Subscriber Range + Channel Age Filters */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-zinc-500">구독자 수</span>
+            <span className="text-xs font-medium text-zinc-400">구독자 수</span>
             {subRanges.map((r) => (
               <button
                 key={r.value}
@@ -129,7 +129,7 @@ export default function SearchBar({
                 className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                   subRange === r.value
                     ? "bg-gradient-to-r from-[#a78bfa] to-[#818cf8] text-white shadow-lg shadow-[#a78bfa]/20"
-                    : "border border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
+                    : "border border-white/10 bg-white/5 text-zinc-300 hover:border-white/20 hover:text-zinc-200"
                 }`}
               >
                 {r.label}
@@ -138,13 +138,13 @@ export default function SearchBar({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-zinc-500">채널 나이</span>
+            <span className="text-xs font-medium text-zinc-400">채널 나이</span>
             <button
               onClick={() => onChannelAgeChange(channelAge === "all" ? "1year" : "all")}
               className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                 channelAge === "1year"
                   ? "bg-gradient-to-r from-[#f472b6] to-[#fb923c] text-white shadow-lg shadow-[#f472b6]/20"
-                  : "border border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
+                  : "border border-white/10 bg-white/5 text-zinc-300 hover:border-white/20 hover:text-zinc-200"
               }`}
             >
               최근 1년 이내 생성
@@ -153,7 +153,7 @@ export default function SearchBar({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-zinc-500">월 예상 수익</span>
+          <span className="text-xs font-medium text-zinc-400">월 예상 수익</span>
           {revenueRanges.map((r) => (
             <button
               key={r.value}
@@ -161,7 +161,7 @@ export default function SearchBar({
               className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                 revenueRange === r.value
                   ? "bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] text-[#0a0a0f] shadow-lg shadow-[#00e5a0]/20"
-                  : "border border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
+                  : "border border-white/10 bg-white/5 text-zinc-300 hover:border-white/20 hover:text-zinc-200"
               }`}
             >
               {r.label}

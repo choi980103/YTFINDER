@@ -17,7 +17,7 @@ export default function NotFound() {
         <p className="mb-1 text-lg font-medium text-zinc-300">
           페이지를 찾을 수 없습니다
         </p>
-        <p className="mb-8 text-sm text-zinc-500">
+        <p className="mb-8 text-sm text-zinc-400">
           요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.
         </p>
         <Link
@@ -27,7 +27,7 @@ export default function NotFound() {
           메인으로 돌아가기
         </Link>
 
-        <footer className="absolute bottom-6 text-xs text-zinc-600">
+        <footer className="absolute bottom-6 text-xs text-zinc-500">
           &copy; 2026 시나브로. All rights reserved.
         </footer>
       </div>

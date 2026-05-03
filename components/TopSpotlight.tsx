@@ -86,7 +86,7 @@ export default function TopSpotlight({ channels }: TopSpotlightProps) {
                 <h3 className="truncate text-sm font-bold text-white group-hover:text-yellow-400 transition-colors">
                   {ch.name}
                 </h3>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-500">
+                <div className="flex items-center gap-2 text-[10px] text-zinc-400">
                   <span>{formatNumber(ch.subscribers)} 구독</span>
                   <span className={`font-bold ${getHoneyColor(tier)}`}>
                     {tier} · {getHoneyLabel(tier)}
@@ -98,19 +98,19 @@ export default function TopSpotlight({ channels }: TopSpotlightProps) {
             {/* Stats Row */}
             <div className="mt-3 flex items-center gap-3 text-xs">
               <div className="rounded-md bg-white/[0.04] px-2 py-1">
-                <span className="text-zinc-500">월 수익 </span>
+                <span className="text-zinc-400">월 수익 </span>
                 <span className={`font-bold ${getHoneyColor(tier)}`}>
                   {formatRevenue(revenue)}원
                 </span>
               </div>
               <div className="rounded-md bg-white/[0.04] px-2 py-1">
-                <span className="text-zinc-500">비율 </span>
+                <span className="text-zinc-400">비율 </span>
                 <span className="font-bold text-[#06b6d4]">
                   {ch.viewToSubRatio.toFixed(0)}%
                 </span>
               </div>
               <div className="rounded-md bg-white/[0.04] px-2 py-1">
-                <span className="text-zinc-500">조회 </span>
+                <span className="text-zinc-400">조회 </span>
                 <span className="font-bold text-zinc-300">{formatNumber(ch.avgViews)}</span>
               </div>
             </div>

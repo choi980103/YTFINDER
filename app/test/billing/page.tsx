@@ -95,7 +95,7 @@ export default function BillingTestPage() {
       <div className="mb-10">
         <p className="mb-2 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Internal · Test</p>
         <h1 className="text-2xl font-bold text-white sm:text-3xl">토스 빌링 연동 테스트</h1>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-zinc-400">
           테스트 환경 — 실 결제는 일어나지 않습니다. 카드창에 아무 카드 번호나 입력해도 OK
           (예: 4330-1234-1234-1234, 만료 12/30, 비밀번호 두 자리 00, 생년월일 0101).
         </p>
@@ -111,7 +111,7 @@ export default function BillingTestPage() {
         {billingInfo ? (
           <div className="space-y-3">
             <p className="text-xs font-medium text-[#00e5a0]">✓ 카드 등록 완료</p>
-            <pre className="overflow-auto rounded-lg bg-black/40 p-3 text-[11px] leading-relaxed text-zinc-400">
+            <pre className="overflow-auto rounded-lg bg-black/40 p-3 text-[11px] leading-relaxed text-zinc-300">
 {JSON.stringify(billingInfo, null, 2)}
             </pre>
           </div>
@@ -140,7 +140,7 @@ export default function BillingTestPage() {
           {loading ? "결제 중..." : billingInfo ? "₩100 결제 요청" : "먼저 카드를 등록하세요"}
         </button>
         {chargeResult ? (
-          <pre className="mt-4 overflow-auto rounded-lg bg-black/40 p-3 text-[11px] leading-relaxed text-zinc-400">
+          <pre className="mt-4 overflow-auto rounded-lg bg-black/40 p-3 text-[11px] leading-relaxed text-zinc-300">
 {JSON.stringify(chargeResult, null, 2)}
           </pre>
         ) : null}
@@ -155,7 +155,7 @@ export default function BillingTestPage() {
       {billingInfo && (
         <button
           onClick={handleReset}
-          className="text-xs text-zinc-500 underline transition-colors hover:text-zinc-300"
+          className="text-xs text-zinc-400 underline transition-colors hover:text-zinc-300"
         >
           빌링 정보 초기화
         </button>

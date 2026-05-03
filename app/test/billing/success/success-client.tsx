@@ -65,9 +65,9 @@ export default function SuccessClient() {
         {status === "ok" && "✓ 카드 등록 완료"}
         {status === "error" && "✗ 발급 실패"}
       </h1>
-      <p className="mb-4 text-sm text-zinc-400">{message}</p>
+      <p className="mb-4 text-sm text-zinc-300">{message}</p>
       {details ? (
-        <pre className="mt-4 overflow-auto rounded-lg bg-black/40 p-3 text-left text-[11px] leading-relaxed text-zinc-500">
+        <pre className="mt-4 overflow-auto rounded-lg bg-black/40 p-3 text-left text-[11px] leading-relaxed text-zinc-400">
 {JSON.stringify(details, null, 2)}
         </pre>
       ) : null}

@@ -26,9 +26,9 @@ export default function FailClient() {
           <h1 className="mb-2 text-xl font-bold text-white">결제가 취소되었습니다</h1>
           <p className="mb-2 text-sm text-zinc-300">{message || "사용자가 결제를 취소했거나 오류가 발생했습니다."}</p>
           {code && (
-            <p className="mb-6 text-[11px] font-mono text-zinc-500">에러 코드: {code}</p>
+            <p className="mb-6 text-[11px] font-mono text-zinc-400">에러 코드: {code}</p>
           )}
-          <p className="mb-6 text-xs text-zinc-500">
+          <p className="mb-6 text-xs text-zinc-400">
             카드 등록 단계에서 취소된 경우 결제는 진행되지 않습니다.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">

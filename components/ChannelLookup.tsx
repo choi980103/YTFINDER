@@ -226,7 +226,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
           <span className="text-lg">🍯</span>
           <h3 className="text-base font-bold text-white sm:text-lg">꿀채널인지 알아보기</h3>
         </div>
-        <p className="text-xs text-zinc-400">
+        <p className="text-xs text-zinc-300">
           유튜브 채널 URL 또는 @핸들을 붙여넣어 주세요
         </p>
       </div>
@@ -285,7 +285,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
             )}
             <div className="min-w-0 flex-1">
               <h4 className="truncate text-sm font-bold text-white">{result.channel.name}</h4>
-              <div className="flex items-center gap-3 text-xs text-zinc-500">
+              <div className="flex items-center gap-3 text-xs text-zinc-400">
                 <span>{formatNumber(result.channel.subscribers)} 구독자</span>
                 <span>평균 조회수 {formatNumber(result.channel.avgViews)}</span>
               </div>
@@ -301,7 +301,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
                     className={`h-4 w-4 transition-colors ${
                       favorites?.has(result.channel.id)
                         ? "fill-amber-400 text-amber-400"
-                        : "fill-none text-zinc-500 hover:text-amber-400"
+                        : "fill-none text-zinc-400 hover:text-amber-400"
                     }`}
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -327,7 +327,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
           {/* 꿀통 지수 + 떡상 지수 */}
           <div className="grid grid-cols-2 gap-3">
             <div className={`rounded-xl border p-3 text-center ${getHoneyBg(result.honeyTier)}`}>
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">꿀통 지수</div>
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">꿀통 지수</div>
               <div className={`text-3xl font-black ${getHoneyColor(result.honeyTier)}`}>{result.honeyScore}</div>
               <div className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getHoneyBg(result.honeyTier)} ${getHoneyColor(result.honeyTier)}`}>
                 {result.honeyTier} · {getHoneyLabel(result.honeyTier)}
@@ -338,7 +338,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
               result.scoreTier === "A" ? "bg-[#06b6d4]/10 border-[#06b6d4]/30" :
               "bg-zinc-400/10 border-zinc-400/30"
             }`}>
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">떡상 지수</div>
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">떡상 지수</div>
               <div className={`text-3xl font-black ${getScoreColor(result.scoreTier)}`}>{result.score}</div>
               <div className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getScoreColor(result.scoreTier)}`}>
                 {result.scoreTier} · {getScoreLabel(result.scoreTier)}
@@ -349,19 +349,19 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
           {/* 상세 스탯 */}
           <div className="mt-3 grid grid-cols-3 gap-2">
             <div className="rounded-lg bg-white/[0.04] p-2.5 text-center">
-              <div className="text-[10px] text-zinc-500">월 예상 수익</div>
+              <div className="text-[10px] text-zinc-400">월 예상 수익</div>
               <div className={`mt-0.5 text-sm font-bold ${getHoneyColor(result.honeyTier)}`}>
                 {formatRevenue(result.monthlyRevenue)}원
               </div>
             </div>
             <div className="rounded-lg bg-white/[0.04] p-2.5 text-center">
-              <div className="text-[10px] text-zinc-500">조회/구독 비율</div>
+              <div className="text-[10px] text-zinc-400">조회/구독 비율</div>
               <div className="mt-0.5 text-sm font-bold text-[#06b6d4]">
                 {result.channel.viewToSubRatio.toFixed(1)}%
               </div>
             </div>
             <div className="rounded-lg bg-white/[0.04] p-2.5 text-center">
-              <div className="text-[10px] text-zinc-500">월 업로드</div>
+              <div className="text-[10px] text-zinc-400">월 업로드</div>
               <div className="mt-0.5 text-sm font-bold text-zinc-300">
                 {result.channel.monthlyUploads ?? 0}개
               </div>
@@ -374,13 +374,13 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
       {history.length > 0 && (
         <div className="relative mt-5 border-t border-white/[0.06] pt-4">
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400">최근 검색</span>
+            <span className="text-xs font-semibold text-zinc-300">최근 검색</span>
             <button
               onClick={() => {
                 setHistory([]);
                 localStorage.removeItem(LOOKUP_HISTORY_KEY);
               }}
-              className="text-[11px] text-zinc-600 hover:text-zinc-400 transition-colors"
+              className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors"
             >
               전체 삭제
             </button>
@@ -390,7 +390,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
               <div key={item.id} className="group relative flex shrink-0 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 transition-all hover:border-yellow-400/20 hover:bg-white/[0.04]">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFromHistory(item.id); }}
-                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-500 opacity-0 transition-all hover:bg-zinc-700 hover:text-zinc-300 group-hover:opacity-100"
+                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 opacity-0 transition-all hover:bg-zinc-700 hover:text-zinc-300 group-hover:opacity-100"
                 >
                   <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -399,7 +399,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
                 {onToggleFavorite && (
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(item.id); }}
-                    className="absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-500 opacity-0 transition-all hover:bg-zinc-700 hover:text-amber-400 group-hover:opacity-100"
+                    className="absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 opacity-0 transition-all hover:bg-zinc-700 hover:text-amber-400 group-hover:opacity-100"
                     title={favorites?.has(item.id) ? "즐겨찾기 해제" : "즐겨찾기 추가"}
                   >
                     <svg
@@ -426,7 +426,7 @@ export default function ChannelLookup({ apiKey, favorites, onToggleFavorite }: C
                       <span className={`text-[10px] font-bold ${getHoneyColor(getHoneyTier(item.honeyScore))}`}>
                         {item.honeyTier} {item.honeyScore}
                       </span>
-                      <span className="text-[10px] text-zinc-500">
+                      <span className="text-[10px] text-zinc-400">
                         {formatRevenue(item.monthlyRevenue)}원
                       </span>
                     </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Channel } from "@/data/mockChannels";
 import Sparkline from "./Sparkline";
 import Tooltip from "./Tooltip";
+import ChannelTagBar from "./ChannelTagBar";
 import { calculateScore, getScoreTier, getScoreLabel, getScoreColor, getScoreBg, calculateHoneyScore, calculateMonthlyRevenue, getHoneyTier, getHoneyLabel, getHoneyColor, getHoneyBg } from "@/lib/score";
 
 function formatNumber(num: number): string {
@@ -17,7 +18,7 @@ function getRatioColor(ratio: number): string {
   if (ratio >= 1000) return "text-[#00e5a0]";
   if (ratio >= 500) return "text-[#06b6d4]";
   if (ratio >= 200) return "text-amber-400";
-  return "text-zinc-400";
+  return "text-zinc-300";
 }
 
 function getRatioBg(ratio: number): string {
@@ -103,7 +104,7 @@ export default function ChannelCard({
       {onHideChannel && (
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHideChannel(channel.id); }}
-          className="absolute right-2 top-14 z-10 flex h-9 w-9 items-center justify-center rounded-full text-zinc-700 opacity-0 transition-all hover:scale-110 hover:bg-white/10 hover:text-zinc-400 group-hover:opacity-100"
+          className="absolute right-2 top-14 z-10 flex h-9 w-9 items-center justify-center rounded-full text-zinc-600 opacity-0 transition-all hover:scale-110 hover:bg-white/10 hover:text-zinc-300 group-hover:opacity-100"
           title="이 채널 숨기기"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -122,7 +123,7 @@ export default function ChannelCard({
           className={`h-5 w-5 transition-colors ${
             isFavorite
               ? "fill-amber-400 text-amber-400"
-              : "fill-none text-zinc-600 hover:text-amber-400"
+              : "fill-none text-zinc-500 hover:text-amber-400"
           }`}
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -168,13 +169,13 @@ export default function ChannelCard({
                   ? "bg-[#00e5a0]/15 text-[#00e5a0]"
                   : channel.monthlyUploads >= 1
                   ? "bg-[#06b6d4]/15 text-[#06b6d4]"
-                  : "bg-zinc-700/50 text-zinc-500"
+                  : "bg-zinc-700/50 text-zinc-400"
               }`}>
                 {channel.monthlyUploads > 0 ? `${channel.monthlyUploads}개/월` : "휴면"}
               </span>
             )}
           </div>
-          <p className="truncate text-xs text-zinc-500">{channel.description}</p>
+          <p className="truncate text-xs text-zinc-400">{channel.description}</p>
         </div>
       </div>
 
@@ -182,7 +183,7 @@ export default function ChannelCard({
       <div className={`mb-3 rounded-xl border p-3 ${getHoneyBg(honeyTier)}`}>
         <div className="flex items-center justify-between">
           <div className="text-center flex-1">
-            <div className="mb-0.5 flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+            <div className="mb-0.5 flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               꿀통 지수
               <Tooltip text="월 예상 수익(50%) + 조회/구독 비율(25%) + 업로드 빈도(25%) 종합 점수" />
             </div>
@@ -192,14 +193,14 @@ export default function ChannelCard({
             <div className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${getHoneyBg(honeyTier)} ${getHoneyColor(honeyTier)}`}>
               {honeyTier} · {getHoneyLabel(honeyTier)}
             </div>
-            <div className="mt-1.5 text-[11px] font-semibold text-zinc-400">
+            <div className="mt-1.5 text-[11px] font-semibold text-zinc-300">
               월 예상 <span className={getHoneyColor(honeyTier)}>{monthlyRevenue.toLocaleString()}원</span>
             </div>
           </div>
           {/* Sparkline */}
           {channel.viewTrend && channel.viewTrend.length >= 2 && (
             <div className="flex flex-col items-end gap-1">
-              <span className="text-[9px] text-zinc-600">조회수 추이</span>
+              <span className="text-[9px] text-zinc-500">조회수 추이</span>
               <Sparkline
                 data={channel.viewTrend}
                 color={getSparklineColor(channel.viewToSubRatio)}
@@ -212,7 +213,7 @@ export default function ChannelCard({
       {/* 떡상 지수 (서브) */}
       <div className={`mb-4 rounded-xl border p-2.5 ${getScoreBg(tier)}`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+          <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
             떡상 지수
             <Tooltip text="조회/구독 비율(50%) + 성장률(30%) + 활동량(20%) 종합 점수" />
           </div>
@@ -228,7 +229,7 @@ export default function ChannelCard({
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className={`rounded-lg border p-2.5 ${getRatioBg(channel.viewToSubRatio)}`}>
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400">
+          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-300">
             조회/구독 비율
             <Tooltip text="평균 조회수 / 구독자 수 × 100. 높을수록 알고리즘이 밀어주는 채널" />
           </div>
@@ -240,7 +241,7 @@ export default function ChannelCard({
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
-          <div className="text-[10px] uppercase tracking-wider text-zinc-400">
+          <div className="text-[10px] uppercase tracking-wider text-zinc-300">
             구독자
           </div>
           <div className="mt-0.5 text-sm font-bold text-zinc-200">
@@ -248,7 +249,7 @@ export default function ChannelCard({
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
-          <div className="text-[10px] uppercase tracking-wider text-zinc-400">
+          <div className="text-[10px] uppercase tracking-wider text-zinc-300">
             평균 조회수
           </div>
           <div className="mt-0.5 text-sm font-bold text-zinc-200">
@@ -256,7 +257,7 @@ export default function ChannelCard({
           </div>
         </div>
         <div className="rounded-lg bg-white/[0.03] p-2.5">
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400">
+          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-300">
             성장률
             <Tooltip text="최근 구독자 증가 속도. 200% 이상이면 급성장 중" />
           </div>
@@ -270,14 +271,14 @@ export default function ChannelCard({
       {channel.engagementRate !== undefined && (
         <div className="mt-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-400">
+            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-zinc-300">
               참여율
               <Tooltip text="(좋아요 + 댓글) ÷ 조회수. 높을수록 시청자 반응이 좋은 채널" />
             </div>
             <span className={`text-xs font-bold ${
               channel.engagementRate >= 5 ? "text-[#00e5a0]" :
               channel.engagementRate >= 3 ? "text-[#06b6d4]" :
-              channel.engagementRate >= 1 ? "text-amber-400" : "text-zinc-500"
+              channel.engagementRate >= 1 ? "text-amber-400" : "text-zinc-400"
             }`}>
               {channel.engagementRate.toFixed(1)}%
             </span>
@@ -295,9 +296,12 @@ export default function ChannelCard({
         </div>
       )}
 
+      {/* User Tags */}
+      <ChannelTagBar channelId={channel.id} />
+
       {/* Category Tag + Links */}
       <div className="mt-3 flex items-center justify-between">
-        <span className="rounded-md bg-white/[0.05] px-2 py-1 text-[10px] font-medium text-zinc-400">
+        <span className="rounded-md bg-white/[0.05] px-2 py-1 text-[10px] font-medium text-zinc-300">
           {channel.category}
         </span>
         <div className="flex items-center gap-3">
@@ -305,13 +309,13 @@ export default function ChannelCard({
             href={`https://www.youtube.com/channel/${channel.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-zinc-500 transition-colors hover:text-red-400"
+            className="text-xs text-zinc-400 transition-colors hover:text-red-400"
           >
             YouTube
           </a>
           <Link
             href={`/channel/${channel.id}`}
-            className="text-xs text-zinc-500 transition-colors hover:text-[#00e5a0]"
+            className="text-xs text-zinc-400 transition-colors hover:text-[#00e5a0]"
           >
             상세보기 →
           </Link>

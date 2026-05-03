@@ -34,7 +34,7 @@ export default function RecentlyViewed() {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
       <div className="mb-3 flex items-center gap-2">
-        <svg className="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <h3 className="text-sm font-semibold text-zinc-300">최근 본 채널</h3>
@@ -49,7 +49,7 @@ export default function RecentlyViewed() {
             {/* X 삭제 버튼 */}
             <button
               onClick={(e) => handleRemove(e, ch.id)}
-              className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-500 opacity-0 transition-all hover:bg-red-500/20 hover:text-red-400 group-hover:opacity-100"
+              className="absolute -right-1 -top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 opacity-0 transition-all hover:bg-red-500/20 hover:text-red-400 group-hover:opacity-100"
               title="삭제"
             >
               <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -68,10 +68,10 @@ export default function RecentlyViewed() {
                 {ch.name.charAt(0)}
               </div>
             )}
-            <span className="max-w-[64px] truncate text-[10px] text-zinc-500 group-hover:text-zinc-300">
+            <span className="max-w-[64px] truncate text-[10px] text-zinc-400 group-hover:text-zinc-300">
               {ch.name}
             </span>
-            <span className="text-[9px] text-zinc-400">{timeAgo(ch.viewedAt)}</span>
+            <span className="text-[9px] text-zinc-300">{timeAgo(ch.viewedAt)}</span>
           </Link>
         ))}
       </div>

@@ -41,7 +41,7 @@ export default function Tooltip({ text, children }: TooltipProps) {
     >
       {children || (
         <svg
-          className="h-3.5 w-3.5 cursor-help text-zinc-600 transition-colors hover:text-zinc-400"
+          className="h-3.5 w-3.5 cursor-help text-zinc-500 transition-colors hover:text-zinc-300"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

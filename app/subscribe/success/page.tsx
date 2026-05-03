@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <main className="mx-auto max-w-md px-5 py-20 text-center text-sm text-zinc-400">
+        <main className="mx-auto max-w-md px-5 py-20 text-center text-sm text-zinc-300">
           결제 처리 중...
         </main>
       }

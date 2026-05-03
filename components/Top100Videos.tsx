@@ -182,7 +182,7 @@ export default function Top100Videos({ apiKey }: Props) {
         <h3 className="mb-2 text-lg font-semibold text-white">
           API 키를 먼저 연동해주세요
         </h3>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-400">
           상단의 &ldquo;API 키 설정&rdquo; 버튼을 눌러 YouTube API 키를 입력하면
           <br />
           실시간 Top 300 영상 데이터를 볼 수 있어요.
@@ -205,7 +205,7 @@ export default function Top100Videos({ apiKey }: Props) {
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             <span className="gradient-text">🔥 오늘의 Top 300</span>
           </h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-zinc-400">
             최근 3일 이내 {REGION_CONFIG.find((r) => r.id === region)?.desc}을 조회수 순으로
             {videos.length > 0 && videos.length < 300 && (
               <span className="ml-1 text-amber-400/80">
@@ -213,7 +213,7 @@ export default function Top100Videos({ apiKey }: Props) {
               </span>
             )}
             {lastUpdated && (
-              <span className="ml-2 text-zinc-600">
+              <span className="ml-2 text-zinc-500">
                 · {new Date(lastUpdated).toLocaleTimeString("ko-KR", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -247,7 +247,7 @@ export default function Top100Videos({ apiKey }: Props) {
             className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
               region === r.id
                 ? "bg-white/10 text-white shadow-sm"
-                : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
+                : "text-zinc-400 hover:bg-white/5 hover:text-zinc-300"
             }`}
           >
             <span className="text-base">{r.flag}</span>
@@ -269,7 +269,7 @@ export default function Top100Videos({ apiKey }: Props) {
             className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
               filter === f.id
                 ? "bg-white/10 text-white shadow-sm"
-                : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
+                : "text-zinc-400 hover:bg-white/5 hover:text-zinc-300"
             }`}
           >
             <span>{f.icon}</span>
@@ -278,7 +278,7 @@ export default function Top100Videos({ apiKey }: Props) {
               className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                 filter === f.id
                   ? "bg-white/20 text-white"
-                  : "bg-white/5 text-zinc-500"
+                  : "bg-white/5 text-zinc-400"
               }`}
             >
               {counts[f.id]}
@@ -356,7 +356,7 @@ export default function Top100Videos({ apiKey }: Props) {
       {/* 비어있음 */}
       {!isLoading && filteredVideos.length === 0 && !error && (
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] py-16 text-center">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             {videos.length === 0
               ? "최근 3일 이내 인기 영상을 찾지 못했어요. 잠시 후 다시 시도해주세요."
               : "해당 조건의 영상이 없습니다."}
@@ -384,7 +384,7 @@ export default function Top100Videos({ apiKey }: Props) {
                         ? "text-zinc-300"
                         : rank === 3
                         ? "text-orange-400"
-                        : "text-zinc-600"
+                        : "text-zinc-500"
                     }`}
                   >
                     {rank}
@@ -425,10 +425,10 @@ export default function Top100Videos({ apiKey }: Props) {
                   >
                     {v.title}
                   </a>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-zinc-500">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-zinc-400">
                     <Link
                       href={`/channel/${v.channelId}`}
-                      className="truncate font-medium text-zinc-400 transition-colors hover:text-[#06b6d4]"
+                      className="truncate font-medium text-zinc-300 transition-colors hover:text-[#06b6d4]"
                     >
                       {v.channelTitle}
                     </Link>
@@ -447,9 +447,9 @@ export default function Top100Videos({ apiKey }: Props) {
 
       {/* 안내 */}
       {videos.length > 0 && (
-        <p className="mt-6 text-center text-[11px] text-zinc-600">
+        <p className="mt-6 text-center text-[11px] text-zinc-500">
           YouTube Data API v3의{" "}
-          <code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400">
+          <code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
             videos.list (chart=mostPopular)
           </code>
           로 수집 · 최근 3일 이내 영상만 · 6시간마다 자동 갱신

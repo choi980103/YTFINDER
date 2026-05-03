@@ -38,7 +38,7 @@ export default function ChangelogBell() {
     <div ref={ref} className="relative">
       <button
         onClick={handleOpen}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-300 transition-colors hover:bg-white/10 hover:text-white"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -57,7 +57,7 @@ export default function ChangelogBell() {
                 <div className="mb-1.5 text-xs font-semibold text-[#00e5a0]">{entry.date}</div>
                 <ul className="space-y-1">
                   {entry.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-zinc-400">
+                    <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
                       <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-zinc-600" />
                       {item}
                     </li>

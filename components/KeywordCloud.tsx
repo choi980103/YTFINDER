@@ -113,7 +113,7 @@ export default function KeywordCloud({ channels }: KeywordCloudProps) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
         </svg>
         <h3 className="text-sm font-semibold text-zinc-300">핫 콘텐츠 키워드</h3>
-        <span className="text-[10px] text-zinc-600">인기 쇼츠 영상 제목에서 추출</span>
+        <span className="text-[10px] text-zinc-500">인기 쇼츠 영상 제목에서 추출</span>
       </div>
       <div className="flex flex-wrap gap-2">
         {keywords.map(({ word, score, count }) => {
@@ -131,7 +131,7 @@ export default function KeywordCloud({ channels }: KeywordCloudProps) {
             ? "border-[#00e5a0]/30 text-[#00e5a0]"
             : isMedium
               ? "border-[#06b6d4]/20 text-[#06b6d4]"
-              : "border-white/10 text-zinc-400";
+              : "border-white/10 text-zinc-300";
 
           const bg = isHot
             ? "bg-[#00e5a0]/8"

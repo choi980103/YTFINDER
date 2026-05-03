@@ -30,7 +30,7 @@ export default function IntroPage() {
             <p className="mt-6 text-xl font-semibold text-zinc-200 sm:text-2xl">
               숨겨진 꿀통 채널을 가장 먼저 발견하세요
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-500 sm:text-base">
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400 sm:text-base">
               남들보다 먼저 꿀통을 선점하세요.<br />
               조회수가 폭발하는 숨은 채널을 데이터로 먼저 발굴해드립니다.
             </p>
@@ -39,12 +39,12 @@ export default function IntroPage() {
               <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#00e5a0]/20 bg-[#00e5a0]/5 px-3.5 py-1 text-[12px] font-extrabold tracking-wider text-[#00e5a0]">
                 ✨ 부담 없이 시작
               </span>
-              <span className="text-xs text-zinc-500">1개월 구독</span>
+              <span className="text-xs text-zinc-400">1개월 구독</span>
               <div className="mt-2 flex items-baseline gap-1.5">
                 <span className="text-4xl font-black sm:text-5xl">
                   <span className="gradient-text">월 ₩29,900</span>
                 </span>
-                <span className="text-base font-bold text-zinc-400">부터</span>
+                <span className="text-base font-bold text-zinc-300">부터</span>
               </div>
               <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-400/10 px-3 py-1 text-[11px] font-semibold text-amber-300">
                 💡 장기 결제 시 최대 31% 할인 · 월 ₩20,750까지
@@ -55,7 +55,7 @@ export default function IntroPage() {
               >
                 지금 시작하기 →
               </Link>
-              <span className="mt-3 text-[11px] text-zinc-500">
+              <span className="mt-3 text-[11px] text-zinc-400">
                 1개월부터 가능 · 언제든 해지
               </span>
             </div>
@@ -188,15 +188,15 @@ export default function IntroPage() {
             <table className="w-full min-w-[600px] border-collapse text-sm">
               <thead className="bg-white/[0.03]">
                 <tr>
-                  <th className="px-3 py-3.5 text-left font-bold text-zinc-400">항목</th>
-                  <th className="px-3 py-3.5 font-bold text-zinc-400">A사</th>
-                  <th className="px-3 py-3.5 font-bold text-zinc-400">B사</th>
-                  <th className="px-3 py-3.5 font-bold text-zinc-400">C사</th>
-                  <th className="px-3 py-3.5 font-bold text-zinc-400">D사</th>
+                  <th className="px-3 py-3.5 text-left font-bold text-zinc-300">항목</th>
+                  <th className="px-3 py-3.5 font-bold text-zinc-300">A사</th>
+                  <th className="px-3 py-3.5 font-bold text-zinc-300">B사</th>
+                  <th className="px-3 py-3.5 font-bold text-zinc-300">C사</th>
+                  <th className="px-3 py-3.5 font-bold text-zinc-300">D사</th>
                   <th className="px-3 py-3.5 font-bold text-[#00e5a0]">YTFINDER</th>
                 </tr>
               </thead>
-              <tbody className="text-zinc-500">
+              <tbody className="text-zinc-400">
                 <CompareRow item="꿀통 지수 스코어링" cells={[false, false, false, false, true]} />
                 <CompareRow item="히든 꿀통 채널 발굴" cells={[false, false, false, false, true]} />
                 <CompareRow item="쇼츠 특화 분석" cells={[false, "일부", true, false, true]} />
@@ -309,7 +309,7 @@ export default function IntroPage() {
             <h2 className="text-3xl font-black sm:text-4xl">
               <span className="gradient-text">월 ₩29,900</span>부터 시작하세요
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-400">
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-300">
               1·3·6·12개월 플랜 중 선택 가능. 장기 결제 시 최대 31% 할인 (월 ₩20,750)으로 더 합리적입니다.
             </p>
             <Link
@@ -318,7 +318,7 @@ export default function IntroPage() {
             >
               🚀 구독 플랜 보기
             </Link>
-            <div className="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 text-xs text-zinc-500">
+            <div className="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 text-xs text-zinc-400">
               <span><span className="text-[#00e5a0]">🔒</span> 토스페이먼츠 안전 결제</span>
               <span><span className="text-[#00e5a0]">♾️</span> 구독 기간 업데이트 무료</span>
               <span><span className="text-[#00e5a0]">💬</span> 1:1 사용법 안내</span>
@@ -352,7 +352,7 @@ function Section({
         <div className="text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">{label}</div>
         <h2 className="mt-4 text-2xl font-black leading-tight sm:text-3xl">{title}</h2>
         {desc && (
-          <p className={`mt-4 max-w-xl text-sm leading-relaxed text-zinc-400 sm:text-base ${center ? "mx-auto" : ""}`}>
+          <p className={`mt-4 max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base ${center ? "mx-auto" : ""}`}>
             {desc}
           </p>
         )}
@@ -366,7 +366,7 @@ function Stat({ number, label }: { number: string; label: string }) {
   return (
     <div className="text-center">
       <div className="text-3xl font-black sm:text-4xl gradient-text">{number}</div>
-      <div className="mt-1 text-xs text-zinc-500 sm:text-sm">{label}</div>
+      <div className="mt-1 text-xs text-zinc-400 sm:text-sm">{label}</div>
     </div>
   );
 }
@@ -384,7 +384,7 @@ function PainCard({
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
       <div className="mb-3 text-2xl">{icon}</div>
       <h3 className="mb-2 text-base font-bold text-zinc-100">{title}</h3>
-      <p className="text-sm leading-relaxed text-zinc-500">{children}</p>
+      <p className="text-sm leading-relaxed text-zinc-400">{children}</p>
     </div>
   );
 }
@@ -409,7 +409,7 @@ function FeatureItem({
       </div>
       <div className="flex-1">
         <h3 className="mb-1.5 text-base font-bold text-zinc-100 sm:text-lg">{title}</h3>
-        <p className="text-sm leading-relaxed text-zinc-400">{desc}</p>
+        <p className="text-sm leading-relaxed text-zinc-300">{desc}</p>
         {tag && (
           <span className={`mt-2 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${tag.color}`}>
             {tag.label}
@@ -432,7 +432,7 @@ function TabBadge({
       className={`rounded-xl border px-4 py-2 text-sm font-semibold ${
         active
           ? "border-[#00e5a0]/30 bg-[#00e5a0]/10 text-[#00e5a0]"
-          : "border-white/[0.06] bg-white/[0.02] text-zinc-500"
+          : "border-white/[0.06] bg-white/[0.02] text-zinc-400"
       }`}
     >
       {children}
@@ -444,7 +444,7 @@ function TabCard({ title, children }: { title: string; children: React.ReactNode
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-left">
       <h4 className="mb-2 text-sm font-bold text-zinc-100">{title}</h4>
-      <p className="text-sm leading-relaxed text-zinc-500">{children}</p>
+      <p className="text-sm leading-relaxed text-zinc-400">{children}</p>
     </div>
   );
 }
@@ -461,7 +461,7 @@ function CompareRow({ item, cells }: { item: string; cells: (boolean | string)[]
           {c === true ? (
             <span className="text-lg font-bold text-[#00e5a0]">✓</span>
           ) : c === false ? (
-            <span className="text-lg text-zinc-700">✕</span>
+            <span className="text-lg text-zinc-600">✕</span>
           ) : (
             <span className="text-xs">{c}</span>
           )}
@@ -484,7 +484,7 @@ function RecommendCard({
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
       <div className="mb-3 text-xl">{icon}</div>
       <p className="mb-3 text-sm leading-relaxed text-zinc-300">{children}</p>
-      <div className="text-xs font-semibold text-zinc-600">{tag}</div>
+      <div className="text-xs font-semibold text-zinc-500">{tag}</div>
     </div>
   );
 }
@@ -496,7 +496,7 @@ function FaqItem({ q, children }: { q: string; children: React.ReactNode }) {
         <span>💬</span>
         {q}
       </div>
-      <p className="pl-6 text-sm leading-relaxed text-zinc-500">{children}</p>
+      <p className="pl-6 text-sm leading-relaxed text-zinc-400">{children}</p>
     </div>
   );
 }

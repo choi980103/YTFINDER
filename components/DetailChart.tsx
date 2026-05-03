@@ -81,7 +81,7 @@ export default function DetailChart({
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
         <h3 className="text-sm font-semibold text-zinc-300">{title}</h3>
-        <p className="mt-2 text-xs text-zinc-600">데이터가 충분하지 않습니다 (최소 2개 필요)</p>
+        <p className="mt-2 text-xs text-zinc-500">데이터가 충분하지 않습니다 (최소 2개 필요)</p>
       </div>
     );
   }
@@ -94,11 +94,11 @@ export default function DetailChart({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-zinc-300">{title}</h3>
-          {subtitle && <p className="mt-0.5 text-[10px] text-zinc-600">{subtitle}</p>}
+          {subtitle && <p className="mt-0.5 text-[10px] text-zinc-500">{subtitle}</p>}
         </div>
         <div className="flex items-center gap-4 text-[11px]">
-          <span className="text-zinc-500">최저 <span className="font-semibold text-zinc-300">{valueFormatter(rawMin)}</span></span>
-          <span className="text-zinc-500">최고 <span className="font-semibold text-zinc-300">{valueFormatter(rawMax)}</span></span>
+          <span className="text-zinc-400">최저 <span className="font-semibold text-zinc-300">{valueFormatter(rawMin)}</span></span>
+          <span className="text-zinc-400">최고 <span className="font-semibold text-zinc-300">{valueFormatter(rawMax)}</span></span>
         </div>
       </div>
 

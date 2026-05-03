@@ -135,7 +135,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
         </div>
 
         <p className="relative mb-2 text-lg font-semibold text-zinc-200 sm:text-xl">숨겨진 꿀통 채널을 가장 먼저 발견하세요</p>
-        <p className="relative mx-auto mb-10 max-w-lg text-sm leading-relaxed text-zinc-400">
+        <p className="relative mx-auto mb-10 max-w-lg text-sm leading-relaxed text-zinc-300">
           쇼츠로 실제 수익을 내고 있는 숨겨진 채널, 알고리즘이 밀어주는 진짜 꿀통을 찾아드립니다.
           실시간 YouTube 데이터를 분석해서 수익성 높은 채널을 발굴합니다.
         </p>
@@ -150,12 +150,12 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           </Link>
           <button
             onClick={scrollToCode}
-            className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-zinc-400 transition-all hover:bg-white/[0.06] hover:text-zinc-200"
+            className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-zinc-300 transition-all hover:bg-white/[0.06] hover:text-zinc-200"
           >
             액세스 코드가 이미 있어요
           </button>
         </div>
-        <p className="relative mt-3 text-[11px] text-zinc-400">7일 이내 미사용 시 전액 환불 · 언제든 해지 가능</p>
+        <p className="relative mt-3 text-[11px] text-zinc-300">7일 이내 미사용 시 전액 환불 · 언제든 해지 가능</p>
       </section>
 
       {/* ██ STATS ██ */}
@@ -168,7 +168,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
         ].map((s) => (
           <div key={s.l} className="text-center">
             <div className="text-2xl font-black sm:text-4xl"><span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">{s.n}</span></div>
-            <div className="mt-1 text-xs text-zinc-400 sm:text-sm">{s.l}</div>
+            <div className="mt-1 text-xs text-zinc-300 sm:text-sm">{s.l}</div>
           </div>
         ))}
       </div>
@@ -187,7 +187,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
             <div key={c.t} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-7">
               <div className="mb-3 text-2xl">{c.icon}</div>
               <h3 className="mb-1.5 text-base font-bold text-zinc-100">{c.t}</h3>
-              <p className="text-sm leading-relaxed text-zinc-400">{c.d}</p>
+              <p className="text-sm leading-relaxed text-zinc-300">{c.d}</p>
             </div>
           ))}
         </div>
@@ -197,7 +197,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
       <section className="px-4 py-14 sm:px-6 sm:py-20">
         <p className="mb-3 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Solution</p>
         <h2 className="mb-2 text-2xl font-black sm:text-3xl">YTFINDER가 <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">전부 해결</span>합니다</h2>
-        <p className="mb-10 text-sm text-zinc-400">현직 유튜브 크리에이터 4년차가 직접 만든 분석 도구. 진짜 필요한 기능만 담았습니다.</p>
+        <p className="mb-10 text-sm text-zinc-300">현직 유튜브 크리에이터 4년차가 직접 만든 분석 도구. 진짜 필요한 기능만 담았습니다.</p>
 
         <div className="flex flex-col gap-4">
           {[
@@ -213,7 +213,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl" style={{ background: f.bg }}>{f.icon}</div>
               <div>
                 <h3 className="text-base font-bold sm:text-lg">{f.t}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-zinc-400">{f.d}</p>
+                <p className="mt-1 text-sm leading-relaxed text-zinc-300">{f.d}</p>
                 {f.tag && <span className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ background: `${f.tagColor}15`, color: f.tagColor! }}>{f.tag}</span>}
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
       <section className="px-4 py-14 text-center sm:px-6 sm:py-20">
         <p className="mb-3 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Interface</p>
         <h2 className="mb-2 text-2xl font-black sm:text-3xl">직관적인 <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">4개 탭</span> 구성</h2>
-        <p className="mx-auto mb-8 max-w-md text-sm text-zinc-400">필요한 정보에 빠르게 접근할 수 있도록 목적별로 분류했습니다.</p>
+        <p className="mx-auto mb-8 max-w-md text-sm text-zinc-300">필요한 정보에 빠르게 접근할 수 있도록 목적별로 분류했습니다.</p>
 
         <div className="mx-auto grid max-w-2xl gap-3 text-left sm:grid-cols-2">
           {[
@@ -236,7 +236,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           ].map((tab) => (
             <div key={tab.t} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
               <h4 className="mb-1 flex items-center gap-2 text-sm font-bold"><span>{tab.icon}</span>{tab.t}</h4>
-              <p className="text-xs leading-relaxed text-zinc-400">{tab.d}</p>
+              <p className="text-xs leading-relaxed text-zinc-300">{tab.d}</p>
             </div>
           ))}
         </div>
@@ -246,7 +246,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
       <section id="pricing" className="px-4 py-14 sm:px-6 sm:py-20">
         <p className="mb-3 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Pricing</p>
         <h2 className="mb-2 text-2xl font-black sm:text-3xl">간단한 <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">가격</span>, 부담 없는 시작</h2>
-        <p className="mb-10 text-sm text-zinc-400">
+        <p className="mb-10 text-sm text-zinc-300">
           기간이 길수록 월 단가가 내려갑니다. 7일 이내 미사용 시 전액 환불 · 언제든 해지 가능.
         </p>
 
@@ -280,9 +280,9 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
                     <span className="text-xs font-bold text-[#00e5a0]">-{plan.discount}%</span>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-zinc-400">월 {formatKRW(plan.monthly)} 환산</p>
+                <p className="mt-1 text-xs text-zinc-300">월 {formatKRW(plan.monthly)} 환산</p>
 
-                <ul className="mt-5 flex-1 space-y-2 text-xs text-zinc-400">
+                <ul className="mt-5 flex-1 space-y-2 text-xs text-zinc-300">
                   <li className="flex items-start gap-1.5">
                     <span className="text-[#00e5a0]">✓</span> 모든 기능 무제한 사용
                   </li>
@@ -309,13 +309,13 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           })}
         </div>
 
-        <p className="mt-6 text-center text-[11px] text-zinc-400">
+        <p className="mt-6 text-center text-[11px] text-zinc-300">
           가격은 부가세 포함 · 결제 시{" "}
-          <Link href="/refund" className="underline underline-offset-2 hover:text-zinc-400">
+          <Link href="/refund" className="underline underline-offset-2 hover:text-zinc-300">
             환불정책
           </Link>{" "}
           및{" "}
-          <Link href="/terms" className="underline underline-offset-2 hover:text-zinc-400">
+          <Link href="/terms" className="underline underline-offset-2 hover:text-zinc-300">
             이용약관
           </Link>
           에 동의한 것으로 간주됩니다.
@@ -330,7 +330,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
         <div className="overflow-x-auto rounded-2xl border border-white/[0.06]">
           <table className="w-full min-w-[600px] border-collapse text-sm">
             <thead>
-              <tr className="bg-white/[0.03] text-xs text-zinc-400">
+              <tr className="bg-white/[0.03] text-xs text-zinc-300">
                 <th className="px-4 py-3 text-left font-semibold">항목</th>
                 <th className="px-3 py-3 text-center font-semibold">A사</th>
                 <th className="px-3 py-3 text-center font-semibold">B사</th>
@@ -339,7 +339,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
                 <th className="px-3 py-3 text-center font-semibold text-[#00e5a0]">YTFINDER</th>
               </tr>
             </thead>
-            <tbody className="text-zinc-400">
+            <tbody className="text-zinc-300">
               {[
                 { label: "꿀통 지수 스코어링", a: false, b: false, c: false, d: false, yt: true },
                 { label: "히든 꿀통 채널 발굴", a: false, b: false, c: false, d: false, yt: true },
@@ -352,7 +352,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
                   <td className="px-4 py-3 font-medium text-zinc-300">{row.label}</td>
                   {[row.a, row.b, row.c, row.d].map((v, i) => (
                     <td key={i} className="px-3 py-3 text-center">
-                      {v === true ? <span className="font-bold text-[#00e5a0]">✓</span> : v === false ? <span className="text-zinc-700">✕</span> : <span className="text-zinc-400">{v}</span>}
+                      {v === true ? <span className="font-bold text-[#00e5a0]">✓</span> : v === false ? <span className="text-zinc-600">✕</span> : <span className="text-zinc-300">{v}</span>}
                     </td>
                   ))}
                   <td className="px-3 py-3 text-center bg-[#00e5a0]/[0.03]"><span className="font-bold text-[#00e5a0]">✓</span></td>
@@ -398,7 +398,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
             <div key={r.author} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
               <div className="mb-2 text-sm text-yellow-400">★★★★★</div>
               <p className="mb-3 text-sm leading-relaxed text-zinc-300">&ldquo;{r.text}&rdquo;</p>
-              <p className="text-xs font-semibold text-zinc-400">{r.author}</p>
+              <p className="text-xs font-semibold text-zinc-300">{r.author}</p>
             </div>
           ))}
         </div>
@@ -417,8 +417,8 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
             { q: "기존에 평생이용권을 구매한 경우는요?", a: "기존 평생이용권 구매자분들은 약속대로 평생 사용 가능합니다. 별도 결제 없이 그대로 이용하시면 됩니다." },
           ].map((faq) => (
             <div key={faq.q} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-              <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-zinc-200"><span className="text-zinc-400">Q.</span>{faq.q}</h4>
-              <p className="pl-6 text-sm leading-relaxed text-zinc-400">{faq.a}</p>
+              <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-zinc-200"><span className="text-zinc-300">Q.</span>{faq.q}</h4>
+              <p className="pl-6 text-sm leading-relaxed text-zinc-300">{faq.a}</p>
             </div>
           ))}
         </div>
@@ -430,7 +430,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
 
         <p className="relative mb-3 text-xs font-bold uppercase tracking-[3px] text-[#00e5a0]">Get started</p>
         <h2 className="relative mb-2 text-2xl font-black sm:text-3xl">월 ₩29,900부터 <span className="bg-gradient-to-r from-[#00e5a0] to-[#06b6d4] bg-clip-text text-transparent">바로 시작</span>하세요</h2>
-        <p className="relative mx-auto mb-10 max-w-md text-sm text-zinc-400">7일 이내 미사용 시 전액 환불 · 언제든 해지 가능 · 카드 결제 1분이면 끝</p>
+        <p className="relative mx-auto mb-10 max-w-md text-sm text-zinc-300">7일 이내 미사용 시 전액 환불 · 언제든 해지 가능 · 카드 결제 1분이면 끝</p>
 
         {/* 코드 입력 카드 */}
         <div className="relative mx-auto w-full max-w-sm rounded-2xl border border-white/10 bg-[#12121a] p-6 shadow-2xl">
@@ -440,7 +440,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
             </svg>
             <h3 className="text-lg font-bold text-white">액세스 코드 입력</h3>
           </div>
-          <p className="mb-5 text-xs text-zinc-400">구매 후 발급받은 코드를 입력해주세요.</p>
+          <p className="mb-5 text-xs text-zinc-300">구매 후 발급받은 코드를 입력해주세요.</p>
 
           <input
             ref={codeRef}
@@ -464,7 +464,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
           </button>
 
           <div className="mt-4 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
-            <p className="text-[11px] leading-relaxed text-zinc-400">
+            <p className="text-[11px] leading-relaxed text-zinc-300">
               아직 코드가 없으신가요?{" "}
               <Link href="/subscribe" className="text-[#06b6d4] underline underline-offset-2 hover:text-[#00e5a0]">구독 시작하기 →</Link>
             </p>
@@ -478,7 +478,7 @@ export default function AccessCodeGate({ children }: AccessCodeGateProps) {
             { icon: "🔄", t: "기능 업데이트 무료" },
             { icon: "↩️", t: "7일 이내 환불 가능" },
           ].map((g) => (
-            <div key={g.t} className="flex items-center gap-1.5 text-xs text-zinc-400 sm:text-sm">
+            <div key={g.t} className="flex items-center gap-1.5 text-xs text-zinc-300 sm:text-sm">
               <span className="text-[#00e5a0]">{g.icon}</span>{g.t}
             </div>
           ))}
