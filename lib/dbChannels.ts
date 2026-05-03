@@ -79,7 +79,7 @@ export async function getShortsChannelsFromDb(
 
   const result: Channel[] = [];
   for (const ch of chRows as ChannelRow[]) {
-    const videos = (videosByChannel.get(ch.id) || []).slice(0, 30);
+    const videos = (videosByChannel.get(ch.id) || []).slice(0, 50);
     if (videos.length === 0) continue;
 
     // 최근 90일 이내 업로드 없는 채널 제외 (휴면)
@@ -159,7 +159,7 @@ export async function getTopVideosFromDb(
   const admin = getSupabaseAdmin();
   if (!admin) return [];
 
-  const recentDays = options.recentDays ?? 7;
+  const recentDays = options.recentDays ?? 3;
   const limit = options.limit ?? 300;
   const since = new Date(Date.now() - recentDays * 24 * 3600 * 1000).toISOString();
 
