@@ -3,9 +3,20 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey, isValidChannelId } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
 import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
+import { TTLCache, shouldSkipCache } from "@/lib/serverCache";
 
 // 핸들: @ 포함 가능, 유니코드 문자(한글 등) + 숫자 + 언더스코어/하이픈/닷, 최대 50자
 const HANDLE_REGEX = /^@?[\p{L}\p{N}._-]{1,50}$/u;
+
+type ChannelResponse = {
+  channel: unknown;
+  recentVideos: unknown[];
+};
+
+// 핸들 → 채널 ID (12시간) — 핸들은 거의 안 바뀌므로 길게
+const handleCache = new TTLCache<string>(12 * 60 * 60 * 1000, 500);
+// 채널 상세 + 영상 (30분) — 통계는 자주 바뀌지 않음
+const channelCache = new TTLCache<ChannelResponse>(30 * 60 * 1000, 200);
 
 function parseDuration(iso: string | undefined): number {
   if (!iso) return 0;
@@ -64,10 +75,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "채널 ID 형식이 올바르지 않습니다." }, { status: 400 });
     }
 
-    // @핸들로 채널 ID 조회 (1유닛)
+    const skipCache = shouldSkipCache(request);
+
+    // @핸들로 채널 ID 조회 (1유닛) — 캐시 우선
     let channelId = rawChannelId as string | undefined;
     if (!channelId && typeof handle === "string") {
       const cleanHandle = handle.replace(/^@/, "");
+      const handleKey = `h:${cleanHandle.toLowerCase()}`;
+      if (!skipCache) {
+        const cachedId = handleCache.get(handleKey);
+        if (cachedId) channelId = cachedId;
+      }
+      if (channelId) {
+        // 캐시 hit — 검증만 하고 바로 다음 단계로
+      } else {
       const handleRes = await fetch(
         `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@${encodeURIComponent(cleanHandle)}&key=${apiKey}`
       );
@@ -114,10 +135,20 @@ export async function POST(request: NextRequest) {
       if (!channelId) {
         return NextResponse.json({ error: "해당 핸들의 채널을 찾을 수 없습니다. 핸들이 정확한지 확인해주세요." }, { status: 404 });
       }
+      handleCache.set(handleKey, channelId);
+      } // end cache miss block
     }
 
     if (!channelId || !isValidChannelId(channelId)) {
       return NextResponse.json({ error: "채널 ID 형식이 올바르지 않습니다." }, { status: 400 });
+    }
+
+    // 채널 상세 캐시 조회
+    if (!skipCache) {
+      const cached = channelCache.get(channelId);
+      if (cached) {
+        return NextResponse.json({ ...cached, cached: true });
+      }
     }
 
     // 1. 채널 상세 정보 (1유닛)
@@ -191,7 +222,7 @@ export async function POST(request: NextRequest) {
         recentVideos.push(...videos);
       }
     }
-    return NextResponse.json({
+    const payload: ChannelResponse = {
       channel: {
         id: ch.id,
         name: ch.snippet.title,
@@ -205,7 +236,9 @@ export async function POST(request: NextRequest) {
         country: ch.snippet.country || "",
       },
       recentVideos,
-    });
+    };
+    channelCache.set(channelId, payload);
+    return NextResponse.json(payload);
   } catch (error) {
     return maskError("channel", error);
   }

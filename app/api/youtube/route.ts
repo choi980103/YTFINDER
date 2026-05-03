@@ -3,6 +3,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { isValidApiKey, sanitizeQuery } from "@/lib/validate";
 import { verifyAccess } from "@/lib/verifyAccess";
 import { getClientIp, maskError, verifySameOrigin } from "@/lib/security";
+import { TTLCache, shouldSkipCache } from "@/lib/serverCache";
 
 interface YouTubeChannel {
   id: string;
@@ -17,6 +18,9 @@ interface YouTubeChannel {
   description: string;
   region?: "kr" | "global";
 }
+
+// 검색어별 캐시 (1시간) — 동일 검색어 호출 시 100유닛 search.list 절감
+const searchCache = new TTLCache<YouTubeChannel[]>(60 * 60 * 1000);
 
 function containsKorean(text: string): boolean {
   return /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(text);
@@ -112,6 +116,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "검색어가 올바르지 않습니다." }, { status: 400 });
     }
 
+    // 캐시 조회 (skipCache 헤더 없을 때만)
+    const cacheKey = searchQuery.toLowerCase();
+    if (!shouldSkipCache(request)) {
+      const cached = searchCache.get(cacheKey);
+      if (cached) {
+        return NextResponse.json({ channels: cached, cached: true });
+      }
+    }
+
     // 1. 채널 검색 (100유닛)
     const searchData = await searchChannels(apiKey, searchQuery);
     const channelIds = [
@@ -199,6 +212,8 @@ export async function POST(request: NextRequest) {
     }
 
     channels.sort((a, b) => b.viewToSubRatio - a.viewToSubRatio);
+
+    searchCache.set(cacheKey, channels);
 
     return NextResponse.json({ channels });
   } catch (error) {
