@@ -6,5 +6,18 @@
       "destination": "https://ytfinder.kr/$1",
       "permanent": true
     }
-  ]
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/discover",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/collect",
+      "schedule": "30 9 * * *"
+    }
+  ],
+  "functions": {
+    "app/api/cron/**/*.ts": { "maxDuration": 60 }
+  }
 }
