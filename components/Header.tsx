@@ -20,6 +20,12 @@ export default function Header({ onApiKeyClick, isConnected }: HeaderProps) {
         <div className="flex items-center gap-2 sm:gap-4">
           <ChangelogBell />
           <Link
+            href="/intro"
+            className="hidden text-sm font-medium text-zinc-400 transition-colors hover:text-white sm:inline-block"
+          >
+            소개
+          </Link>
+          <Link
             href="/subscribe"
             className="hidden items-center gap-1.5 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-sm font-semibold text-amber-300 transition-colors hover:bg-amber-400/20 sm:inline-flex"
           >

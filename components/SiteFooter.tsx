@@ -17,6 +17,9 @@ export default function SiteFooter() {
             </p>
           </div>
           <nav className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            <a href="/intro" className="transition-colors hover:text-zinc-200">
+              소개
+            </a>
             <a href="/terms" className="transition-colors hover:text-zinc-200">
               이용약관
             </a>

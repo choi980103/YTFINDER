@@ -8,12 +8,20 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6">
         <Logo />
-        <Link
-          href="/subscribe"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#00e5a0]/30 bg-[#00e5a0]/10 px-3 py-1.5 text-sm font-semibold text-[#00e5a0] transition-colors hover:bg-[#00e5a0]/20"
-        >
-          요금제
-        </Link>
+        <nav className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/intro"
+            className="hidden text-sm font-medium text-zinc-400 transition-colors hover:text-white sm:inline-block"
+          >
+            소개
+          </Link>
+          <Link
+            href="/subscribe"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#00e5a0]/30 bg-[#00e5a0]/10 px-3 py-1.5 text-sm font-semibold text-[#00e5a0] transition-colors hover:bg-[#00e5a0]/20"
+          >
+            요금제
+          </Link>
+        </nav>
       </div>
     </header>
   );
