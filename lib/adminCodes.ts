@@ -48,7 +48,12 @@ export async function generateUniqueCode(plan: Plan): Promise<string> {
       .select("code")
       .eq("code", code)
       .maybeSingle();
-    if (error) throw error;
+    if (error) {
+      const msg = error.message || "알 수 없는 DB 오류";
+      const details = error.details ? ` (${error.details})` : "";
+      const hint = error.hint ? ` [hint: ${error.hint}]` : "";
+      throw new Error(`Supabase 조회 실패: ${msg}${details}${hint}`);
+    }
     if (!data) return code;
   }
   throw new Error("코드 생성 충돌 5회 — 다시 시도해주세요");

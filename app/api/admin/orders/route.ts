@@ -50,7 +50,12 @@ export async function POST(req: NextRequest) {
   try {
     code = await generateUniqueCode(plan);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg =
+      err instanceof Error
+        ? err.message
+        : err && typeof err === "object" && "message" in err
+        ? String((err as { message: unknown }).message)
+        : JSON.stringify(err);
     console.error("[admin/orders] code gen failed", err);
     return NextResponse.json({ error: `코드 생성 실패: ${msg}` }, { status: 500 });
   }
