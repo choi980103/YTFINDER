@@ -16,10 +16,22 @@ import {
 // 채널/영상 정기 갱신 cron — 매일 KST 18:30
 // 가장 오래된(혹은 갱신되지 않은) 채널부터 N개 처리
 // quota 비용: channels.list 1×ceil(N/50) + playlistItems 1×N + videos.list 1×ceil(V/50)
-// N=300, V=50개/채널 = 15000개 → 6 + 300 + 300 = ~606 unit
+// N=80, V=20개/채널 = 1600개 → 2 + 80 + 32 = ~114 unit
+// Vercel function 60s 한도 안에서 안전하게 처리하기 위해 batch 병렬 + 채널 수 축소
 
-const MAX_CHANNELS_PER_RUN = 300;
-const MAX_VIDEOS_PER_CHANNEL = 50;
+const MAX_CHANNELS_PER_RUN = 80;
+const MAX_VIDEOS_PER_CHANNEL = 20;
+const PLAYLIST_FETCH_CONCURRENCY = 10;
+
+async function inBatches<T, R>(items: T[], size: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += size) {
+    const batch = items.slice(i, i + size);
+    const results = await Promise.all(batch.map(fn));
+    out.push(...results);
+  }
+  return out;
+}
 
 export async function GET(request: NextRequest) {
   const denied = verifyCronRequest(request);
@@ -57,21 +69,30 @@ export async function GET(request: NextRequest) {
     await insertSnapshots(channels);
     processedChannels = channels.length;
 
-    // 3) 각 채널의 최근 영상 ID 수집
+    // 3) 각 채널의 최근 영상 ID 수집 (병렬 batch)
+    const channelsWithPlaylist = channels.filter((c) => !!c.uploadsPlaylistId);
+    const playlistResults = await inBatches(
+      channelsWithPlaylist,
+      PLAYLIST_FETCH_CONCURRENCY,
+      async (ch) => {
+        try {
+          const ids = await getRecentVideoIds(ch.uploadsPlaylistId!, MAX_VIDEOS_PER_CHANNEL, quota);
+          return { channelId: ch.id, ids };
+        } catch (err) {
+          console.error("[cron/collect] playlistItems failed", ch.id, err);
+          return { channelId: ch.id, ids: [] as string[] };
+        }
+      }
+    );
+
     const allVideoIds: string[] = [];
     const videoToChannel = new Map<string, string>();
-    for (const ch of channels) {
-      if (!ch.uploadsPlaylistId) continue;
-      try {
-        const ids = await getRecentVideoIds(ch.uploadsPlaylistId, MAX_VIDEOS_PER_CHANNEL, quota);
-        for (const id of ids) {
-          if (!videoToChannel.has(id)) {
-            videoToChannel.set(id, ch.id);
-            allVideoIds.push(id);
-          }
+    for (const { channelId, ids } of playlistResults) {
+      for (const id of ids) {
+        if (!videoToChannel.has(id)) {
+          videoToChannel.set(id, channelId);
+          allVideoIds.push(id);
         }
-      } catch (err) {
-        console.error("[cron/collect] playlistItems failed", ch.id, err);
       }
     }
 
