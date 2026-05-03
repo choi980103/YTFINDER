@@ -23,9 +23,9 @@ import {
 // N=80, V=20개/채널 = 1600개 → 2 + 80 + 32 = ~114 unit
 // Vercel function 60s 한도 안에서 안전하게 처리하기 위해 batch 병렬 + 채널 수 축소
 
-const MAX_CHANNELS_PER_RUN = 80;
+const MAX_CHANNELS_PER_RUN = 10;
 const MAX_VIDEOS_PER_CHANNEL = 20;
-const PLAYLIST_FETCH_CONCURRENCY = 10;
+const PLAYLIST_FETCH_CONCURRENCY = 5;
 
 async function inBatches<T, R>(items: T[], size: number, fn: (item: T) => Promise<R>): Promise<R[]> {
   const out: R[] = [];
