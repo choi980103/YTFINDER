@@ -178,7 +178,20 @@ export async function getRecentVideoIds(
   );
 }
 
-// [1유닛/요청] 영상 상세 batch
+type VideoApiItem = {
+  id: string;
+  snippet: {
+    title: string;
+    publishedAt: string;
+    channelId: string;
+    categoryId?: string;
+    thumbnails?: { medium?: { url: string }; default?: { url: string } };
+  };
+  contentDetails: { duration: string };
+  statistics: { viewCount?: string; likeCount?: string; commentCount?: string };
+};
+
+// [1유닛/요청] 영상 상세 batch — 50개씩 chunk + 8개 chunk씩 병렬
 export async function getVideoDetailsBatch(
   videoIds: string[],
   channelIdMap: Map<string, string>,
@@ -186,43 +199,46 @@ export async function getVideoDetailsBatch(
 ): Promise<RawVideo[]> {
   if (!YOUTUBE_API_KEY) throw new Error("YOUTUBE_API_KEY 미설정");
   if (videoIds.length === 0) return [];
-  const result: RawVideo[] = [];
+
+  const chunks: string[][] = [];
   for (let i = 0; i < videoIds.length; i += 50) {
-    const ids = videoIds.slice(i, i + 50);
-    const url =
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics` +
-      `&id=${ids.join(",")}&key=${YOUTUBE_API_KEY}`;
-    const res = await fetch(url);
-    quota.add(1);
-    if (!res.ok) continue;
-    const data = await res.json();
-    for (const v of (data.items || []) as {
-      id: string;
-      snippet: {
-        title: string;
-        publishedAt: string;
-        channelId: string;
-        categoryId?: string;
-        thumbnails?: { medium?: { url: string }; default?: { url: string } };
-      };
-      contentDetails: { duration: string };
-      statistics: { viewCount?: string; likeCount?: string; commentCount?: string };
-    }[]) {
-      const dur = parseDuration(v.contentDetails.duration);
-      result.push({
-        id: v.id,
-        channelId: v.snippet.channelId || channelIdMap.get(v.id) || "",
-        title: v.snippet.title,
-        thumbnail:
-          v.snippet.thumbnails?.medium?.url || v.snippet.thumbnails?.default?.url || "",
-        publishedAt: v.snippet.publishedAt,
-        durationSeconds: dur,
-        isShort: dur > 0 && dur <= 60,
-        views: parseInt(v.statistics.viewCount || "0", 10),
-        likes: parseInt(v.statistics.likeCount || "0", 10),
-        comments: parseInt(v.statistics.commentCount || "0", 10),
-        categoryId: v.snippet.categoryId,
-      });
+    chunks.push(videoIds.slice(i, i + 50));
+  }
+
+  const result: RawVideo[] = [];
+  for (let bi = 0; bi < chunks.length; bi += 8) {
+    const slice = chunks.slice(bi, bi + 8);
+    const responses = await Promise.all(
+      slice.map(async (ids) => {
+        const url =
+          `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics` +
+          `&id=${ids.join(",")}&key=${YOUTUBE_API_KEY}`;
+        const res = await fetch(url);
+        quota.add(1);
+        if (!res.ok) return null;
+        return res.json() as Promise<{ items?: VideoApiItem[] }>;
+      })
+    );
+
+    for (const data of responses) {
+      if (!data) continue;
+      for (const v of data.items || []) {
+        const dur = parseDuration(v.contentDetails.duration);
+        result.push({
+          id: v.id,
+          channelId: v.snippet.channelId || channelIdMap.get(v.id) || "",
+          title: v.snippet.title,
+          thumbnail:
+            v.snippet.thumbnails?.medium?.url || v.snippet.thumbnails?.default?.url || "",
+          publishedAt: v.snippet.publishedAt,
+          durationSeconds: dur,
+          isShort: dur > 0 && dur <= 60,
+          views: parseInt(v.statistics.viewCount || "0", 10),
+          likes: parseInt(v.statistics.likeCount || "0", 10),
+          comments: parseInt(v.statistics.commentCount || "0", 10),
+          categoryId: v.snippet.categoryId,
+        });
+      }
     }
   }
   return result;
