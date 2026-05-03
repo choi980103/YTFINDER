@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Logo from "@/components/Logo";
+import SiteFooter from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "이용약관 | YTFINDER",
@@ -19,7 +20,7 @@ export default function TermsPage() {
 
       <header className="mb-10 border-b border-white/[0.06] pb-6">
         <h1 className="text-2xl font-bold text-white sm:text-3xl">이용약관</h1>
-        <p className="mt-2 text-sm text-zinc-500">시행일: 2026년 4월 22일</p>
+        <p className="mt-2 text-sm text-zinc-400">시행일: 2026년 4월 22일</p>
       </header>
 
       <article className="prose prose-invert max-w-none text-sm leading-relaxed text-zinc-300">
@@ -60,12 +61,13 @@ export default function TermsPage() {
         </section>
 
         <section className="mb-8">
-          <h2 className="mb-3 text-lg font-bold text-white">제5조 (이용요금 및 환불)</h2>
+          <h2 className="mb-3 text-lg font-bold text-white">제5조 (이용요금 및 결제)</h2>
           <ol className="list-decimal space-y-1 pl-5">
-            <li>서비스는 유료 판매되며, 현재 판매 채널은 크몽(kmong.com)입니다.</li>
-            <li>평생이용권은 결제일로부터 서비스 종료 시점까지 이용할 수 있는 권리를 의미합니다.</li>
-            <li>결제·환불 관련 사항은 <strong>크몽의 환불 정책</strong>을 따릅니다. 디지털 상품 특성상 액세스 코드 발급 후에는 원칙적으로 환불이 제한될 수 있으며, 구체적 기준은 크몽 정책을 기준으로 합니다.</li>
-            <li>환불 문의는 크몽 플랫폼 또는 본 약관에 기재된 이메일로 접수할 수 있습니다.</li>
+            <li>서비스는 유료로 제공되며, 현재 판매 형태는 1·3·6·12개월 단위 정기결제(구독)입니다.</li>
+            <li>결제는 토스페이먼츠(주식회사 토스페이먼츠)를 통한 신용·체크카드 자동결제로 이루어지며, 회사는 결제 정보(카드번호 등)를 직접 수집·보관하지 않습니다.</li>
+            <li>구독은 약정 기간 만료 시점에 동일 조건으로 자동 갱신되며, 이용자는 결제 페이지 또는 이메일을 통해 언제든지 자동결제를 해지할 수 있습니다. 해지 시 다음 결제 예정일부터 자동결제가 중지되고, 이미 결제된 기간은 만료일까지 정상 이용 가능합니다.</li>
+            <li>이용자가 평생이용권 등 별도 상품을 다른 채널(예: 크몽)에서 결제한 경우, 해당 채널의 정책 및 본 약관에 따라 이용 가능합니다.</li>
+            <li>환불 관련 사항은 별도의 <a href="/refund" className="text-zinc-200 underline decoration-dotted underline-offset-2 hover:text-white">환불정책</a>을 따릅니다.</li>
           </ol>
         </section>
 
@@ -122,25 +124,26 @@ export default function TermsPage() {
         <section className="mb-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
           <h2 className="mb-3 text-lg font-bold text-white">사업자 정보</h2>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-            <dt className="text-zinc-500">상호</dt>
+            <dt className="text-zinc-400">상호</dt>
             <dd className="text-zinc-200">시나브로</dd>
-            <dt className="text-zinc-500">대표자</dt>
+            <dt className="text-zinc-400">대표자</dt>
             <dd className="text-zinc-200">최준혁</dd>
-            <dt className="text-zinc-500">사업자등록번호</dt>
+            <dt className="text-zinc-400">사업자등록번호</dt>
             <dd className="text-zinc-200">187-21-02241</dd>
-            <dt className="text-zinc-500">문의 이메일</dt>
+            <dt className="text-zinc-400">문의 이메일</dt>
             <dd className="text-zinc-200">seenabr00@gmail.com</dd>
-            <dt className="text-zinc-500">사업장 주소</dt>
+            <dt className="text-zinc-400">사업장 주소</dt>
             <dd className="text-zinc-400">문의 시 별도 제공</dd>
           </dl>
         </section>
 
-        <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-500">
+        <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-400">
           <p>부칙</p>
           <p className="mt-1">본 약관은 2026년 4월 22일부터 시행합니다.</p>
         </section>
       </article>
     </main>
+    <SiteFooter />
     </>
   );
 }

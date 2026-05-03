@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Logo from "@/components/Logo";
+import SiteFooter from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "개인정보처리방침 | YTFINDER",
@@ -19,7 +20,7 @@ export default function PrivacyPage() {
 
       <header className="mb-10 border-b border-white/[0.06] pb-6">
         <h1 className="text-2xl font-bold text-white sm:text-3xl">개인정보처리방침</h1>
-        <p className="mt-2 text-sm text-zinc-500">시행일: 2026년 4월 22일</p>
+        <p className="mt-2 text-sm text-zinc-400">시행일: 2026년 4월 22일</p>
       </header>
 
       <article className="max-w-none text-sm leading-relaxed text-zinc-300">
@@ -40,7 +41,7 @@ export default function PrivacyPage() {
                 <li>액세스 코드 인증 실패 기록 (IP별 30분, 브루트포스 차단 목적)</li>
                 <li>서비스 이용 로그 (에러 추적 목적)</li>
               </ul>
-              <p className="mt-2 text-xs text-zinc-500">※ 위 정보는 서버 메모리에 일시 보관되며, 주기적으로 자동 삭제됩니다.</p>
+              <p className="mt-2 text-xs text-zinc-400">※ 위 정보는 서버 메모리에 일시 보관되며, 주기적으로 자동 삭제됩니다.</p>
             </div>
 
             <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
@@ -50,12 +51,15 @@ export default function PrivacyPage() {
                 <li>액세스 코드</li>
                 <li>검색 기록, 최근 조회 채널, 즐겨찾기, 필터 설정</li>
               </ul>
-              <p className="mt-2 text-xs text-zinc-500">※ 위 정보는 <strong>이용자 기기에만 저장되며, 회사 서버로 전송되지 않습니다.</strong> 브라우저 캐시·저장소를 삭제하면 함께 삭제됩니다.</p>
+              <p className="mt-2 text-xs text-zinc-400">※ 위 정보는 <strong>이용자 기기에만 저장되며, 회사 서버로 전송되지 않습니다.</strong> 브라우저 캐시·저장소를 삭제하면 함께 삭제됩니다.</p>
             </div>
 
             <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
               <h3 className="mb-2 text-sm font-bold text-white">다. 결제 관련</h3>
-              <p className="text-xs text-zinc-400">결제는 <strong>크몽(kmong.com)</strong>을 통해 이루어지며, 결제 정보는 크몽에서 수집·보관합니다. 회사는 결제 정보(카드번호, 계좌번호 등)를 일체 수집하지 않습니다.</p>
+              <p className="text-xs text-zinc-400">
+                구독 결제는 <strong>토스페이먼츠(주식회사 토스페이먼츠)</strong>를 통해 처리되며, 카드 정보는 토스페이먼츠가 직접 수집·보관합니다. 회사는 결제 정보(카드번호, CVC 등)를 일체 수집·저장하지 않으며, 결제 식별을 위한 빌링키(billingKey)와 주문 정보(주문번호, 결제 금액, 결제일)만 보관합니다.
+              </p>
+              <p className="mt-2 text-xs text-zinc-400">※ 평생이용권 등 일부 상품을 다른 채널(예: 크몽)에서 결제하신 경우, 해당 채널의 결제 처리 정책이 함께 적용됩니다.</p>
             </div>
           </div>
         </section>
@@ -84,9 +88,10 @@ export default function PrivacyPage() {
           <h2 className="mb-3 text-lg font-bold text-white">4. 제3자 제공 및 위탁</h2>
           <p className="mb-3">회사는 원칙적으로 이용자의 개인정보를 제3자에게 제공하지 않습니다. 다만 아래 서비스와 필수적인 연동이 있습니다.</p>
           <ul className="list-disc space-y-1 pl-5">
-            <li><strong>Google LLC (YouTube Data API v3)</strong>: 이용자가 입력한 API 키로 이용자가 직접 호출하며, Google의 <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="text-yellow-400 underline decoration-dotted underline-offset-2 hover:text-yellow-300">개인정보처리방침</a>을 따릅니다.</li>
+            <li><strong>Google LLC (YouTube Data API v3)</strong>: 채널·영상 데이터 조회를 위해 호출하며, Google의 <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="text-yellow-400 underline decoration-dotted underline-offset-2 hover:text-yellow-300">개인정보처리방침</a>을 따릅니다.</li>
             <li><strong>Vercel Inc.</strong>: 서비스 호스팅 및 배포 인프라. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noreferrer" className="text-yellow-400 underline decoration-dotted underline-offset-2 hover:text-yellow-300">Vercel Privacy Policy</a></li>
-            <li><strong>크몽(주식회사 크몽)</strong>: 결제 및 상품 판매 플랫폼. 결제 정보는 크몽에서 직접 처리합니다.</li>
+            <li><strong>토스페이먼츠(주식회사 토스페이먼츠)</strong>: 카드 결제·자동결제(빌링) 처리. 카드 정보는 토스페이먼츠에서 직접 수집·보관합니다. <a href="https://www.tosspayments.com/policies/privacy" target="_blank" rel="noreferrer" className="text-yellow-400 underline decoration-dotted underline-offset-2 hover:text-yellow-300">토스페이먼츠 개인정보처리방침</a></li>
+            <li><strong>크몽(주식회사 크몽)</strong>: 평생이용권 등 별도 채널 판매 시 해당 결제 정보는 크몽에서 직접 처리합니다.</li>
           </ul>
         </section>
 
@@ -98,7 +103,7 @@ export default function PrivacyPage() {
             <li>localStorage 데이터 직접 삭제(브라우저 설정)</li>
             <li>액세스 코드 삭제 요청 (이메일 문의)</li>
           </ul>
-          <p className="mt-3 text-xs text-zinc-500">요청은 <a href="mailto:seenabr00@gmail.com" className="text-yellow-400 underline decoration-dotted underline-offset-2 hover:text-yellow-300">seenabr00@gmail.com</a>으로 접수해 주세요.</p>
+          <p className="mt-3 text-xs text-zinc-400">요청은 <a href="mailto:seenabr00@gmail.com" className="text-yellow-400 underline decoration-dotted underline-offset-2 hover:text-yellow-300">seenabr00@gmail.com</a>으로 접수해 주세요.</p>
         </section>
 
         <section className="mb-8">
@@ -115,9 +120,9 @@ export default function PrivacyPage() {
           <h2 className="mb-3 text-lg font-bold text-white">7. 개인정보 보호책임자</h2>
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-              <dt className="text-zinc-500">책임자</dt>
+              <dt className="text-zinc-400">책임자</dt>
               <dd className="text-zinc-200">최준혁 (대표)</dd>
-              <dt className="text-zinc-500">이메일</dt>
+              <dt className="text-zinc-400">이메일</dt>
               <dd className="text-zinc-200">seenabr00@gmail.com</dd>
             </dl>
           </div>
@@ -128,12 +133,13 @@ export default function PrivacyPage() {
           <p>본 방침은 법령 또는 서비스 정책 변경에 따라 개정될 수 있으며, 변경 시 서비스 내 공지사항을 통해 고지합니다.</p>
         </section>
 
-        <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-500">
+        <section className="border-t border-white/[0.06] pt-6 text-xs text-zinc-400">
           <p>부칙</p>
           <p className="mt-1">본 방침은 2026년 4월 22일부터 시행합니다.</p>
         </section>
       </article>
     </main>
+    <SiteFooter />
     </>
   );
 }
