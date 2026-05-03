@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidAccessCodeFormat } from "@/lib/validate";
 import { getClientIp, verifySameOrigin } from "@/lib/security";
-
-// 환경변수에서 액세스 코드 로드 (쉼표 구분)
-const VALID_CODES = new Set(
-  (process.env.ACCESS_CODES || "")
-    .split(",")
-    .map((c) => c.trim().toUpperCase())
-    .filter(Boolean)
-);
+import { checkAccessCode } from "@/lib/accessCodes";
 
 // 브루트포스 방지: IP별 실패 횟수 추적
 const failureMap = new Map<string, { count: number; lockedUntil: number }>();
@@ -29,10 +22,8 @@ export async function POST(req: NextRequest) {
 
     const ip = getClientIp(req);
 
-    // 주기적 정리
     if (failureMap.size > 1000) cleanupExpired();
 
-    // 잠금 확인
     const record = failureMap.get(ip);
     if (record && record.lockedUntil > Date.now()) {
       const remaining = Math.ceil(
@@ -57,18 +48,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const trimmed = code.trim().toUpperCase();
+    const result = await checkAccessCode(code);
 
-    if (VALID_CODES.has(trimmed)) {
-      // 성공 시 실패 기록 초기화
+    if (result.valid) {
       failureMap.delete(ip);
       return NextResponse.json({ valid: true });
     }
 
-    // 실패 횟수 증가
     const current = failureMap.get(ip) || { count: 0, lockedUntil: 0 };
     current.count += 1;
-    console.warn("[access-code] invalid attempt", { ip, count: current.count });
+    console.warn("[access-code] invalid attempt", { ip, count: current.count, reason: result.reason });
     if (current.count >= MAX_FAILURES) {
       current.lockedUntil = Date.now() + LOCK_DURATION;
       failureMap.set(ip, current);

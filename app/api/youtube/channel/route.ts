@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const originBlocked = verifySameOrigin(request);
     if (originBlocked) return originBlocked;
 
-    const denied = verifyAccess(request);
+    const denied = await verifyAccess(request);
     if (denied) return denied;
 
     const ip = getClientIp(request);
