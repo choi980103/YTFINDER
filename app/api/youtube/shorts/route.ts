@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 
     // DB 조회 우선
     try {
-      const dbChannels = await getShortsChannelsFromDb({ region: "kr", limit: 300 });
+      const dbChannels = await getShortsChannelsFromDb({ region: "kr", limit: 500 });
       if (dbChannels.length >= DB_MIN_CHANNELS) {
         return NextResponse.json({ channels: dbChannels, source: "db" });
       }
