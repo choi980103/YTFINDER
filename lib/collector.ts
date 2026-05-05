@@ -255,6 +255,35 @@ export async function getVideoDetailsBatch(
 
 // ─── DB Upsert ──────────────────────────────────────────────────────────────
 
+// PostgREST는 bulk upsert를 jsonb로 packing해서 PG에 넘김.
+// 따라서 text 컬럼이라도 PG JSON 파서가 거부하는 문자(NULL 바이트, lone surrogate)가
+// 들어있으면 "invalid input syntax for type json" 에러가 남.
+// YouTube 채널명/설명에 가끔 박혀있으니 boundary에서 한 번 cleanup.
+function sanitizeText(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    if (code === 0) continue; // NULL byte
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = s.charCodeAt(i + 1);
+      if (next >= 0xdc00 && next <= 0xdfff) {
+        out += s[i] + s[i + 1];
+        i++;
+        continue;
+      }
+      continue; // lone high surrogate
+    }
+    if (code >= 0xdc00 && code <= 0xdfff) continue; // lone low surrogate
+    out += s[i];
+  }
+  return out;
+}
+
+function sanitizeRequired(s: string | null | undefined): string {
+  return sanitizeText(s) ?? "";
+}
+
 export async function upsertChannels(channels: RawChannel[]): Promise<void> {
   if (channels.length === 0) return;
   const admin = getSupabaseAdmin();
@@ -262,11 +291,11 @@ export async function upsertChannels(channels: RawChannel[]): Promise<void> {
   const now = new Date().toISOString();
   const rows = channels.map((c) => ({
     id: c.id,
-    name: c.name,
-    handle: c.handle || null,
-    thumbnail: c.thumbnail,
-    description: c.description,
-    country: c.country || null,
+    name: sanitizeRequired(c.name),
+    handle: sanitizeText(c.handle) || null,
+    thumbnail: sanitizeRequired(c.thumbnail),
+    description: sanitizeRequired(c.description),
+    country: sanitizeText(c.country) || null,
     channel_created_at: c.channelCreatedAt || null,
     subscribers: c.subscribers,
     total_views: c.totalViews,
@@ -307,8 +336,8 @@ export async function upsertVideos(videos: RawVideo[]): Promise<void> {
   const rows = videos.map((v) => ({
     id: v.id,
     channel_id: v.channelId,
-    title: v.title,
-    thumbnail: v.thumbnail,
+    title: sanitizeRequired(v.title),
+    thumbnail: sanitizeRequired(v.thumbnail),
     published_at: v.publishedAt,
     duration_seconds: v.durationSeconds,
     is_short: v.isShort,
