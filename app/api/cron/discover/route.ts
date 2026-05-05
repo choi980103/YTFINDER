@@ -44,6 +44,20 @@ const POPULAR_CATEGORIES = [
   "22", "23", "24", "25", "26", "27", "28",
 ];
 
+// Vercel 60s timeout 회피용 동시성 제한
+const SEARCH_CONCURRENCY = 8;
+const POPULAR_CONCURRENCY = 8;
+
+async function inBatches<T, R>(items: T[], size: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += size) {
+    const batch = items.slice(i, i + size);
+    const results = await Promise.all(batch.map(fn));
+    out.push(...results);
+  }
+  return out;
+}
+
 export async function GET(request: NextRequest) {
   const denied = verifyCronRequest(request);
   if (denied) return denied;
@@ -53,28 +67,28 @@ export async function GET(request: NextRequest) {
   let totalChannels = 0;
 
   try {
-    // 1) 검색으로 채널 ID 수집 (search.list 100 unit × N)
+    // 1) 검색으로 채널 ID 수집 (search.list 100 unit × N) — 병렬
     const channelIdSet = new Set<string>();
-    for (const q of SEARCH_QUERIES) {
+    await inBatches(SEARCH_QUERIES, SEARCH_CONCURRENCY, async (q) => {
       try {
         const found = await searchShortsChannels(q, quota);
         for (const f of found) channelIdSet.add(f.channelId);
       } catch (err) {
         console.error("[cron/discover] search failed", q, err);
       }
-    }
+    });
 
-    // 2) mostPopular로 채널 ID 추가 수집 (1 unit/카테고리 — 거의 공짜)
+    // 2) mostPopular로 채널 ID 추가 수집 (1 unit/카테고리 — 거의 공짜) — 병렬
     const apiKey = process.env.YOUTUBE_API_KEY;
     if (apiKey) {
-      for (const cat of POPULAR_CATEGORIES) {
+      await inBatches(POPULAR_CATEGORIES, POPULAR_CONCURRENCY, async (cat) => {
         try {
           const url =
             `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails` +
             `&chart=mostPopular&regionCode=KR&videoCategoryId=${cat}&maxResults=50&key=${apiKey}`;
           const res = await fetch(url);
           quota.add(1);
-          if (!res.ok) continue;
+          if (!res.ok) return;
           const data = await res.json();
           for (const item of (data.items || []) as {
             snippet?: { channelId: string };
@@ -91,7 +105,7 @@ export async function GET(request: NextRequest) {
         } catch (err) {
           console.error("[cron/discover] mostPopular failed", cat, err);
         }
-      }
+      });
     }
 
     const channelIds = [...channelIdSet];
