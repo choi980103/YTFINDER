@@ -284,26 +284,34 @@ function sanitizeRequired(s: string | null | undefined): string {
   return sanitizeText(s) ?? "";
 }
 
-export async function upsertChannels(channels: RawChannel[]): Promise<void> {
+// `markCollected` true → last_collected_at을 now로 갱신 (collect cron용)
+// false → last_collected_at 안 건드림 (discover cron용 — 신규 채널은 NULL 유지해서
+// collect 큐에서 우선 처리되도록)
+export async function upsertChannels(
+  channels: RawChannel[],
+  options: { markCollected?: boolean } = {}
+): Promise<void> {
   if (channels.length === 0) return;
   const admin = getSupabaseAdmin();
   if (!admin) throw new Error("Supabase admin 미설정");
   const now = new Date().toISOString();
-  const rows = channels.map((c) => ({
-    id: c.id,
-    name: sanitizeRequired(c.name),
-    handle: sanitizeText(c.handle) || null,
-    thumbnail: sanitizeRequired(c.thumbnail),
-    description: sanitizeRequired(c.description),
-    country: sanitizeText(c.country) || null,
-    channel_created_at: c.channelCreatedAt || null,
-    subscribers: c.subscribers,
-    total_views: c.totalViews,
-    video_count: c.videoCount,
-    hidden_subscriber_count: c.hiddenSubscriberCount,
-    last_collected_at: now,
-    is_active: true,
-  }));
+  const rows = channels.map((c) => {
+    const base = {
+      id: c.id,
+      name: sanitizeRequired(c.name),
+      handle: sanitizeText(c.handle) || null,
+      thumbnail: sanitizeRequired(c.thumbnail),
+      description: sanitizeRequired(c.description),
+      country: sanitizeText(c.country) || null,
+      channel_created_at: c.channelCreatedAt || null,
+      subscribers: c.subscribers,
+      total_views: c.totalViews,
+      video_count: c.videoCount,
+      hidden_subscriber_count: c.hiddenSubscriberCount,
+      is_active: true,
+    };
+    return options.markCollected ? { ...base, last_collected_at: now } : base;
+  });
   // upsert: id 있으면 update, 없으면 insert
   const { error } = await admin.from("channels").upsert(rows, { onConflict: "id" });
   if (error) throw new Error(`channels upsert: ${error.message}`);

@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
     // 2) 채널 통계 갱신
     const channels = await getChannelStatsBatch(channelIds, quota);
-    await upsertChannels(channels);
+    await upsertChannels(channels, { markCollected: true });
     await insertSnapshots(channels);
     processedChannels = channels.length;
 
